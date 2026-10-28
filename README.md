@@ -4,9 +4,10 @@ Solo entry, Indie Developer track. All times ET.
 
 - **Team:** Cooked Chef (solo developer)
 - **Project:** Nom Nom Go!
-- **One-liner:** An adaptive kitchen game powered by Meta AI that dynamically trains kids' focus and decision speed.
-- **ELI5:** A kids' kitchen arcade game to help improve concentration and quick-thinking.
-- **Brainstorm origin:** "Speed Chef: Order Up!" concept (ages 8+, 60-90 second rounds, adaptive difficulty), see Links.
+- **One-liner:** A kitchen game where kids practice focus and quick thinking and play with a parent. Made possible with Meta AI.
+- **ELI5:** A kids' kitchen arcade game for practicing concentration and quick thinking, together with a parent.
+- **Brainstorm origin:** "Speed Chef: Order Up!" concept from an early brainstorm, see Links. The design has since been reworked (target age 7, no reading needed).
+
 Full rules and details: `docs/participant-guide.md` (copied from the Cerebral Valley event page on Oct 26, 2026).
 
 ## Key dates
@@ -45,7 +46,7 @@ Full rules and details: `docs/participant-guide.md` (copied from the Cerebral Va
 
 ## Credits
 
-Status (Oct 26): all four request forms submitted; accounts created at Meta, Baseten, Modal, and Fireworks. Billing card added on all accounts except Modal (Modal would not accept billing; possible bug, unresolved). Meta $150 credits applied (confirmed on Billing page, Oct 26). Awaiting Baseten, Modal, Fireworks. Still to do: set Billing spend limit on Meta. Note: while free credits are in use, Meta may use your content for product improvement.
+Status (Oct 28): all four request forms submitted; accounts created at Meta, Baseten, Modal, and Fireworks. Billing card added on all accounts except Modal (Modal would not accept billing; possible bug, unresolved). Meta $150 credits applied (confirmed on Billing page, Oct 26). Meta Billing spend limit set (Oct 28). Baseten not needed for this project (no open-weight models). Awaiting Modal, Fireworks. Note: while free credits are in use, Meta may use your content for product improvement.
 
 - Meta Model API: $150, claim by Nov 4 9 PM ET. Credit card required on account. Form: https://docs.google.com/forms/d/e/1FAIpQLScam78z7tHsNYibiFyJQVFzEgr0coyBTiY568SxxNbsPa3jiw/viewform
 - Baseten: $100 (use model `meta-models/muse-spark-open-1026`): https://docs.google.com/forms/d/e/1FAIpQLSfM7gcK8yMZEmAGq6DbTyiuv2c71IH7CKCy0fXGIfUED1qxVQ/viewform
