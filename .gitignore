@@ -6,3 +6,15 @@
 research/
 working/
 generated_images/
+
+# dependencies and build output
+node_modules/
+game/dist/
+game/dist-assets/
+game/dist-root/
+infra/cdk.out/
+infra/node_modules/
+
+# test artifacts
+game/playwright-report/
+game/test-results/

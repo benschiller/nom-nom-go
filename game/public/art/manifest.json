@@ -1,0 +1,917 @@
+{
+  "v": 1,
+  "assets": [
+    {
+      "id": "item.patty",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon patty for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.tomato",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon tomato slice for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.pineapple",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon pineapple slice for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.lettuce",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon lettuce for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.avocado",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon avocado for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.ketchup",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon ketchup for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.salsa",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon salsa for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.cheese",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon cheese for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.pickles",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon pickles for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.onionRings",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon onion rings for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.crispyOnions",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon crispy onions for a burger, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.crust.thin",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon thin crust for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.crust.thick",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon thick crust for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.sauce.redSmooth",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon smooth red sauce for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.sauce.redChunky",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon chunky red sauce for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.sauce.white",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon white sauce for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.pepperoni",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon beef pepperoni for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.greenPepper",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon green pepper for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.basil",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon basil leaf for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.mushroom",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon mushroom for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.olives",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon olives for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.turkey",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon turkey slice for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.corn",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon corn for a pizza, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.cup",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon cup for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.cone",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon cone for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.scoop.vanilla",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon vanilla scoop for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.scoop.chocolate",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon chocolate scoop for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.scoop.strawberry",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon strawberry scoop for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.cherry",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon cherry for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.grape",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon grape for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.whippedCream",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon whipped cream for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.marshmallow",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon marshmallow for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.chocChips",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon chocolate chips for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.sprinkles",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon sprinkles for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.banana",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon banana slice for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "item.caramel",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon caramel drizzle for a sundae, bold silhouette, transparent background"
+    },
+    {
+      "id": "scene.truckExterior",
+      "kind": "scene",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Food truck exterior at day, side view"
+    },
+    {
+      "id": "scene.kiosk",
+      "kind": "scene",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Order kiosk with big screen"
+    },
+    {
+      "id": "scene.kitchen",
+      "kind": "scene",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Inside of a food truck kitchen"
+    },
+    {
+      "id": "scene.servingWindow",
+      "kind": "scene",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Small serving window frame"
+    },
+    {
+      "id": "prop.monitor",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Kitchen order monitor"
+    },
+    {
+      "id": "prop.speakerOn",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Speaker with sound waves"
+    },
+    {
+      "id": "prop.speakerStatic",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Speaker with static sparks"
+    },
+    {
+      "id": "prop.bell",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Service bell"
+    },
+    {
+      "id": "prop.trash",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Trash bin"
+    },
+    {
+      "id": "prop.powerOff",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Power off pictogram button"
+    },
+    {
+      "id": "prop.powerOn",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Glowing power on pictogram"
+    },
+    {
+      "id": "ui.star",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Star pip, lit and unlit states"
+    },
+    {
+      "id": "ui.glove",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Chef glove pointer"
+    },
+    {
+      "id": "ui.badgeDad",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Head Chef face presence badge"
+    },
+    {
+      "id": "ui.rotate",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Rotate phone sideways pictogram"
+    },
+    {
+      "id": "ui.appIcon",
+      "kind": "prop",
+      "size": 300,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "App icon source: monster face with chef hat"
+    },
+    {
+      "id": "monster.gobbler.idle",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in idle pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.walk",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in walk pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.tap",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in tap pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.happy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in happy pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.fidgety",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in fidgety pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.grumpy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in grumpy pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.gobble",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in gobble pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.dance",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in dance pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.confused",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in confused pose, transparent background"
+    },
+    {
+      "id": "monster.gobbler.leave",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster gobbler in leave pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.idle",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in idle pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.walk",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in walk pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.tap",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in tap pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.happy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in happy pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.fidgety",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in fidgety pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.grumpy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in grumpy pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.gobble",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in gobble pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.dance",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in dance pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.confused",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in confused pose, transparent background"
+    },
+    {
+      "id": "monster.doubleTrouble.leave",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster doubleTrouble in leave pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.idle",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in idle pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.walk",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in walk pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.tap",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in tap pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.happy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in happy pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.fidgety",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in fidgety pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.grumpy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in grumpy pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.gobble",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in gobble pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.dance",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in dance pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.confused",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in confused pose, transparent background"
+    },
+    {
+      "id": "monster.sneezer.leave",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster sneezer in leave pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.idle",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in idle pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.walk",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in walk pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.tap",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in tap pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.happy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in happy pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.fidgety",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in fidgety pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.grumpy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in grumpy pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.gobble",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in gobble pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.dance",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in dance pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.confused",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in confused pose, transparent background"
+    },
+    {
+      "id": "monster.fussy.leave",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster fussy in leave pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.idle",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in idle pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.walk",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in walk pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.tap",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in tap pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.happy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in happy pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.fidgety",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in fidgety pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.grumpy",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in grumpy pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.gobble",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in gobble pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.dance",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in dance pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.confused",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in confused pose, transparent background"
+    },
+    {
+      "id": "monster.speedy.leave",
+      "kind": "monster",
+      "size": 260,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Original silly monster speedy in leave pose, transparent background"
+    },
+    {
+      "id": "chef.hello",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, hello pose, transparent background"
+    },
+    {
+      "id": "chef.point",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, point pose, transparent background"
+    },
+    {
+      "id": "chef.thumbs-up",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, thumbs-up pose, transparent background"
+    },
+    {
+      "id": "chef.cheer",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, cheer pose, transparent background"
+    },
+    {
+      "id": "chef.think",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, think pose, transparent background"
+    },
+    {
+      "id": "chef.surprised",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, surprised pose, transparent background"
+    },
+    {
+      "id": "chef.clap",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, clap pose, transparent background"
+    },
+    {
+      "id": "chef.goodbye",
+      "kind": "chef",
+      "size": 280,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Friendly cartoon Head Chef, Dad-like, goodbye pose, transparent background"
+    },
+    {
+      "id": "cheer.thumbs",
+      "kind": "cheer",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cheer icon thumbs"
+    },
+    {
+      "id": "cheer.heart",
+      "kind": "cheer",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cheer icon heart"
+    },
+    {
+      "id": "cheer.wow",
+      "kind": "cheer",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cheer icon wow"
+    },
+    {
+      "id": "item.pizzaTomato",
+      "kind": "ingredient",
+      "size": 120,
+      "anchor": "center",
+      "layer": "mid",
+      "description": "Cartoon tomato slice for a pizza, bold silhouette, transparent background"
+    }
+  ]
+}

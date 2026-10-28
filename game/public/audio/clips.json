@@ -1,0 +1,275 @@
+{
+  "v": 1,
+  "clips": [
+    {
+      "id": "welcome.hello",
+      "text": "Hello! Let's cook together!",
+      "category": "welcome"
+    },
+    {
+      "id": "phrase.order_up",
+      "text": "Order up!",
+      "category": "order"
+    },
+    {
+      "id": "phrase.and",
+      "text": "and",
+      "category": "order"
+    },
+    {
+      "id": "amount.double",
+      "text": "double",
+      "category": "order"
+    },
+    {
+      "id": "ing.patty",
+      "text": "patty",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.tomato",
+      "text": "tomato slice",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.pineapple",
+      "text": "pineapple slice",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.lettuce",
+      "text": "lettuce",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.avocado",
+      "text": "avocado",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.ketchup",
+      "text": "ketchup",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.salsa",
+      "text": "salsa",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.cheese",
+      "text": "cheese",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.pickles",
+      "text": "pickles",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.onionRings",
+      "text": "onion rings",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.crispyOnions",
+      "text": "crispy onions",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.crust.thin",
+      "text": "thin crust",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.crust.thick",
+      "text": "thick crust",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.sauce.redSmooth",
+      "text": "smooth red sauce",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.sauce.redChunky",
+      "text": "chunky red sauce",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.sauce.white",
+      "text": "white sauce",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.pepperoni",
+      "text": "beef pepperoni",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.greenPepper",
+      "text": "green pepper",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.basil",
+      "text": "basil leaf",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.mushroom",
+      "text": "mushroom",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.olives",
+      "text": "olives",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.turkey",
+      "text": "turkey slice",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.corn",
+      "text": "corn",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.cup",
+      "text": "cup",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.cone",
+      "text": "cone",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.scoop.vanilla",
+      "text": "vanilla scoop",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.scoop.chocolate",
+      "text": "chocolate scoop",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.scoop.strawberry",
+      "text": "strawberry scoop",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.cherry",
+      "text": "cherry",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.grape",
+      "text": "grape",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.whippedCream",
+      "text": "whipped cream",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.marshmallow",
+      "text": "marshmallow",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.chocChips",
+      "text": "chocolate chips",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.sprinkles",
+      "text": "sprinkles",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.banana",
+      "text": "banana slice",
+      "category": "ingredients"
+    },
+    {
+      "id": "ing.caramel",
+      "text": "caramel drizzle",
+      "category": "ingredients"
+    },
+    {
+      "id": "cheer.great",
+      "text": "Great job!",
+      "category": "cheers"
+    },
+    {
+      "id": "cheer.lightning",
+      "text": "Lightning chef!",
+      "category": "cheers"
+    },
+    {
+      "id": "cheer.wow",
+      "text": "Wow!",
+      "category": "cheers"
+    },
+    {
+      "id": "level.up",
+      "text": "You did it! Level up!",
+      "category": "levels"
+    },
+    {
+      "id": "level.tryAgain",
+      "text": "Let's try again!",
+      "category": "levels"
+    },
+    {
+      "id": "level.intro",
+      "text": "Here we go!",
+      "category": "levels"
+    },
+    {
+      "id": "boss.rush",
+      "text": "Rush hour!",
+      "category": "levels"
+    },
+    {
+      "id": "tutorial.first",
+      "text": "Watch, then cook!",
+      "category": "tutorials"
+    },
+    {
+      "id": "gag.speaker",
+      "text": "The speaker is crackly today!",
+      "category": "gags"
+    },
+    {
+      "id": "gag.monitor",
+      "text": "The screen is sleepy today!",
+      "category": "gags"
+    },
+    {
+      "id": "gag.kiosk",
+      "text": "Snow on the screen!",
+      "category": "gags"
+    },
+    {
+      "id": "pair.team",
+      "text": "We are a team!",
+      "category": "pairing"
+    },
+    {
+      "id": "goodbye.closed",
+      "text": "Kitchen's closed for the night!",
+      "category": "goodbye"
+    },
+    {
+      "id": "ing.pizzaTomato",
+      "text": "tomato slice",
+      "category": "ingredients"
+    }
+  ]
+}

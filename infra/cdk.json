@@ -1,0 +1,6 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/nom-nom-go.ts",
+  "context": {
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false
+  }
+}

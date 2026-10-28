@@ -1,0 +1,44 @@
+{
+  "name": "nom-nom-go",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": "^22.12 || ^24"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5173",
+    "build": "tsc --noEmit && vite build && node scripts/split-dist.mjs && node scripts/check-size.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4173",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . && prettier --check \"src/**/*.{ts,tsx}\" \"*.{ts,json,html}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\" \"*.{ts,json,html}\""
+  },
+  "dependencies": {
+    "motion": "14.7.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "workbox-window": "7.4.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@playwright/test": "1.64.1",
+    "@types/node": "22.19.7",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vite-pwa/assets-generator": "2.0.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "aws-amplify": "6.22.2",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1",
+    "vite": "8.3.5",
+    "vite-plugin-pwa": "2.0.0",
+    "vitest": "5.0.5"
+  }
+}
