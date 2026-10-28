@@ -1,0 +1,6 @@
+
+# credentials
+*.env
+
+# work product
+research/
