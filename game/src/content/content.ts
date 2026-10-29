@@ -165,7 +165,7 @@ export const ITEMS: Item[] = [
       dish: 'pizza',
       kind: 'base',
       clipText: 'smooth red sauce',
-      emoji: '🍅',
+      emoji: '🥣',
       shape: 'drizzle',
       color: '#d42b1e',
       texture: 'smooth',

@@ -76,6 +76,8 @@ export interface GameState {
   power: 'on' | 'off';
   pendingEvents: string[];
   tryCount: number;
+  attemptsThisOrder: number;
+  bankedProgress: number;
 }
 
 export type GameEvent =
@@ -91,7 +93,9 @@ export type GameEvent =
   | { type: 'resume' }
   | { type: 'powerOff' }
   | { type: 'powerOn' }
-  | { type: 'tutorialDone' };
+  | { type: 'powerReset' }
+  | { type: 'tutorialDone' }
+  | { type: 'tourDone' };
 
 export interface StartOptions {
   seed?: number;
@@ -103,6 +107,7 @@ export interface StartOptions {
   gagSeen?: string[];
   power?: 'on' | 'off';
   telemetry?: TelemetryEntry[];
+  levelProgress?: number;
 }
 
 export function initialState(opts: StartOptions = {}): GameState {
@@ -149,12 +154,14 @@ export function initialState(opts: StartOptions = {}): GameState {
     power,
     pendingEvents: [],
     tryCount: 0,
+    attemptsThisOrder: 0,
+    bankedProgress: Math.min(2, Math.max(0, opts.levelProgress ?? 0)),
   };
 }
 
 const orderOf = (s: GameState): Order | null => s.orders[s.orderIndex] ?? null;
 
-function startTry(s: GameState, level: number): GameState {
+function startBatch(s: GameState, level: number, preserveProgress: boolean): GameState {
   const seed = (s.seed * 1103515245 + level * 977 + s.tryCount * 131) >>> 0;
   const { orders, rngState } = generateTryOrders(level, seed);
   let pace = s.paceStep;
@@ -163,6 +170,9 @@ function startTry(s: GameState, level: number): GameState {
   }
   const failed = s.failedTries[level] ?? 0;
   const first = orders[0];
+  // Banked progress applies only when starting the saved level itself,
+  // not a warm-up level below it, and is consumed once applied.
+  const banked = !preserveProgress && level === s.savedLevel && !s.warmup ? s.bankedProgress : 0;
   return {
     ...s,
     level,
@@ -171,7 +181,9 @@ function startTry(s: GameState, level: number): GameState {
     rngState,
     orderIndex: 0,
     tryCount: s.tryCount + 1,
-    starsTry: 0,
+    attemptsThisOrder: 0,
+    starsTry: preserveProgress ? s.starsTry : banked,
+    bankedProgress: banked > 0 ? 0 : s.bankedProgress,
     assist: failed >= 2,
     sawtoothAppliedFor: [...new Set([...s.sawtoothAppliedFor, level])],
     phase: 'kiosk',
@@ -183,6 +195,10 @@ function startTry(s: GameState, level: number): GameState {
     result: null,
     tutorial: tutorialFor(s, level, first),
   };
+}
+
+function startTry(s: GameState, level: number): GameState {
+  return startBatch(s, level, false);
 }
 
 function tutorialFor(s: GameState, level: number, order: Order): string | null {
@@ -223,7 +239,10 @@ function finishOrder(s: GameState, result: ServeResult): GameState {
     paceStep = clampPace(paceStep + 1);
     correctRun = 0;
   }
-  if (!correct) paceStep = clampPace(paceStep - 1);
+  // A first wrong serve earns a retry of the same order, so the pace does
+  // not ease yet. A miss on the retry (or a timeout) eases one pace step.
+  const willRetry = result.kind === 'wrong' && s.attemptsThisOrder === 0;
+  if (!correct && !willRetry) paceStep = clampPace(paceStep - 1);
   if (correct && result.fast) {
     fastRun += 1;
     if (fastRun >= 3) streak = true;
@@ -262,12 +281,82 @@ function finishOrder(s: GameState, result: ServeResult): GameState {
   };
 }
 
+/** Trim an order's ticket (and expected sequence) to at most `cap` items. */
+function capOrder(order: Order, cap: number): Order {
+  if (order.ticket.length <= cap) return order;
+  const ticket = order.ticket.slice(0, Math.max(0, cap));
+  return { ...order, ticket, expected: [...order.prebuilt, ...ticket] };
+}
+
 function advanceAfterResult(s: GameState): GameState {
   const cleared = { ...s, result: null, pendingEvents: [] as string[] };
+  // First wrong serve: same order again from the kiosk, so the player can
+  // re-watch and re-hear it. Getting it on the retry proceeds as normal.
+  if (s.result?.kind === 'wrong' && s.attemptsThisOrder === 0) {
+    const order = orderOf(s);
+    if (order) {
+      return {
+        ...cleared,
+        attemptsThisOrder: 1,
+        phase: 'kiosk',
+        phaseMs: 0,
+        kioskShown: 0,
+        built: [...order.prebuilt],
+        printDone: false,
+        calloutDone: false,
+      };
+    }
+  }
+  // A round is missed when it ends without a correct serve, excluding the
+  // first wrong serve that is about to be retried. Two missed rounds on a
+  // level turn assist mode on for the rounds that follow.
+  const missedRound =
+    s.result !== null && s.result.kind !== 'correct' && !(s.result.kind === 'wrong' && s.attemptsThisOrder === 0);
+  const failedTries = missedRound ? { ...s.failedTries, [s.level]: (s.failedTries[s.level] ?? 0) + 1 } : s.failedTries;
+  const progressed = {
+    ...cleared,
+    failedTries,
+    assist: s.assist || (failedTries[s.level] ?? 0) >= 2,
+  };
+
+  // The level ends as soon as three rounds have been banked correct,
+  // however many rounds that took.
+  if (s.starsTry >= 3) {
+    const stars = s.starsTry;
+    const best = Math.max(s.starsByLevel[s.level] ?? 0, stars);
+    const withStars = {
+      ...progressed,
+      attemptsThisOrder: 0,
+      starsByLevel: { ...s.starsByLevel, [s.level]: best },
+      phase: 'levelResult' as Phase,
+      phaseMs: 0,
+      pendingEvents: [...progressed.pendingEvents, 'levelUp'],
+    };
+    if (s.level >= 6) {
+      return {
+        ...withStars,
+        bossBeaten: true,
+        phase: 'bossEnding' as Phase,
+        pendingEvents: [...withStars.pendingEvents, 'bossWin'],
+      };
+    }
+    return withStars;
+  }
+
   if (s.orderIndex < 2) {
-    const next = s.orders[s.orderIndex + 1];
+    const failed = orderOf(s);
+    // Option 1: after a second miss, the next order is capped at the failed
+    // order's length, so a double miss is never followed by a longer order.
+    const nextRaw = s.orders[s.orderIndex + 1];
+    const next =
+      s.result?.kind === 'wrong' && s.attemptsThisOrder === 1 && failed
+        ? capOrder(nextRaw, failed.ticket.length)
+        : nextRaw;
+    const orders = next !== nextRaw ? s.orders.map((o, i) => (i === s.orderIndex + 1 ? next : o)) : s.orders;
     return {
-      ...cleared,
+      ...progressed,
+      orders,
+      attemptsThisOrder: 0,
       orderIndex: s.orderIndex + 1,
       phase: 'kiosk',
       phaseMs: 0,
@@ -278,55 +367,73 @@ function advanceAfterResult(s: GameState): GameState {
       tutorial: tutorialFor(s, s.level, next),
     };
   }
-  // Level result
-  const stars = s.starsTry;
-  const best = Math.max(s.starsByLevel[s.level] ?? 0, stars);
-  const withStars = {
-    ...cleared,
-    starsByLevel: { ...s.starsByLevel, [s.level]: best },
-    phase: 'levelResult' as Phase,
-    phaseMs: 0,
-  };
-  if (stars === 3) {
-    withStars.pendingEvents = [...withStars.pendingEvents, 'levelUp'];
-    if (s.level >= 6) {
+  // Batch exhausted with progress still to bank: deal a fresh batch of
+  // rounds at the same level, keeping the banked correct count. Avoid an
+  // immediate dish or monster repeat across the batch boundary.
+  const batch = startBatch(progressed, s.level, true);
+  const previous = orderOf(s);
+  if (previous && batch.orders.length > 1) {
+    const first = batch.orders[0];
+    if (first.dish === previous.dish || first.monster === previous.monster) {
+      const rotated = [batch.orders[1], batch.orders[2], batch.orders[0]];
       return {
-        ...withStars,
-        bossBeaten: true,
-        phase: 'bossEnding',
-        pendingEvents: [...withStars.pendingEvents, 'bossWin'],
+        ...batch,
+        orders: rotated,
+        built: [...rotated[0].prebuilt],
+        tutorial: tutorialFor(progressed, s.level, rotated[0]),
       };
     }
   }
-  return withStars;
+  return batch;
 }
 
 function continueFromLevelResult(s: GameState): GameState {
-  if (s.bossBeaten && s.level >= 6 && s.starsTry === 3) return { ...s, phase: 'closed', phaseMs: 0 };
-  if (s.starsTry === 3) {
-    const nextLevel = s.warmup && s.level < s.savedLevel ? s.savedLevel : s.level + 1;
-    const wasWarmup = s.warmup;
-    return startTry(
-      { ...s, savedLevel: Math.max(s.savedLevel, wasWarmup ? s.savedLevel : nextLevel), warmup: false },
-      nextLevel,
-    );
-  }
-  // Failed try: easing off.
-  const failed = { ...s.failedTries, [s.level]: (s.failedTries[s.level] ?? 0) + 1 };
-  const failedCount = failed[s.level];
-  if (failedCount >= 3 && s.assist && !s.droppedThisSession && s.level > 1) {
-    return startTry({ ...s, failedTries: failed, droppedThisSession: true }, s.level - 1);
-  }
-  return startTry({ ...s, failedTries: failed, assist: failedCount >= 2 }, s.level);
+  // Level result is only reached with three banked correct rounds.
+  if (s.bossBeaten && s.level >= 6) return { ...s, phase: 'closed', phaseMs: 0 };
+  const nextLevel = s.warmup && s.level < s.savedLevel ? s.savedLevel : s.level + 1;
+  const wasWarmup = s.warmup;
+  return startTry(
+    {
+      ...s,
+      failedTries: {},
+      assist: false,
+      savedLevel: Math.max(s.savedLevel, wasWarmup ? s.savedLevel : nextLevel),
+      warmup: false,
+    },
+    nextLevel,
+  );
+}
+
+function withTutorialDismissed(s: GameState): GameState {
+  const t = s.tutorial;
+  if (!t) return s;
+  const gag = t.startsWith('gag:') ? t.slice(4) : null;
+  return {
+    ...s,
+    tutorial: null,
+    tutorialsSeen: gag ? s.tutorialsSeen : [...new Set([...s.tutorialsSeen, t])],
+    gagSeen: gag ? [...new Set([...s.gagSeen, gag])] : s.gagSeen,
+  };
 }
 
 export function step(prev: GameState, event: GameEvent): GameState {
-  if (prev.paused && event.type !== 'resume' && event.type !== 'tick') return prev;
+  // calloutFinished is allowed through while paused: the voice may finish
+  // in the background, and dropping it would strand the game in callout.
+  if (
+    prev.paused &&
+    event.type !== 'resume' &&
+    event.type !== 'tick' &&
+    event.type !== 'calloutFinished' &&
+    event.type !== 'powerReset'
+  )
+    return prev;
   switch (event.type) {
     case 'pause':
       return { ...prev, paused: true };
     case 'resume':
-      return { ...prev, paused: false };
+      // Resuming counts as activity, so patience visibly moves again
+      // instead of staying in the idle freeze until the next ingredient tap.
+      return { ...prev, paused: false, idleMs: 0 };
     case 'go': {
       if (prev.phase !== 'title') return prev;
       const startLevel = Math.max(1, prev.savedLevel - (prev.savedLevel > 1 ? 1 : 0));
@@ -347,16 +454,12 @@ export function step(prev: GameState, event: GameEvent): GameState {
       }
       return prev;
     }
+    case 'tourDone': {
+      if (prev.tutorialsSeen.includes('tour')) return prev;
+      return { ...prev, tutorialsSeen: [...prev.tutorialsSeen, 'tour'] };
+    }
     case 'tutorialDone': {
-      const t = prev.tutorial;
-      if (!t) return prev;
-      const gag = t.startsWith('gag:') ? t.slice(4) : null;
-      return {
-        ...prev,
-        tutorial: null,
-        tutorialsSeen: gag ? prev.tutorialsSeen : [...new Set([...prev.tutorialsSeen, t])],
-        gagSeen: gag ? [...new Set([...prev.gagSeen, gag])] : prev.gagSeen,
-      };
+      return withTutorialDismissed(prev);
     }
     case 'calloutFinished': {
       const s = { ...prev, calloutDone: true };
@@ -367,7 +470,10 @@ export function step(prev: GameState, event: GameEvent): GameState {
     }
     case 'addItem': {
       if (prev.phase !== 'cooking') return prev;
-      return { ...prev, built: [...prev.built, event.item], idleMs: 0, firstTapMs: prev.firstTapMs ?? prev.cookingMs };
+      // The pointing hand is a coach mark, not a gate: the first real tap
+      // dismisses it and marks it seen. No dismiss button covers the tray.
+      const base = withTutorialDismissed(prev);
+      return { ...base, built: [...base.built, event.item], idleMs: 0, firstTapMs: base.firstTapMs ?? base.cookingMs };
     }
     case 'undo': {
       if (prev.phase !== 'cooking') return prev;
@@ -395,6 +501,10 @@ export function step(prev: GameState, event: GameEvent): GameState {
         highlight: firstMismatchIndex(prev.built, order.expected),
       });
     }
+    case 'powerReset':
+      // Complete wipe back to the beginning. Resetting the core first means
+      // later ticks project this fresh state, never the old level.
+      return initialState({ seed: prev.seed, power: 'on' });
     case 'powerOff':
       return prev.phase === 'closed' ? { ...prev, phase: 'poweredOff', power: 'off' } : prev;
     case 'powerOn': {
@@ -450,7 +560,7 @@ export function step(prev: GameState, event: GameEvent): GameState {
           return { ...s, cookingMs, idleMs, hintsUsed, patienceLeftMs: left };
         }
         case 'serveResult': {
-          const hold = s.result?.kind === 'correct' ? 2500 : s.result?.kind === 'wrong' ? 1800 : 1200;
+          const hold = s.result?.kind === 'correct' ? 2500 : s.result?.kind === 'wrong' ? 2500 : 1200;
           return s.phaseMs >= hold ? advanceAfterResult(s) : s;
         }
         case 'bossEnding':

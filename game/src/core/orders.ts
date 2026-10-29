@@ -68,9 +68,28 @@ export function generateOrder(level: number, dish: DishId, rng: Rng, monster: st
   const expected = [...prebuilt, ...base, ...toppings];
   const ticket = level <= 1 ? [...toppings] : [...base, ...toppings];
 
-  // Tray: needed unique types + distractors, capped at 8, never depleting.
+  // Tray: exactly level + 3 distinct items in every round (Level 1: 4,
+  // rising one per level to Level 6: 9). Needed items first, then one wrong
+  // base alternative from Level 2, a forced look-alike from Level 4, and
+  // distractors to fill. Never depletes.
+  const trayTarget = level + 3;
   const needed = [...new Set(ticket)];
   const traySet = new Set<string>(needed);
+  if (level >= 2) {
+    const wrongBases =
+      dish === 'pizza'
+        ? [
+            'crust.thin',
+            'crust.thick',
+            ...(level >= 4 ? ['sauce.redSmooth', 'sauce.redChunky'] : []),
+            'sauce.white',
+          ].filter((id) => !traySet.has(id))
+        : dish === 'sundae'
+          ? ['cup', 'cone', 'scoop.vanilla', 'scoop.chocolate', 'scoop.strawberry'].filter((id) => !traySet.has(id))
+          : [];
+    const wrong = shuffled(rng, wrongBases);
+    if (wrong.length > 0) traySet.add(wrong[0]);
+  }
   if (level >= 4) {
     for (const id of chosen) {
       const look = lookalikeOf(id);
@@ -80,18 +99,24 @@ export function generateOrder(level: number, dish: DishId, rng: Rng, monster: st
       }
     }
   }
+  const basePool =
+    level <= 1
+      ? []
+      : dish === 'burger'
+        ? ['patty']
+        : dish === 'pizza'
+          ? ['crust.thin', 'crust.thick', 'sauce.redSmooth', ...(level >= 4 ? ['sauce.redChunky'] : []), 'sauce.white']
+          : ['cup', 'cone', 'scoop.vanilla', 'scoop.chocolate', 'scoop.strawberry'];
   const distractors = shuffled(
     rng,
-    itemsFor(dish, 'topping')
-      .map((i) => i.id)
-      .filter((id) => {
-        if (traySet.has(id)) return false;
-        if (level < 4 && chosen.some((c) => lookalikeOf(c) === id)) return false;
-        return true;
-      }),
+    [...basePool, ...itemsFor(dish, 'topping').map((i) => i.id)].filter((id) => {
+      if (traySet.has(id)) return false;
+      if (level < 4 && chosen.some((c) => lookalikeOf(c) === id)) return false;
+      return true;
+    }),
   );
   for (const d of distractors) {
-    if (traySet.size >= 8) break;
+    if (traySet.size >= trayTarget) break;
     traySet.add(d);
   }
   const tray = shuffled(rng, [...traySet]);

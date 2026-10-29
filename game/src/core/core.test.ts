@@ -7,7 +7,7 @@ import { toMirror } from './mirror';
 import { generateOrder, generateTryOrders } from './orders';
 import { kioskIntervalMs, patienceMs, perItemSeconds } from './pace';
 import { makeRng } from './rng';
-import { defaultSave, migrateSave } from './save';
+import { defaultSave, migrateSave, saveFromState } from './save';
 
 describe('order generation', () => {
   it('is always solvable with the tray shown', () => {
@@ -20,7 +20,8 @@ describe('order generation', () => {
           for (const needed of new Set(order.ticket)) {
             expect(order.tray, `L${level} ${order.dish} needs ${needed}`).toContain(needed);
           }
-          expect(order.tray.length).toBeLessThanOrEqual(8);
+          expect(order.tray.length, `L${level} ${order.dish} tray size`).toBe(level + 3);
+          expect(new Set(order.tray).size).toBe(order.tray.length);
         }
       }
     }
@@ -108,6 +109,234 @@ describe('game flow', () => {
     expect(s.level).toBe(2);
   });
 
+  it('marks the onboarding tour seen once and re-arms it on power cycle', () => {
+    let s = initialState({ seed: 1, savedLevel: 1 });
+    s = step(s, { type: 'tourDone' });
+    expect(s.tutorialsSeen).toContain('tour');
+    const again = step(s, { type: 'tourDone' });
+    expect(again).toBe(s);
+    const off = step({ ...s, phase: 'closed', bossBeaten: true }, { type: 'powerOff' });
+    const on = step(off, { type: 'powerOn' });
+    expect(on.tutorialsSeen).not.toContain('tour');
+  });
+
+  it('dismisses the pointing tutorial on the first tap and marks it seen', () => {
+    let s = initialState({ seed: 99, savedLevel: 1 });
+    s = step(s, { type: 'go' });
+    s = step(s, { type: 'tick', ms: 2000 });
+    s = step(s, { type: 'tick', ms: 10000 });
+    s = step(s, { type: 'tick', ms: 1000 });
+    s = step(s, { type: 'calloutFinished' });
+    expect(s.phase).toBe('cooking');
+    expect(s.tutorial).toBe('firstOrder');
+    const item = s.orders[s.orderIndex].ticket[0];
+    s = step(s, { type: 'addItem', item });
+    expect(s.tutorial).toBeNull();
+    expect(s.tutorialsSeen).toContain('firstOrder');
+    expect(s.built).toContain(item);
+  });
+
+  it('records a callout that finishes while paused and resumes into cooking', () => {
+    let s = initialState({ seed: 99, savedLevel: 1 });
+    s = step(s, { type: 'go' });
+    s = step(s, { type: 'tick', ms: 2000 });
+    s = step(s, { type: 'tick', ms: 10000 });
+    s = step(s, { type: 'tick', ms: 1000 });
+    expect(s.phase).toBe('callout');
+    s = step(s, { type: 'pause' });
+    s = step(s, { type: 'calloutFinished' });
+    expect(s.phase).toBe('cooking');
+    expect(s.paused).toBe(true);
+    s = step(s, { type: 'resume' });
+    expect(s.paused).toBe(false);
+    expect(s.phase).toBe('cooking');
+  });
+
+  it('clears the idle freeze on resume so patience moves again', () => {
+    let s = initialState({ seed: 99, savedLevel: 1 });
+    s = { ...s, phase: 'cooking', paused: true, idleMs: 12000, patienceLeftMs: 5000, patienceTotalMs: 13000 };
+    s = step(s, { type: 'resume' });
+    expect(s.idleMs).toBe(0);
+    s = step(s, { type: 'tick', ms: 1000 });
+    expect(s.patienceLeftMs).toBe(4000);
+  });
+
+  it('retries the same order after a first wrong serve, then proceeds when corrected', () => {
+    const toCooking = (s: GameState): GameState => {
+      let out = step(s, { type: 'tick', ms: 10000 });
+      out = step(out, { type: 'tick', ms: 1000 });
+      out = step(out, { type: 'calloutFinished' });
+      expect(out.phase).toBe('cooking');
+      return out;
+    };
+    let s = initialState({ seed: 99, savedLevel: 1, paceStep: 5 });
+    s = step(s, { type: 'go' });
+    s = step(s, { type: 'tick', ms: 2000 });
+    s = toCooking(s);
+    const paceBefore = s.paceStep;
+    s = step(s, { type: 'serve' });
+    expect(s.result?.kind).toBe('wrong');
+    expect(s.paceStep).toBe(paceBefore);
+    s = step(s, { type: 'tick', ms: 3000 });
+    expect(s.phase).toBe('kiosk');
+    expect(s.orderIndex).toBe(0);
+    expect(s.attemptsThisOrder).toBe(1);
+    s = toCooking(s);
+    for (const item of s.orders[s.orderIndex].ticket) s = step(s, { type: 'addItem', item });
+    s = step(s, { type: 'serve' });
+    expect(s.result?.kind).toBe('correct');
+    s = step(s, { type: 'tick', ms: 3000 });
+    expect(s.orderIndex).toBe(1);
+    expect(s.starsTry).toBe(1);
+    expect(s.attemptsThisOrder).toBe(0);
+  });
+
+  it('moves on and eases pace after a second wrong serve on the retry', () => {
+    const toCooking = (s: GameState): GameState => {
+      let out = step(s, { type: 'tick', ms: 10000 });
+      out = step(out, { type: 'tick', ms: 1000 });
+      return step(out, { type: 'calloutFinished' });
+    };
+    let s = initialState({ seed: 99, savedLevel: 1, paceStep: 5 });
+    s = step(s, { type: 'go' });
+    s = step(s, { type: 'tick', ms: 2000 });
+    s = toCooking(s);
+    const paceBefore = s.paceStep;
+    s = step(s, { type: 'serve' });
+    s = step(s, { type: 'tick', ms: 3000 });
+    s = toCooking(s);
+    s = step(s, { type: 'serve' });
+    expect(s.result?.kind).toBe('wrong');
+    expect(s.paceStep).toBe(paceBefore - 1);
+    s = step(s, { type: 'tick', ms: 3000 });
+    expect(s.orderIndex).toBe(1);
+    expect(s.starsTry).toBe(0);
+  });
+
+  it('caps the next order at the failed length after a second miss', () => {
+    const { orders } = generateTryOrders(2, 5);
+    expect(orders[0].ticket.length).toBeLessThan(orders[1].ticket.length);
+    let s: GameState = {
+      ...initialState({ seed: 5, savedLevel: 2 }),
+      level: 2,
+      phase: 'cooking' as const,
+      orders,
+      orderIndex: 0,
+      attemptsThisOrder: 1,
+      built: [...orders[0].prebuilt],
+    };
+    s = step(s, { type: 'serve' });
+    expect(s.result?.kind).toBe('wrong');
+    s = step(s, { type: 'tick', ms: 3000 });
+    expect(s.orderIndex).toBe(1);
+    const next = s.orders[1];
+    expect(next.ticket.length).toBeLessThanOrEqual(orders[0].ticket.length);
+    expect(next.dish).toBe(orders[1].dish);
+    expect(next.monster).toBe(orders[1].monster);
+    expect(next.expected).toEqual([...next.prebuilt, ...next.ticket]);
+    for (const id of new Set(next.ticket)) expect(next.tray).toContain(id);
+    expect(next.tray.length).toBe(5);
+  });
+
+  it('does not cap the next order after a correct serve', () => {
+    const { orders } = generateTryOrders(2, 5);
+    let s: GameState = {
+      ...initialState({ seed: 5, savedLevel: 2 }),
+      level: 2,
+      phase: 'cooking' as const,
+      orders,
+      orderIndex: 0,
+      attemptsThisOrder: 0,
+      built: [...orders[0].expected],
+    };
+    s = step(s, { type: 'serve' });
+    expect(s.result?.kind).toBe('correct');
+    s = step(s, { type: 'tick', ms: 3000 });
+    expect(s.orders[1].ticket).toEqual(orders[1].ticket);
+  });
+
+  it('banks correct rounds across batches until three finish the level', () => {
+    const toCooking = (s: GameState): GameState => {
+      let out = step(s, { type: 'tick', ms: 10000 });
+      out = step(out, { type: 'tick', ms: 1000 });
+      return step(out, { type: 'calloutFinished' });
+    };
+    const playRound = (s: GameState, correct: boolean): GameState => {
+      let out = toCooking(s);
+      if (correct) {
+        for (const item of out.orders[out.orderIndex].ticket) out = step(out, { type: 'addItem', item });
+        out = step(out, { type: 'serve' });
+        return step(out, { type: 'tick', ms: 3000 });
+      }
+      out = step(out, { type: 'serve' });
+      out = step(out, { type: 'tick', ms: 3000 });
+      out = toCooking(out);
+      out = step(out, { type: 'serve' });
+      return step(out, { type: 'tick', ms: 3000 });
+    };
+    let s = initialState({ seed: 99, savedLevel: 1 });
+    s = step(s, { type: 'go' });
+    s = step(s, { type: 'tick', ms: 2000 });
+    s = playRound(s, false);
+    expect(s.starsTry).toBe(0);
+    s = playRound(s, true);
+    s = playRound(s, true);
+    // Batch of three is done with only two banked: a fresh batch continues
+    // the same level instead of ending it.
+    expect(s.phase).toBe('kiosk');
+    expect(s.level).toBe(1);
+    expect(s.starsTry).toBe(2);
+    s = playRound(s, true);
+    expect(s.phase).toBe('levelResult');
+    expect(s.starsTry).toBe(3);
+    s = step(s, { type: 'continue' });
+    expect(s.level).toBe(2);
+    expect(s.starsTry).toBe(0);
+  });
+
+  it('restores banked progress when starting the saved level', () => {
+    let s = initialState({ seed: 99, savedLevel: 1, levelProgress: 2 });
+    s = step(s, { type: 'go' });
+    s = step(s, { type: 'tick', ms: 2000 });
+    expect(s.phase).toBe('kiosk');
+    expect(s.starsTry).toBe(2);
+    expect(s.bankedProgress).toBe(0);
+  });
+
+  it('power reset wipes back to Level 1 from any point', () => {
+    let s = initialState({ seed: 7, savedLevel: 5, paceStep: 6, bossBeaten: false });
+    s = {
+      ...s,
+      phase: 'cooking',
+      level: 5,
+      starsByLevel: { 1: 3, 2: 3 },
+      tutorialsSeen: ['tour', 'firstOrder'],
+      telemetry: [
+        {
+          level: 5,
+          dish: 'pizza',
+          monster: 'fussy',
+          paceStep: 6,
+          msToFirstTap: 100,
+          msToFinish: 900,
+          correct: true,
+          mistake: null,
+          broken: null,
+          hintsUsed: 0,
+        },
+      ],
+    };
+    s = step(s, { type: 'powerReset' });
+    expect(s.phase).toBe('title');
+    expect(s.level).toBe(1);
+    expect(s.savedLevel).toBe(1);
+    expect(s.paceStep).toBe(0);
+    expect(s.starsByLevel).toEqual({});
+    expect(s.tutorialsSeen).toEqual([]);
+    expect(s.telemetry).toEqual([]);
+    expect(s.bossBeaten).toBe(false);
+  });
+
   it('boss leads to closed, power cycle resets to a fresh title', () => {
     let s = initialState({ seed: 5, savedLevel: 6 });
     s = { ...s, phase: 'closed', bossBeaten: true, power: 'on' };
@@ -139,9 +368,30 @@ describe('save migration', () => {
     expect(m.power).toBe('off');
     expect('bogus' in m).toBe(false);
   });
+
+  it('clamps and banks level progress', () => {
+    expect(migrateSave({ levelProgress: 9 }).levelProgress).toBe(2);
+    expect(migrateSave({ levelProgress: -1 }).levelProgress).toBe(0);
+    const playing = {
+      ...initialState({ seed: 1, savedLevel: 2 }),
+      phase: 'cooking' as const,
+      level: 2,
+      starsTry: 1,
+    };
+    expect(saveFromState(playing, defaultSave()).levelProgress).toBe(1);
+    const warming = { ...playing, warmup: true, level: 1 };
+    expect(saveFromState(warming, { ...defaultSave(), levelProgress: 2 }).levelProgress).toBe(2);
+  });
 });
 
 describe('content coverage', () => {
+  it('never shows the same picture for two different items of one dish', () => {
+    for (const dish of ['burger', 'pizza', 'sundae'] as const) {
+      const emojis = ITEMS.filter((i) => i.dish === dish).map((i) => i.emoji);
+      expect(new Set(emojis).size, dish).toBe(emojis.length);
+    }
+  });
+
   it('has no nuts and no pork items, and clips cover every item', () => {
     const text = ITEMS.map((i) => `${i.id} ${i.clipText}`)
       .join(' ')

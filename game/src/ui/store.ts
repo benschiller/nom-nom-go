@@ -10,6 +10,17 @@ export interface Store {
   setSave: (save: SaveData) => void;
 }
 
+/** Fresh seed per launch, from outside the pure core. Test mode stays pinned. */
+function launchSeed(): number {
+  try {
+    const a = new Uint32Array(1);
+    crypto.getRandomValues(a);
+    return a[0] || 1234;
+  } catch {
+    return Date.now() >>> 0;
+  }
+}
+
 export function createStore(seed?: number): Store {
   const params = new URLSearchParams(window.location.search);
   const testMode = params.get('test') === '1';
@@ -19,7 +30,7 @@ export function createStore(seed?: number): Store {
     save = { ...save, bossBeaten: true, level: 6 };
   }
   let state = initialState({
-    seed: seed ?? testSeed ?? 1234,
+    seed: seed ?? testSeed ?? launchSeed(),
     savedLevel: save.level,
     paceStep: save.paceStep,
     bossBeaten: save.bossBeaten,
@@ -28,6 +39,7 @@ export function createStore(seed?: number): Store {
     gagSeen: save.gagSeen,
     power: save.power,
     telemetry: save.telemetry,
+    levelProgress: save.levelProgress,
   });
   const listeners = new Set<() => void>();
   return {

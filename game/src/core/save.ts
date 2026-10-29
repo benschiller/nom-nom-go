@@ -15,6 +15,7 @@ export interface SaveData {
   telemetry: TelemetryEntry[];
   power: 'on' | 'off';
   freshStartPending: boolean;
+  levelProgress: number;
 }
 
 export const defaultSave = (): SaveData => ({
@@ -32,6 +33,7 @@ export const defaultSave = (): SaveData => ({
   telemetry: [],
   power: 'on',
   freshStartPending: false,
+  levelProgress: 0,
 });
 
 /** Migrate any older/partial raw value to SaveData v1. Unknown fields are dropped. */
@@ -57,6 +59,8 @@ export function migrateSave(raw: unknown): SaveData {
     telemetry: Array.isArray(r.telemetry) ? (r.telemetry as TelemetryEntry[]).slice(-200) : [],
     power: r.power === 'off' ? 'off' : 'on',
     freshStartPending: r.freshStartPending === true,
+    levelProgress:
+      typeof r.levelProgress === 'number' ? Math.min(2, Math.max(0, Math.floor(r.levelProgress))) : base.levelProgress,
   };
 }
 
@@ -82,6 +86,16 @@ export function persistSave(storage: Pick<Storage, 'setItem'>, save: SaveData): 
 /** Project game state + device settings into the save schema. */
 export function saveFromState(state: GameState, prev: SaveData): SaveData {
   const completedLevel = state.starsTry === 3 && !state.warmup ? state.level + 1 : state.savedLevel;
+  // Bank correct rounds toward the saved level. Warm-up rounds and the
+  // level-result moment itself do not move the bank.
+  const levelProgress =
+    state.phase === 'title'
+      ? prev.levelProgress
+      : state.phase === 'levelResult' || state.phase === 'bossEnding' || state.phase === 'closed'
+        ? 0
+        : !state.warmup && state.level === state.savedLevel
+          ? Math.min(2, state.starsTry)
+          : prev.levelProgress;
   return {
     ...prev,
     v: 1,
@@ -94,5 +108,6 @@ export function saveFromState(state: GameState, prev: SaveData): SaveData {
     telemetry: state.telemetry,
     power: state.power,
     freshStartPending: state.power === 'off',
+    levelProgress,
   };
 }

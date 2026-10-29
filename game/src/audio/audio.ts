@@ -172,17 +172,61 @@ async function playClip(id: string): Promise<void> {
 
 const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
 
-/** Compose a call-out: order_up -> items (double/and grammar) with ~150ms gaps. */
-export async function playCallout(ticket: readonly string[], doubled: ReadonlySet<string>): Promise<void> {
+interface Run {
+  id: string;
+  count: number;
+  start: number;
+}
+const runsOf = (ticket: readonly string[]): Run[] => {
+  const runs: Run[] = [];
+  ticket.forEach((id, i) => {
+    const last = runs[runs.length - 1];
+    if (last && last.id === id) last.count++;
+    else runs.push({ id, count: 1, start: i });
+  });
+  return runs;
+};
+
+/** Clip ids for a whole call-out. A doubled item is named once: "double pickles". */
+export function calloutClipIds(ticket: readonly string[]): string[] {
+  const runs = runsOf(ticket);
+  const ids = ['phrase.order_up'];
+  runs.forEach((run, r) => {
+    if (r > 0 && r === runs.length - 1) ids.push('phrase.and');
+    if (run.count >= 2) ids.push('amount.double');
+    ids.push(`ing.${run.id}`);
+  });
+  return ids;
+}
+
+/** Clip ids to speak when ticket[index] first appears at the kiosk. */
+export function itemClipIds(ticket: readonly string[], index: number): string[] {
+  const runs = runsOf(ticket);
+  const run = runs.find((r) => r.start === index);
+  if (!run) return [];
+  const ids: string[] = [];
+  if (index === 0) ids.push('phrase.order_up');
+  if (runs.indexOf(run) > 0 && runs.indexOf(run) === runs.length - 1) ids.push('phrase.and');
+  if (run.count >= 2) ids.push('amount.double');
+  ids.push(`ing.${run.id}`);
+  return ids;
+}
+
+export async function playCallout(ticket: readonly string[]): Promise<void> {
   if (!soundOn) return;
-  await playClip('phrase.order_up');
-  for (let i = 0; i < ticket.length; i++) {
-    const id = ticket[i];
-    const isDupe = i > 0 && ticket[i - 1] === id;
-    if (i === ticket.length - 1 && ticket.length > 1) await playClip('phrase.and');
-    if (!isDupe && doubled.has(id)) await playClip('amount.double');
-    await playClip(`ing.${id}`);
-    if (i < ticket.length - 1) await wait(40);
+  const ids = calloutClipIds(ticket);
+  for (let i = 0; i < ids.length; i++) {
+    await playClip(ids[i]);
+    if (i < ids.length - 1) await wait(40);
+  }
+}
+
+/** Speak one kiosk item as it pops up, so seeing and hearing happen together. */
+export async function playKioskItem(ticket: readonly string[], index: number): Promise<void> {
+  if (!soundOn) return;
+  for (const id of itemClipIds(ticket, index)) {
+    await playClip(id);
+    await wait(40);
   }
 }
 

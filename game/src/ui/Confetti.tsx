@@ -15,9 +15,13 @@ const COLORS = ['#ff595e', '#ffca3a', '#8ac926', '#1982c4', '#ff924c'];
 export function Confetti({ active }: { active: boolean }): React.JSX.Element {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    if (!active) return;
     const canvas = ref.current;
     if (!canvas) return;
+    if (!active) {
+      const idle = canvas.getContext('2d');
+      idle?.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = 1600 * dpr;
     canvas.height = 900 * dpr;
@@ -51,7 +55,10 @@ export function Confetti({ active }: { active: boolean }): React.JSX.Element {
       else g.clearRect(0, 0, 1600, 900);
     };
     frame();
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      g.clearRect(0, 0, 1600, 900);
+    };
   }, [active]);
   return (
     <canvas
