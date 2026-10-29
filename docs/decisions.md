@@ -10,3 +10,5 @@ Choices this build made that the prompt (`docs/wonder-prompt.md`) left open. New
 - **Clip/art sync:** `public/audio/clips.json` and `public/art/manifest.json` are generated from the frozen content in `game/src/content/content.ts`; a Vitest coverage test fails if any content item lacks a clip or art entry.
 - **PWA icons:** generated from `game/public/icon.svg` with `@vite-pwa/assets-generator` (`game/pwa-assets.config.ts`).
 - **Pre-built Level 1 burger ticket:** the bun is scenery under the pre-built patty; the ticket and call-out carry toppings only.
+- **Baseten / hackathon model (2026-10-29):** Baseten provided a pre-assigned API key (in repo `.env`, gitignored) locked to `meta-models/muse-spark-open-1026`. Docs say `meta-models/muse-spark-open`; always use the `-1026` id. No integration decided yet; not required. Any use must not break the "no AI at runtime, nothing leaves the device" privacy stance without a deliberate decision.
+- **Stretch goal (2026-10-29):** AI-generated, self-improving levels, only after gameplay is locked. Preferred shape is authoring-time generation baked into content, keeping runtime AI-free.
