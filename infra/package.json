@@ -1,0 +1,21 @@
+{
+  "name": "nom-nom-go-infra",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "synth": "cdk synth --profile valerian253",
+    "deploy": "cdk deploy --profile valerian253 --require-approval never",
+    "destroy": "cdk destroy --profile valerian253 --force"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.7",
+    "aws-cdk": "2.1146.1",
+    "ts-node": "10.9.2",
+    "typescript": "5.9.3"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.275.0",
+    "constructs": "10.5.0"
+  }
+}

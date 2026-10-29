@@ -1,0 +1,15 @@
+{
+  "name": "nom-nom-go-root",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "test": "npm --prefix game test",
+    "test:e2e": "npm --prefix game run test:e2e",
+    "typecheck": "npm --prefix game run typecheck",
+    "lint": "npm --prefix game run lint",
+    "build": "npm --prefix game run build",
+    "dev": "npm --prefix game run dev",
+    "deploy": "npm run build && npm --prefix infra run deploy",
+    "destroy": "npm --prefix infra run destroy"
+  }
+}

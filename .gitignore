@@ -5,3 +5,26 @@
 # work product
 research/
 working/
+generated_images/
+
+# dependencies (any depth, in any package)
+node_modules/
+
+# build output
+dist/
+dist-assets/
+dist-root/
+cdk.out/
+.cdk.staging/
+dev-dist/
+.vite/
+coverage/
+
+# caches and OS files
+*.tsbuildinfo
+.eslintcache
+.DS_Store
+
+# test artifacts
+playwright-report/
+test-results/

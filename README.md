@@ -1,54 +1,98 @@
-# Meta Global AI Developer Hackathon
+# Nom Nom Go!
 
-Solo entry, Indie Developer track. All times ET.
+A kitchen game for a kid and a parent to play together. Made possible with Meta AI.
 
-- **Team:** Cooked Chef (solo developer)
-- **Project:** Nom Nom Go!
-- **One-liner:** A kitchen game where kids practice focus and quick thinking and play with a parent. Made possible with Meta AI.
-- **ELI5:** A kids' kitchen arcade game for practicing concentration and quick thinking, together with a parent.
-- **Brainstorm origin:** "Speed Chef: Order Up!" concept from an early brainstorm, see Links. The design has since been reworked (target age 7, no reading needed).
+I live in the UAE. My son is seven and lives in the USA. We have been apart for years, and most of our time together happens on video calls. I built Nom Nom Go! so we would have something to do on those calls besides ask each other how school went.
 
-Full rules and details: `docs/participant-guide.md` (copied from the Cerebral Valley event page on Oct 26, 2026).
+[GIF or screenshot goes here once the art pass lands]
 
-## Key dates
+## How it plays
 
-| Date | Event |
-| --- | --- |
-| Mon Oct 26, 12:00 PM | Kickoff (livestream) |
-| Tue Oct 27, 12:00-1:00 PM | Agents 101: Build a Multimodal AI Agent |
-| Wed Oct 28, 12:00-1:00 PM | Agents 102: Best Practices for Verifiable Agents |
-| Fri Oct 30, 12:00-1:00 PM | Building Specialized Intelligence on Fireworks |
-| Oct 27 - Nov 4 | Building period (Discord office hours 10-11 AM weekdays) |
-| Mon Nov 2 | Own target: feature freeze |
-| Wed Nov 4, 9:00 PM | Submissions due, credit claim deadline |
-| Nov 5 - 8 | Judging |
-| Mon Nov 9, 12:00 PM | Closing ceremony, top 10 announced |
-| Mon Nov 16 | Community vote winner announced |
+Silly monsters pull up to a food truck and order burgers, pizzas, and sundaes. My son watches the order, sees it printed on a ticket in the kitchen, and hears the Head Chef call it out. The Head Chef is my voice. Then he builds the dish by tapping ingredients in the right order before the monster runs out of patience.
 
-## Submission requirements
+There are six levels. The last is a Rush hour boss. When it ends, the kitchen closes for the night, and that is the end of the session. The next time he powers the game on, the kitchen opens fresh for the next customers.
 
-- Public repository
-- 3-minute demo video showing only what was built during the hackathon
-- Submit via the Cerebral Valley platform
-- Project must use Meta models (Muse Spark series, Muse Wonder, Muse Image, Muse Voice Transcribe, SAM 3.1, Muse Glimmer, Muse Spark Open)
+While he plays, I can open "Dad's Window" on my own device. I see what he sees, point at things with a glove to assist, and send a cheer for encouragement. The call brings us together, and the interactions give us connection.
 
-## Links
+The kid's game is meant to be a small exercise in focus and quick thinking, played with a parent.
 
-- Gemini brainstorm (game ideas): https://share.gemini.google/7YsIhJjQwLDn
-- Notion workspace: https://app.notion.com/p/405e34f437ae81fbb496db802ac45f94
-- Event details: https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details
-- Livestream: https://cerebralvalley.ai/e/meta-ai-developer-hackathon/live
-- Discord: https://cerebralvalley.ai/e/meta-ai-developer-hackathon/discord
-- Submit: https://cerebralvalley.ai/e/meta-ai-developer-hackathon/hackathon/submit
-- Meta docs: https://dev.meta.ai/docs/overview
-- Meta Model API cookbook: https://github.com/meta-models/meta-model-cookbook
-- Open model cookbook: https://github.com/meta-models/meta-oss-cookbook
+## Made for a child with safety first
 
-## Credits
+- No accounts, no analytics, no ads, no trackers.
+- No AI runs while he plays.
+- Nothing about him is collected: no name, photos, voice, or typed text.
+- Progress, settings, pairing, and the last 200 orders stay on his device and are never sent anywhere.
+- "Dad's Window" receives only game state, pointer position, and a fixed set of cheers. The pairing id travels in the URL fragment, so it never appears in server logs.
+- The game works offline once installed on the Home Screen.
 
-Status (Oct 28): all four request forms submitted; accounts created at Meta, Baseten, Modal, and Fireworks. Billing card added on all accounts except Modal (Modal would not accept billing; possible bug, unresolved). Meta $150 credits applied (confirmed on Billing page, Oct 26). Meta Billing spend limit set (Oct 28). Baseten not needed for this project (no open-weight models). Awaiting Modal, Fireworks. Note: while free credits are in use, Meta may use your content for product improvement.
+## How Meta AI was used
 
-- Meta Model API: $150, claim by Nov 4 9 PM ET. Credit card required on account. Form: https://docs.google.com/forms/d/e/1FAIpQLScam78z7tHsNYibiFyJQVFzEgr0coyBTiY568SxxNbsPa3jiw/viewform
-- Baseten: $100 (use model `meta-models/muse-spark-open-1026`): https://docs.google.com/forms/d/e/1FAIpQLSfM7gcK8yMZEmAGq6DbTyiuv2c71IH7CKCy0fXGIfUED1qxVQ/viewform
-- Modal: $100: https://docs.google.com/forms/d/e/1FAIpQLSe_GDPtLZsdA57xPhFcOCi_yLjPf8HRxMIQJ5V7ystoKSqWCQ/viewform
-- Fireworks: $25 (shortlist only): https://docs.google.com/forms/d/e/1FAIpQLSdPQTTES8_nhavzZkOrebVNYbM1FumWLdpeZx8ZSNe4QLXKPA/viewform
+Muse Wonder, in Muse Code, wrote this codebase from the specification in [`docs/wonder-prompt.md`](docs/wonder-prompt.md). I reviewed and amended that prompt before it built anything.
+
+Art is from Muse Image, with SAM 3.1 for cutting out characters and ingredients. Muse Spark playtested the levels.
+
+## Built during the hackathon
+
+This project was built between Oct 27 and Nov 4, 2026 for the Meta Global AI Developer Hackathon (solo entry, Indie Developer track).
+
+## Run it
+
+Requires Node 22.12+ or 24.
+
+```bash
+npm --prefix game install
+npm run dev        # http://127.0.0.1:5173
+npm test           # unit tests
+npm run test:e2e   # Playwright, iPhone and iPad sizes
+npm run build      # production build and bundle budget check
+```
+
+Deploying to AWS is covered in [`docs/hackathon.md`](docs/hackathon.md).
+
+## How it is built
+
+```mermaid
+flowchart LR
+  subgraph Child["Child device (PWA)"]
+    Core["Pure core reducer\nsrc/core (seeded RNG, injected clock)"]
+    UI["React screens\nsrc/ui"]
+    Audio["Web Audio + Dad clips\nsrc/audio"]
+    Net["Transport\nsrc/net"]
+    Core --> UI --> Audio
+    UI --> Net
+  end
+  subgraph Dad["Dad's device"]
+    Mirror["Read-only mirror"]
+  end
+  subgraph AWS["AWS (eu-central-1)"]
+    CF["CloudFront + S3"]
+    EV["AppSync Events API"]
+  end
+  Net <--> EV
+  EV <--> Mirror
+  CF --> Child
+  CF --> Dad
+```
+
+The game rules are a pure TypeScript reducer with a seeded random generator and an injected clock. They never call `Math.random()` or `Date.now()`, so any game can be replayed exactly. The child's device is the only writer of game state. Dad's Window is a whitelist mirror and cannot see anything else.
+
+Dad's voice clips live in `game/public/audio/clips/`. Any missing clip falls back to the device's speech voice.
+
+## Pairing Dad's Window
+
+1. On Dad's device, open `…/#dad` and choose **Copy pairing link**.
+2. Open that link once on the child's device and confirm the picture.
+3. Dad opens `…/#watch=<id>` to watch, point, and send cheers.
+
+If the installed Home Screen app does not share storage with Safari, hold the chef-hat icon on the title screen for 3 seconds and use **paste pairing link**.
+
+## Submission checklist
+
+- [x] Public repository
+- [x] Built during the hackathon period (Oct 27 – Nov 4, 2026)
+- [x] Solo entry, Indie Developer track
+- [x] Uses Meta models: Muse Wonder [add others as they are actually used]
+- [ ] 3-minute demo video: [link]
+- [ ] Submitted on Cerebral Valley
+
+Event rules, dates, and links are in [`docs/hackathon.md`](docs/hackathon.md). Progress notes are in [`docs/progress.md`](docs/progress.md).
