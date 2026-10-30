@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 import { initialState, step, type GameEvent, type GameState } from '../core/game';
+import { decayMastery } from '../core/mastery';
 import { loadSave, persistSave, saveFromState, type SaveData } from '../core/save';
 
 export interface Store {
@@ -33,6 +34,10 @@ export function createStore(seed?: number): Store {
     seed: seed ?? testSeed ?? launchSeed(),
     savedLevel: save.level,
     paceStep: save.paceStep,
+    // Returning session: mild forgetting pull toward the prior (applied once
+    // at launch; the decayed profile is what then gets persisted on play).
+    mastery: decayMastery(save.mastery),
+    dimensions: save.dimensions,
     bossBeaten: save.bossBeaten,
     starsByLevel: save.starsByLevel,
     tutorialsSeen: save.tutorialsSeen,

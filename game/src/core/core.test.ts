@@ -191,23 +191,30 @@ describe('game flow', () => {
     expect(s.attemptsThisOrder).toBe(0);
   });
 
-  it('moves on and eases pace after a second wrong serve on the retry', () => {
+  it('moves on after a second wrong serve, easing only the implicated dimension', () => {
     const toCooking = (s: GameState): GameState => {
       let out = step(s, { type: 'tick', ms: 10000 });
       out = step(out, { type: 'tick', ms: 1000 });
       return step(out, { type: 'calloutFinished' });
     };
-    let s = initialState({ seed: 99, savedLevel: 1, paceStep: 5 });
+    let s = initialState({ seed: 99, savedLevel: 3, paceStep: 3 });
+    s = { ...s, savedLevel: 3 };
     s = step(s, { type: 'go' });
     s = step(s, { type: 'tick', ms: 2000 });
+    // Warm-up plays one level below the frontier; jump straight to cooking
+    // on the current order to isolate the dimension assertion.
     s = toCooking(s);
-    const paceBefore = s.paceStep;
+    s = { ...s, dimensions: { ...s.dimensions, memory: 2, time: 2 } };
+    const dimsBefore = { ...s.dimensions };
     s = step(s, { type: 'serve' });
     s = step(s, { type: 'tick', ms: 3000 });
     s = toCooking(s);
     s = step(s, { type: 'serve' });
     expect(s.result?.kind).toBe('wrong');
-    expect(s.paceStep).toBe(paceBefore - 1);
+    // Empty serve is a missed item: memory eases, time pressure does not.
+    expect(s.dimensions.memory).toBe(dimsBefore.memory - 1);
+    expect(s.dimensions.time).toBe(dimsBefore.time);
+    expect(s.paceStep).toBe(s.dimensions.time);
     s = step(s, { type: 'tick', ms: 3000 });
     expect(s.orderIndex).toBe(1);
     expect(s.starsTry).toBe(0);
@@ -370,7 +377,7 @@ describe('save migration', () => {
   });
 
   it('clamps and banks level progress', () => {
-    expect(migrateSave({ levelProgress: 9 }).levelProgress).toBe(2);
+    expect(migrateSave({ levelProgress: 9 }).levelProgress).toBe(6);
     expect(migrateSave({ levelProgress: -1 }).levelProgress).toBe(0);
     const playing = {
       ...initialState({ seed: 1, savedLevel: 2 }),

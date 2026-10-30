@@ -51,15 +51,31 @@ const baseSequence = (rng: Rng, dish: DishId, level: number): string[] => {
 // Local float helper so orders.ts does not depend on rng internals ordering.
 import { nextFloat as rngFloat } from './rng';
 
-export function generateOrder(level: number, dish: DishId, rng: Rng, monster: string): Order {
-  const toppingTypes = TOPPING_TYPES_BY_LEVEL[Math.min(6, Math.max(1, level))] ?? 2;
+export interface GenerateOptions {
+  /** Probability of doubling a topping (Level 3+). Default 0.7. */
+  doubleProb?: number;
+  /** Adjust topping-type count within the level band. Default 0. */
+  toppingDelta?: number;
+  /** Tray size override from the search dimension. Default level + 3. */
+  trayTarget?: number;
+}
+
+export function generateOrder(
+  level: number,
+  dish: DishId,
+  rng: Rng,
+  monster: string,
+  opts: GenerateOptions = {},
+): Order {
+  const baseTypes = TOPPING_TYPES_BY_LEVEL[Math.min(6, Math.max(1, level))] ?? 2;
+  const toppingTypes = Math.min(baseTypes, Math.max(1, baseTypes + (opts.toppingDelta ?? 0)));
   const pool = shuffled(
     rng,
     itemsFor(dish, 'topping').map((i) => i.id),
   );
   const chosen = pool.slice(0, toppingTypes);
   const toppings: string[] = [...chosen];
-  if (level >= 3 && toppings.length > 0 && rngFloat(rng) < 0.7) {
+  if (level >= 3 && toppings.length > 0 && rngFloat(rng) < (opts.doubleProb ?? 0.7)) {
     const idx = Math.floor(rngFloat(rng) * toppings.length);
     toppings.splice(idx + 1, 0, toppings[idx]);
   }
@@ -72,8 +88,8 @@ export function generateOrder(level: number, dish: DishId, rng: Rng, monster: st
   // rising one per level to Level 6: 9). Needed items first, then one wrong
   // base alternative from Level 2, a forced look-alike from Level 4, and
   // distractors to fill. Never depletes.
-  const trayTarget = level + 3;
   const needed = [...new Set(ticket)];
+  const trayTarget = Math.max(opts.trayTarget ?? level + 3, needed.length);
   const traySet = new Set<string>(needed);
   if (level >= 2) {
     const wrongBases =
@@ -127,13 +143,17 @@ export function generateOrder(level: number, dish: DishId, rng: Rng, monster: st
   return { dish, monster, expected, ticket, prebuilt, tray, broken };
 }
 
-export function generateTryOrders(level: number, seed: number): { orders: Order[]; rngState: number } {
+export function generateTryOrders(
+  level: number,
+  seed: number,
+  opts: GenerateOptions = {},
+): { orders: Order[]; rngState: number } {
   const rng = makeRng(seed);
   const dishes = shuffled(rng, DISHES);
   const monsters = shuffled(
     rng,
     MONSTERS.map((m) => m.id),
   );
-  const orders = dishes.map((dish, i) => generateOrder(level, dish, rng, monsters[i % monsters.length]));
+  const orders = dishes.map((dish, i) => generateOrder(level, dish, rng, monsters[i % monsters.length], opts));
   return { orders, rngState: rng.state };
 }

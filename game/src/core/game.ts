@@ -1,6 +1,22 @@
 import { classifyMismatch, firstMismatchIndex, type Mistake } from './compare';
+import {
+  MAX_BANKED,
+  adjustDimensions,
+  bankedTarget,
+  clampDimensions,
+  defaultDimensions,
+  easeForLevel,
+  emptyRuns,
+  hintDelayMs,
+  kioskMsForDims,
+  patienceForOrder,
+  peekBudgetFor,
+  trayTargetFor,
+  type DimRuns,
+  type Dimensions,
+} from './difficulty';
+import { defaultMastery, generationHints, updateMastery, type MasteryProfile } from './mastery';
 import { generateTryOrders, type Order } from './orders';
-import { clampPace, kioskIntervalMs, patienceMs } from './pace';
 import { makeRng } from './rng';
 
 export type Phase =
@@ -27,13 +43,16 @@ export interface TelemetryEntry {
   level: number;
   dish: string;
   monster: string;
+  /** Synced alias of dimensions.time. */
   paceStep: number;
+  dimensions?: Dimensions;
   msToFirstTap: number | null;
   msToFinish: number | null;
   correct: boolean;
   mistake: Mistake | null;
   broken: string | null;
   hintsUsed: number;
+  peeksUsed?: number;
 }
 
 export interface GameState {
@@ -44,7 +63,13 @@ export interface GameState {
   level: number;
   savedLevel: number;
   warmup: boolean;
+  /** Legacy alias of dimensions.time. */
   paceStep: number;
+  mastery: MasteryProfile;
+  dimensions: Dimensions;
+  dimRuns: DimRuns;
+  peeksUsed: number;
+  peekBudget: number;
   orders: Order[];
   orderIndex: number;
   built: string[];
@@ -85,6 +110,7 @@ export type GameEvent =
   | { type: 'tick'; ms: number }
   | { type: 'calloutFinished' }
   | { type: 'addItem'; item: string }
+  | { type: 'peek' }
   | { type: 'undo' }
   | { type: 'trash' }
   | { type: 'serve' }
@@ -101,6 +127,8 @@ export interface StartOptions {
   seed?: number;
   savedLevel?: number;
   paceStep?: number;
+  mastery?: MasteryProfile;
+  dimensions?: Dimensions;
   bossBeaten?: boolean;
   starsByLevel?: Record<number, number>;
   tutorialsSeen?: string[];
@@ -114,6 +142,7 @@ export function initialState(opts: StartOptions = {}): GameState {
   const savedLevel = Math.min(6, Math.max(1, opts.savedLevel ?? 1));
   const boss = opts.bossBeaten ?? false;
   const power = opts.power ?? 'on';
+  const dimensions = clampDimensions(opts.dimensions ?? defaultDimensions(savedLevel, opts.paceStep), savedLevel);
   return {
     phase: power === 'off' ? 'poweredOff' : boss ? 'closed' : 'title',
     paused: false,
@@ -122,7 +151,12 @@ export function initialState(opts: StartOptions = {}): GameState {
     level: savedLevel,
     savedLevel,
     warmup: false,
-    paceStep: clampPace(opts.paceStep ?? 0),
+    paceStep: dimensions.time,
+    mastery: opts.mastery ?? defaultMastery(),
+    dimensions,
+    dimRuns: emptyRuns(),
+    peeksUsed: 0,
+    peekBudget: peekBudgetFor(savedLevel, dimensions, false),
     orders: [],
     orderIndex: 0,
     built: [],
@@ -155,7 +189,7 @@ export function initialState(opts: StartOptions = {}): GameState {
     pendingEvents: [],
     tryCount: 0,
     attemptsThisOrder: 0,
-    bankedProgress: Math.min(2, Math.max(0, opts.levelProgress ?? 0)),
+    bankedProgress: Math.min(MAX_BANKED - 1, Math.max(0, opts.levelProgress ?? 0)),
   };
 }
 
@@ -163,20 +197,26 @@ const orderOf = (s: GameState): Order | null => s.orders[s.orderIndex] ?? null;
 
 function startBatch(s: GameState, level: number, preserveProgress: boolean): GameState {
   const seed = (s.seed * 1103515245 + level * 977 + s.tryCount * 131) >>> 0;
-  const { orders, rngState } = generateTryOrders(level, seed);
-  let pace = s.paceStep;
-  if (!s.sawtoothAppliedFor.includes(level)) {
-    pace = clampPace(pace - 2);
-  }
+  const firstEntry = !s.sawtoothAppliedFor.includes(level);
+  const dimensions = firstEntry ? easeForLevel(s.dimensions, level) : clampDimensions(s.dimensions, level);
+  const hints = generationHints(s.mastery, level);
+  const { orders, rngState } = generateTryOrders(level, seed, {
+    doubleProb: hints.doubleProb,
+    toppingDelta: hints.toppingDelta,
+    trayTarget: trayTargetFor(level, dimensions, 0),
+  });
   const failed = s.failedTries[level] ?? 0;
   const first = orders[0];
-  // Banked progress applies only when starting the saved level itself,
+  // Banked progress applies only when starting the frontier level itself,
   // not a warm-up level below it, and is consumed once applied.
   const banked = !preserveProgress && level === s.savedLevel && !s.warmup ? s.bankedProgress : 0;
   return {
     ...s,
     level,
-    paceStep: pace,
+    paceStep: dimensions.time,
+    dimensions,
+    peeksUsed: 0,
+    peekBudget: peekBudgetFor(level, dimensions, failed >= 2),
     orders,
     rngState,
     orderIndex: 0,
@@ -215,7 +255,7 @@ function tutorialFor(s: GameState, level: number, order: Order): string | null {
 function beginCooking(s: GameState): GameState {
   const order = orderOf(s);
   if (!order) return s;
-  const total = patienceMs(order.ticket.length, s.paceStep, s.assist);
+  const total = patienceForOrder(order.ticket.length, s.dimensions, s.assist, order.broken);
   return {
     ...s,
     phase: 'cooking',
@@ -225,6 +265,8 @@ function beginCooking(s: GameState): GameState {
     cookingMs: 0,
     idleMs: 0,
     hintsUsed: 0,
+    peeksUsed: 0,
+    peekBudget: peekBudgetFor(s.level, s.dimensions, s.assist),
     firstTapMs: null,
   };
 }
@@ -233,16 +275,29 @@ function finishOrder(s: GameState, result: ServeResult): GameState {
   const order = orderOf(s);
   if (!order) return s;
   const correct = result.kind === 'correct';
-  let { paceStep, correctRun, fastRun, streak } = s;
+  let { correctRun, fastRun, streak } = s;
   correctRun = correct ? correctRun + 1 : 0;
-  if (correctRun >= 3) {
-    paceStep = clampPace(paceStep + 1);
-    correctRun = 0;
-  }
-  // A first wrong serve earns a retry of the same order, so the pace does
-  // not ease yet. A miss on the retry (or a timeout) eases one pace step.
+  if (correctRun >= 3) correctRun = 0;
+  // A first wrong serve earns a retry of the same order, so difficulty does
+  // not ease yet. A counted miss eases only its implicated dimension.
   const willRetry = result.kind === 'wrong' && s.attemptsThisOrder === 0;
-  if (!correct && !willRetry) paceStep = clampPace(paceStep - 1);
+  const adjusted = adjustDimensions(s.dimensions, s.dimRuns, {
+    level: s.level,
+    order,
+    correct,
+    mistake: result.mistake,
+    willRetry,
+  });
+  const mastery = updateMastery(s.mastery, {
+    level: s.level,
+    order,
+    correct,
+    mistake: result.mistake,
+    fast: result.fast,
+    hintsUsed: s.hintsUsed,
+    peeksUsed: s.peeksUsed,
+  });
+  const dimensions = adjusted.dimensions;
   if (correct && result.fast) {
     fastRun += 1;
     if (fastRun >= 3) streak = true;
@@ -258,18 +313,23 @@ function finishOrder(s: GameState, result: ServeResult): GameState {
     level: s.level,
     dish: order.dish,
     monster: order.monster,
-    paceStep: s.paceStep,
+    paceStep: dimensions.time,
+    dimensions: { ...dimensions },
     msToFirstTap: s.firstTapMs,
     msToFinish: s.cookingMs || null,
     correct,
     mistake: result.mistake,
     broken: order.broken,
     hintsUsed: s.hintsUsed,
+    peeksUsed: s.peeksUsed,
   };
   return {
     ...s,
     result,
-    paceStep,
+    paceStep: dimensions.time,
+    mastery,
+    dimensions,
+    dimRuns: adjusted.runs,
     correctRun,
     fastRun,
     streak,
@@ -319,9 +379,9 @@ function advanceAfterResult(s: GameState): GameState {
     assist: s.assist || (failedTries[s.level] ?? 0) >= 2,
   };
 
-  // The level ends as soon as three rounds have been banked correct,
+  // The level ends as soon as its banked-correct target is reached,
   // however many rounds that took.
-  if (s.starsTry >= 3) {
+  if (s.starsTry >= bankedTarget(s.level)) {
     const stars = s.starsTry;
     const best = Math.max(s.starsByLevel[s.level] ?? 0, stars);
     const withStars = {
@@ -468,6 +528,11 @@ export function step(prev: GameState, event: GameEvent): GameState {
       if (s.phase === 'printing' && s.printDone) return beginCooking(s);
       return s;
     }
+    case 'peek': {
+      if (prev.phase !== 'cooking') return prev;
+      if (prev.peeksUsed >= prev.peekBudget) return prev;
+      return { ...prev, peeksUsed: prev.peeksUsed + 1 };
+    }
     case 'addItem': {
       if (prev.phase !== 'cooking') return prev;
       // The pointing hand is a coach mark, not a gate: the first real tap
@@ -549,7 +614,8 @@ export function step(prev: GameState, event: GameEvent): GameState {
           const cookingMs = s.cookingMs + ms;
           const idleMs = s.idleMs + ms;
           const frozen = idleMs >= 10000;
-          const hintsUsed = s.hintsUsed + (idleMs >= 4000 && s.hintsUsed === 0 ? 1 : 0);
+          const hintsUsed =
+            s.hintsUsed + (idleMs >= hintDelayMs(s.dimensions, s.level, s.assist) && s.hintsUsed === 0 ? 1 : 0);
           const left = frozen ? s.patienceLeftMs : s.patienceLeftMs - ms;
           if (left <= 0) {
             return finishOrder(
@@ -573,9 +639,9 @@ export function step(prev: GameState, event: GameEvent): GameState {
 }
 
 // Kiosk speed may be scaled by UI test mode via a multiplier stored outside core:
-// core uses real pace interval; UI test mode dispatches larger tick steps instead.
+// core uses the encode dimension; UI test mode dispatches larger tick steps instead.
 function kioskSpeed(s: GameState): number {
-  return kioskIntervalMs(s.paceStep);
+  return kioskMsForDims(s.dimensions);
 }
 
 export { orderOf as currentOrder };

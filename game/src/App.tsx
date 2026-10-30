@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { DISH_EMOJI, MONSTERS } from './content/content';
+import { bankedTarget, hintDelayMs } from './core/difficulty';
 import { currentOrder } from './core/game';
 import { defaultSave } from './core/save';
 import {
@@ -623,9 +624,9 @@ function GameShell(): React.JSX.Element {
               gap: 16,
             }}
           >
-            <Emoji size={160}>{state.starsTry === 3 ? '👨‍🍳🎉' : '👨‍🍳💪'}</Emoji>
+            <Emoji size={160}>{state.starsTry >= bankedTarget(state.level) ? '👨‍🍳🎉' : '👨‍🍳💪'}</Emoji>
             <div data-testid="result-stars" style={{ display: 'flex', gap: 12 }}>
-              {[0, 1, 2].map((i) => (
+              {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
                 <span key={i} style={{ fontSize: 84, opacity: i < state.starsTry ? 1 : 0.25 }}>
                   ⭐
                 </span>
@@ -944,7 +945,6 @@ function Kitchen({
 }): React.JSX.Element {
   const order = currentOrder(state);
   const [peek, setPeek] = useState(false);
-  const [peeksUsed, setPeeksUsed] = useState(0);
   const [peekKey, setPeekKey] = useState('');
   const peekTimer = useRef<number | null>(null);
   useEffect(
@@ -958,7 +958,6 @@ function Kitchen({
   if (peekKey !== orderKey) {
     setPeekKey(orderKey);
     setPeek(false);
-    setPeeksUsed(0);
   }
   const monster = MONSTERS.find((m) => m.id === order.monster);
   const fraction = state.patienceTotalMs > 0 ? state.patienceLeftMs / state.patienceTotalMs : 1;
@@ -984,7 +983,7 @@ function Kitchen({
     );
   });
   const hintId =
-    state.phase === 'cooking' && state.idleMs >= (state.assist ? 2000 : 4000)
+    state.phase === 'cooking' && state.idleMs >= hintDelayMs(state.dimensions, state.level, state.assist)
       ? order.ticket[state.built.length - order.prebuilt.length]
       : undefined;
   void nextNeeded;
@@ -995,14 +994,14 @@ function Kitchen({
   // the ticket row shows ticket items only, so shift by the pre-built count.
   const ticketHighlightIndex = highlight?.side === 'expected' ? highlight.index - order.prebuilt.length : -1;
   // Hide-the-order: the ticket is hidden by default on every construction
-  // screen, at every level. Tapping the monitor peeks for 2 s, with fewer
-  // peeks as levels rise. Wrong-serve feedback always re-shows it.
-  const maxPeeks = state.level <= 2 ? 3 : state.level <= 4 ? 2 : 1;
+  // screen, at every level. Tapping the monitor peeks for 2 s; the budget
+  // lives in the core (memory dimension). Wrong-serve feedback re-shows it.
   const ticketVisible = order.broken === 'monitor' ? false : peek || state.phase === 'serveResult';
-  const canPeek = state.phase === 'cooking' && !ticketVisible && order.broken !== 'monitor' && peeksUsed < maxPeeks;
+  const canPeek =
+    state.phase === 'cooking' && !ticketVisible && order.broken !== 'monitor' && state.peeksUsed < state.peekBudget;
   const onPeek = (): void => {
     if (!canPeek) return;
-    setPeeksUsed((n) => n + 1);
+    dispatch({ type: 'peek' });
     setPeek(true);
     if (peekTimer.current) clearTimeout(peekTimer.current);
     peekTimer.current = window.setTimeout(() => setPeek(false), 2000);
@@ -1099,8 +1098,11 @@ function Kitchen({
           gap: 4,
         }}
       >
-        {[0, 1, 2].map((i) => (
-          <span key={i} style={{ fontSize: 58, opacity: i < state.starsTry ? 1 : 0.25 }}>
+        {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
+          <span
+            key={i}
+            style={{ fontSize: bankedTarget(state.level) > 3 ? 40 : 58, opacity: i < state.starsTry ? 1 : 0.25 }}
+          >
             ⭐
           </span>
         ))}

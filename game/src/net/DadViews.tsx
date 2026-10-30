@@ -175,7 +175,7 @@ function WatchView({ id }: { id: string | null }): React.JSX.Element {
               ))}
             </div>
             <div>
-              {[0, 1, 2].map((i) => (
+              {Array.from({ length: mirror.bankedTarget ?? 3 }, (_, i) => (
                 <span key={i} style={{ fontSize: 44, opacity: i < mirror.starsTry ? 1 : 0.25 }}>
                   ⭐
                 </span>

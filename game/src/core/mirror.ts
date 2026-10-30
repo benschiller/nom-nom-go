@@ -1,3 +1,4 @@
+import { bankedTarget } from './difficulty';
 import { currentOrder, type GameState } from './game';
 
 export interface MirrorView {
@@ -6,6 +7,9 @@ export interface MirrorView {
   level: number;
   orderIndex: number;
   starsTry: number;
+  bankedTarget: number;
+  peeksUsed: number;
+  peekBudget: number;
   dish: string | null;
   monster: string | null;
   ticket: string[];
@@ -28,6 +32,9 @@ export function toMirror(state: GameState): MirrorView {
     level: state.level,
     orderIndex: state.orderIndex,
     starsTry: state.starsTry,
+    bankedTarget: bankedTarget(state.level),
+    peeksUsed: state.peeksUsed,
+    peekBudget: state.peekBudget,
     dish: order?.dish ?? null,
     monster: order?.monster ?? null,
     ticket: order?.ticket ?? [],

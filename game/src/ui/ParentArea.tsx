@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { getStore } from './store';
 import { setSoundOn } from '../audio/audio';
+import { SKILL_IDS, SKILL_LABELS, shrunkMastery } from '../core/mastery';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -68,6 +69,30 @@ export function ParentArea({ onClose }: { onClose: () => void }): React.JSX.Elem
           {Object.entries(save.starsByLevel)
             .map(([l, s]) => `L${l}: ${s}`)
             .join(' · ') || 'none yet'}
+        </p>
+        <h3>Skill mastery (on-device estimate)</h3>
+        {SKILL_IDS.map((id) => {
+          const entry = save.mastery.skills[id];
+          const pct = Math.round(shrunkMastery(entry) * 100);
+          return (
+            <div key={id} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
+              <span style={{ width: 190 }}>{SKILL_LABELS[id]}</span>
+              <span style={{ flex: 1, background: '#eee', borderRadius: 8, height: 14 }}>
+                <span
+                  style={{ display: 'block', width: `${pct}%`, background: '#69b84d', borderRadius: 8, height: 14 }}
+                />
+              </span>
+              <span style={{ width: 90 }}>
+                {pct}% · n={entry.n}
+              </span>
+            </div>
+          );
+        })}
+        <p style={{ color: '#555', margin: '4px 0' }}>
+          Fluency (speed vs patience): {Math.round(save.mastery.fluency.mastery * 100)}% · n={save.mastery.fluency.n}.
+          Difficulty axes (encode/time/memory/search/complexity): {save.dimensions.encode}/{save.dimensions.time}/
+          {save.dimensions.memory}/{save.dimensions.search}/{save.dimensions.complexity}. Estimates stay on this device
+          and only shape practice and support.
         </p>
         <h3>Recent orders</h3>
         <p>
