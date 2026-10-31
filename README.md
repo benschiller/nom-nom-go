@@ -8,7 +8,7 @@ I live in the UAE. My son is seven and lives in the USA. We have been apart for 
 
 ## How it plays
 
-Silly monsters pull up to a food truck and order burgers, pizzas, and sundaes. My son watches the order, sees it printed on a ticket in the kitchen, and hears the Head Chef call it out. The Head Chef is my voice. Then he builds the dish by tapping ingredients in the right order before the monster runs out of patience.
+Silly monsters pull up to a food truck and order burgers, pizzas, and sundaes. My son watches the order at the kiosk and hears the Head Chef call it out. The Head Chef is my voice. Then he builds the dish by tapping ingredients in the right order before the monster runs out of patience. If he gets stuck, he taps the Head Chef button and hears the call-out again while each ingredient lights up in order.
 
 There are six levels. The last is a Rush hour boss. When it ends, the kitchen closes for the night, and that is the end of the session. The next time he powers the game on, the kitchen opens fresh for the next customers.
 
@@ -76,7 +76,7 @@ flowchart LR
 
 The game rules are a pure TypeScript reducer with a seeded random generator and an injected clock. They never call `Math.random()` or `Date.now()`, so any game can be replayed exactly. The child's device is the only writer of game state. Dad's Window is a whitelist mirror and cannot see anything else.
 
-Difficulty adapts on the device, invisibly, in the same reducer. The game keeps a small per-skill estimate (building the base, telling look-alikes apart, amounts and doubles, right order, remembering the order — plus a separate speed measure) and adjusts five independent axes — how fast orders are shown, how long patience lasts, how much memory support (peeks, hints) is offered, how crowded the tray is, and how long orders get — each kept inside the current level's limits, so a slip on one skill never makes everything harder at once. Levels ask for 3–7 correct dishes each (29 across the six levels), sized with a built-in persona simulator so a full first run through all six levels takes roughly 25 minutes; a returning session warms up one level below the furthest uncompleted level, then carries on from there. None of this is shown to the child, and the estimates never leave the device.
+Difficulty adapts on the device, invisibly, in the same reducer. The game keeps a small per-skill estimate (building the base, telling look-alikes apart, amounts and doubles, right order, remembering the order — plus a separate speed measure) and adjusts five independent axes — how fast orders are shown, how long patience lasts, how much memory support (Head Chef replays, hints) is offered, how crowded the tray is, and how long orders get — each kept inside the current level's limits, so a slip on one skill never makes everything harder at once. Levels ask for 3–7 correct dishes each (29 across the six levels), sized with a built-in persona simulator so a full first run through all six levels takes roughly 25 minutes; a returning session warms up one level below the furthest uncompleted level, then carries on from there. None of this is shown to the child, and the estimates never leave the device.
 
 Dad's voice clips live in `game/public/audio/clips/`. Any missing clip falls back to the device's speech voice.
 

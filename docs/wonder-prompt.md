@@ -6,6 +6,8 @@ You are building **Nom Nom Go!**, a complete, deployable web game, in this repos
 
 **Status of this document:** This is the reviewed, definitive build prompt. It supersedes `working/wonder-build-prompt.md` and `working/plan.md` wherever they differ. Decisions already made here are not open for the builder to re-derive; record only genuinely new choices in `docs/decisions.md` (section 14).
 
+**Amendment (2026-10-30) — kitchen HELP supersedes the kitchen ticket.** The kitchen screen no longer shows an order ticket or monitor, and there is no peek. The locked kitchen master (`generated_images/kitchen-master-stars.jpg`) has a tall serving window with the monster behind the build area, a horizontal ingredient bar, undo/bell/trash beneath it (bell biggest), stars lower-right, and a Head Chef HELP button. Tapping HELP replays the call-out (static bursts when the speaker is broken) while tray items grow and highlight in order. HELP consumes the existing memory budget (code keeps the internal names `ticket` for the called sequence and `peek`/`peekBudget` for HELP and its budget), and patience pauses during the replay. Wrong-serve feedback highlights the tray item instead of a ticket icon. Wherever this prompt says kitchen ticket, monitor, or peek (notably sections 5.2, 6.2, and 6.4), this amendment wins. The kiosk order presentation and the call-out itself are unchanged. Shipped in commit `c638196`.
+
 ---
 
 ## 1. What you are building
