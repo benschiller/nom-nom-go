@@ -61,7 +61,7 @@ export default function App(): React.JSX.Element {
   return <GameShell />;
 }
 
-const TOUR_STEPS = 5;
+const TOUR_STEPS = 6;
 
 function TourDemo({ step }: { step: number }): React.JSX.Element {
   const iconRow = (ids: string[], size = 120) => (
@@ -132,6 +132,34 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
         </>,
       );
     case 3:
+      return panel(
+        '#ffe9b8',
+        <>
+          <span
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: '50%',
+              background: '#fff',
+              border: '5px solid rgba(90,50,20,.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 84,
+            }}
+          >
+            👨‍🍳
+          </span>
+          <span style={{ fontSize: 44 }}>➜</span>
+          <div style={{ display: 'flex', gap: 14 }}>
+            <ItemIcon id="cheese" size={120} glow />
+            <ItemIcon id="lettuce" size={120} />
+            <ItemIcon id="pickles" size={120} />
+          </div>
+          <span style={{ fontSize: 54 }}>🔊</span>
+        </>,
+      );
+    case 4:
       return panel(
         '#fff8ec',
         <>
@@ -944,21 +972,15 @@ function Kitchen({
   testAttrs: Record<string, string | undefined>;
 }): React.JSX.Element {
   const order = currentOrder(state);
-  const [peek, setPeek] = useState(false);
-  const [peekKey, setPeekKey] = useState('');
-  const peekTimer = useRef<number | null>(null);
+  const [helpStep, setHelpStep] = useState(-1);
+  const helpRun = useRef(0);
   useEffect(
     () => () => {
-      if (peekTimer.current) clearTimeout(peekTimer.current);
+      helpRun.current += 1;
     },
     [],
   );
   if (!order) return <></>;
-  const orderKey = `${state.level}-${state.orderIndex}-${state.tryCount}-${state.attemptsThisOrder}`;
-  if (peekKey !== orderKey) {
-    setPeekKey(orderKey);
-    setPeek(false);
-  }
   const monster = MONSTERS.find((m) => m.id === order.monster);
   const fraction = state.patienceTotalMs > 0 ? state.patienceLeftMs / state.patienceTotalMs : 1;
   const emotion =
@@ -973,139 +995,85 @@ function Kitchen({
         : fraction > 0.33
           ? '😐👆'
           : '😤💨';
-  const nextNeeded = order.ticket.find((id, idx) => {
-    const builtToppings = state.built.slice(order.prebuilt.length);
-    const used = builtToppings.filter((b, bi) => bi < idx + 1 && b === id).length;
-    void used;
-    return (
-      state.built.filter((b) => b === id).length < order.expected.filter((e) => e === id).length &&
-      order.ticket[state.built.length - order.prebuilt.length] === id
-    );
-  });
   const hintId =
     state.phase === 'cooking' && state.idleMs >= hintDelayMs(state.dimensions, state.level, state.assist)
       ? order.ticket[state.built.length - order.prebuilt.length]
       : undefined;
-  void nextNeeded;
   // One merged inventory, generated per order at exactly level + 3 items.
   const mergedItems = order.tray;
   const highlight = state.result?.highlight;
-  // Highlight indexes the full expected sequence (pre-built base included);
-  // the ticket row shows ticket items only, so shift by the pre-built count.
-  const ticketHighlightIndex = highlight?.side === 'expected' ? highlight.index - order.prebuilt.length : -1;
-  // Hide-the-order: the ticket is hidden by default on every construction
-  // screen, at every level. Tapping the monitor peeks for 2 s; the budget
-  // lives in the core (memory dimension). Wrong-serve feedback re-shows it.
-  const ticketVisible = order.broken === 'monitor' ? false : peek || state.phase === 'serveResult';
-  const canPeek =
-    state.phase === 'cooking' && !ticketVisible && order.broken !== 'monitor' && state.peeksUsed < state.peekBudget;
-  const onPeek = (): void => {
-    if (!canPeek) return;
+  // No ticket on this screen. Wrong-serve feedback points at the tray item.
+  const wrongTrayId =
+    state.phase === 'serveResult' && highlight?.side === 'expected' ? order.expected[highlight.index] : undefined;
+  // HELP: Head Chef replays the call-out. Each tray item grows in ticket
+  // order, in sync with its clip (static bursts when the speaker is broken).
+  // Budget and the patience pause live in the core (peek / helpPlaying).
+  const helpId = helpStep >= 0 ? order.ticket[helpStep] : undefined;
+  const canHelp = state.phase === 'cooking' && !state.helpPlaying && state.peeksUsed < state.peekBudget;
+  const onHelp = async (): Promise<void> => {
+    if (!canHelp) return;
     dispatch({ type: 'peek' });
-    setPeek(true);
-    if (peekTimer.current) clearTimeout(peekTimer.current);
-    peekTimer.current = window.setTimeout(() => setPeek(false), 2000);
+    const run = ++helpRun.current;
+    try {
+      for (let i = 0; i < order.ticket.length; i++) {
+        if (helpRun.current !== run) return;
+        setHelpStep(i);
+        if (isTestMode()) {
+          await new Promise((r) => setTimeout(r, 30));
+        } else if (order.broken === 'speaker') {
+          playSfx('static');
+          await new Promise((r) => setTimeout(r, 650));
+        } else {
+          await Promise.race([playKioskItem(order.ticket, i), new Promise((r) => setTimeout(r, 1400))]);
+          await new Promise((r) => setTimeout(r, 120));
+        }
+      }
+    } finally {
+      if (helpRun.current === run) {
+        setHelpStep(-1);
+        dispatch({ type: 'helpEnd' });
+      }
+    }
   };
 
   return (
-    <div style={{ position: 'absolute', inset: 0 }}>
-      {/* Monitor / ticket zone x24 y24 w700 h150 */}
+    <div style={{ position: 'absolute', inset: 0, background: '#2a9d8f' }}>
+      {/* Kitchen master layout (locked still): tall window, dominant dish,
+          horizontal tray, controls below it. No order bar on this screen.
+          Test hook only: the expected order for automated play. */}
+      <div data-testid="ticket" {...testAttrs} style={{ display: 'none' }} aria-hidden />
       <div
-        data-testid="ticket-monitor"
-        role={canPeek ? 'button' : undefined}
-        aria-label={canPeek ? 'Show order' : undefined}
-        onClick={onPeek}
-        style={{
-          position: 'absolute',
-          left: 24,
-          top: 24,
-          width: 700,
-          height: 150,
-          background: '#203040',
-          borderRadius: 20,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: '0 14px',
-          overflow: 'hidden',
-          cursor: canPeek ? 'pointer' : undefined,
-        }}
-      >
-        <span style={{ fontSize: 44 }}>{order.broken === 'speaker' ? '🔊❄️' : '🔊'}</span>
-        <div data-testid="ticket" {...testAttrs} style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          {order.broken === 'monitor' ? (
-            <span style={{ fontSize: 54 }}>⬛</span>
-          ) : !ticketVisible ? (
-            <span data-testid="ticket-hidden" style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-              {order.ticket.map((id, i) => (
-                <span key={`${id}-${i}`} style={{ fontSize: 54 }}>
-                  ❓
-                </span>
-              ))}
-              <span style={{ fontSize: 44 }}>{canPeek ? '👀' : ''}</span>
-            </span>
-          ) : (
-            order.ticket.map((id, i) => (
-              <span
-                key={i}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 2,
-                  outline: ticketHighlightIndex === i ? '8px solid #ffd93d' : undefined,
-                  borderRadius: 60,
-                }}
-              >
-                <ItemIcon id={id} size={104} />
-                {i < order.ticket.length - 1 && <span style={{ color: '#fff', fontSize: 28 }}>➜</span>}
-              </span>
-            ))
-          )}
-        </div>
-      </div>
-      {/* Serving window */}
+        aria-hidden
+        style={{ position: 'absolute', left: 0, top: 0, width: 784, height: 640, background: '#ff8c69' }}
+      />
       <div
         data-testid="serving-window"
         style={{
           position: 'absolute',
-          left: 748,
+          left: 24,
           top: 24,
-          width: 220,
-          height: 150,
-          background: '#bfe8ff',
-          borderRadius: 20,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 76,
+          width: 1232,
+          height: 496,
+          background: '#7fd4c9',
+          border: '8px solid #f2b035',
+          borderRadius: 12,
+          overflow: 'hidden',
         }}
       >
-        {monster?.emoji}
-        {emotion}
-      </div>
-      {/* Stars */}
-      <div
-        data-testid="try-stars"
-        style={{
-          position: 'absolute',
-          left: 992,
-          top: 24,
-          width: 264,
-          height: 150,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 4,
-        }}
-      >
-        {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
-          <span
-            key={i}
-            style={{ fontSize: bankedTarget(state.level) > 3 ? 40 : 58, opacity: i < state.starsTry ? 1 : 0.25 }}
-          >
-            ⭐
-          </span>
-        ))}
+        <div
+          style={{
+            position: 'absolute',
+            right: 60,
+            bottom: -30,
+            fontSize: 300,
+            lineHeight: 1,
+            display: 'flex',
+            alignItems: 'flex-end',
+          }}
+        >
+          <span>{monster?.emoji}</span>
+          <span style={{ fontSize: 110, marginLeft: -70, marginBottom: 130 }}>{emotion}</span>
+        </div>
       </div>
       {/* Build area */}
       <div
@@ -1113,16 +1081,16 @@ function Kitchen({
         style={{
           position: 'absolute',
           left: 24,
-          top: 186,
+          top: 300,
           width: 736,
-          height: 444,
-          background: '#fff8ec',
+          height: 320,
+          background: 'rgba(255,248,236,.92)',
           borderRadius: 28,
           border: '5px solid rgba(90,50,20,.25)',
           display: 'flex',
           alignItems: 'flex-end',
           justifyContent: 'center',
-          paddingBottom: 26,
+          paddingBottom: 18,
         }}
       >
         {state.phase === 'serveResult' && state.result?.kind === 'wrong' && (
@@ -1172,45 +1140,130 @@ function Kitchen({
           )}
         </div>
       </div>
-      {/* One merged inventory: bases first, then toppings, no duplicates. */}
+      {/* Horizontal ingredient bar (master layout). HELP and wrong-serve
+          feedback grow/highlight items here. */}
       <div
         data-testid="tray"
         style={{
           position: 'absolute',
-          left: 784,
-          top: 186,
-          width: 472,
-          height: 668,
-          background: '#d9f2d0',
+          left: 24,
+          top: 636,
+          width: 1552,
+          height: 132,
+          background: '#ffe9b8',
           borderRadius: 24,
+          border: '5px solid rgba(90,50,20,.3)',
           display: 'flex',
-          flexWrap: 'wrap',
-          gap: 10,
-          padding: 14,
-          alignContent: 'flex-start',
+          gap: 8,
+          padding: 10,
+          alignItems: 'center',
+          overflowX: 'auto',
         }}
       >
-        {mergedItems.map((id) => (
-          <button
-            key={id}
-            data-tray-item={id}
-            data-base-item={id}
-            style={{ background: 'none', border: 'none', padding: 0 }}
-            onClick={() => {
-              playSfx('tap');
-              dispatch({ type: 'addItem', item: id });
+        {mergedItems.map((id) => {
+          const active = id === helpId || id === wrongTrayId;
+          return (
+            <button
+              key={id}
+              data-tray-item={id}
+              data-base-item={id}
+              data-help-active={id === helpId ? 'true' : undefined}
+              style={{
+                background: 'none',
+                border: 'none',
+                padding: 0,
+                transform: id === helpId ? 'scale(1.35)' : undefined,
+                outline: active ? '7px solid #ffd93d' : undefined,
+                borderRadius: 60,
+                transition: 'transform 160ms ease',
+                zIndex: id === helpId ? 3 : undefined,
+              }}
+              onClick={() => {
+                playSfx('tap');
+                dispatch({ type: 'addItem', item: id });
+              }}
+            >
+              <ItemIcon id={id} size={104} glow={hintId === id && helpId === undefined} />
+            </button>
+          );
+        })}
+      </div>
+      {/* Controls under the tray: chef HELP left, undo/bell/trash centre
+          (bell biggest, clear of the bottom edge), stars lower right. */}
+      <button
+        data-testid="chef-help"
+        aria-label="Head Chef help"
+        disabled={!canHelp}
+        style={{
+          position: 'absolute',
+          left: 184,
+          top: 782,
+          width: 104,
+          height: 104,
+          borderRadius: '50%',
+          fontSize: 56,
+          background: '#fff',
+          border: '5px solid rgba(90,50,20,.4)',
+          opacity: canHelp ? 1 : 0.45,
+          zIndex: 6,
+        }}
+        onClick={() => void onHelp()}
+      >
+        👨‍🍳
+      </button>
+      <div
+        data-testid="help-pips"
+        style={{ position: 'absolute', left: 300, top: 826, display: 'flex', gap: 7, zIndex: 6 }}
+        aria-hidden
+      >
+        {Array.from({ length: state.peekBudget }, (_, i) => (
+          <span
+            key={i}
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: '50%',
+              display: 'block',
+              background: i < state.peekBudget - state.peeksUsed ? '#ffd93d' : 'rgba(90,50,20,.25)',
+              border: '3px solid rgba(90,50,20,.4)',
             }}
-          >
-            <ItemIcon id={id} size={128} glow={hintId === id} />
-          </button>
+          />
         ))}
       </div>
-      {/* Bell / undo / trash under the build area */}
-      <div style={{ position: 'absolute', left: 188, top: 646, width: 572, height: 164, display: 'flex', gap: 12 }}>
+      <div
+        style={{
+          position: 'absolute',
+          left: 560,
+          top: 776,
+          width: 480,
+          height: 112,
+          display: 'flex',
+          gap: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <button
+          data-testid="undo"
+          aria-label="Undo"
+          style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
+          onClick={() => dispatch({ type: 'undo' })}
+        >
+          ↩️
+        </button>
         <button
           data-testid="bell"
           aria-label="Serve"
-          style={{ ...BTN, flex: 1, fontSize: 76 }}
+          style={{
+            ...BTN,
+            width: 150,
+            minWidth: 150,
+            minHeight: 112,
+            height: 112,
+            fontSize: 72,
+            borderRadius: '50%',
+            background: '#ffd93d',
+          }}
           onClick={() => {
             playSfx('bell');
             dispatch({ type: 'serve' });
@@ -1219,21 +1272,36 @@ function Kitchen({
           🔔
         </button>
         <button
-          data-testid="undo"
-          aria-label="Undo"
-          style={{ ...BTN, width: 140, fontSize: 54 }}
-          onClick={() => dispatch({ type: 'undo' })}
-        >
-          ↩️
-        </button>
-        <button
           data-testid="trash"
           aria-label="Clear dish"
-          style={{ ...BTN, width: 140, fontSize: 54 }}
+          style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
           onClick={() => dispatch({ type: 'trash' })}
         >
           🗑️
         </button>
+      </div>
+      <div
+        data-testid="try-stars"
+        style={{
+          position: 'absolute',
+          left: 1304,
+          top: 800,
+          width: 272,
+          height: 80,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: 4,
+        }}
+      >
+        {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
+          <span
+            key={i}
+            style={{ fontSize: bankedTarget(state.level) > 3 ? 36 : 52, opacity: i < state.starsTry ? 1 : 0.25 }}
+          >
+            ⭐
+          </span>
+        ))}
       </div>
       {state.streak && (
         <div style={{ position: 'absolute', left: 640, top: 600, fontSize: 54, pointerEvents: 'none' }}>🔥</div>

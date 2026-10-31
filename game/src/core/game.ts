@@ -70,6 +70,8 @@ export interface GameState {
   dimRuns: DimRuns;
   peeksUsed: number;
   peekBudget: number;
+  /** True while the Head Chef HELP replay is speaking. Patience is paused. */
+  helpPlaying: boolean;
   orders: Order[];
   orderIndex: number;
   built: string[];
@@ -111,6 +113,7 @@ export type GameEvent =
   | { type: 'calloutFinished' }
   | { type: 'addItem'; item: string }
   | { type: 'peek' }
+  | { type: 'helpEnd' }
   | { type: 'undo' }
   | { type: 'trash' }
   | { type: 'serve' }
@@ -157,6 +160,7 @@ export function initialState(opts: StartOptions = {}): GameState {
     dimRuns: emptyRuns(),
     peeksUsed: 0,
     peekBudget: peekBudgetFor(savedLevel, dimensions, false),
+    helpPlaying: false,
     orders: [],
     orderIndex: 0,
     built: [],
@@ -529,9 +533,15 @@ export function step(prev: GameState, event: GameEvent): GameState {
       return s;
     }
     case 'peek': {
+      // HELP: Head Chef replay. Consumes one help from the memory budget.
       if (prev.phase !== 'cooking') return prev;
+      if (prev.helpPlaying) return prev;
       if (prev.peeksUsed >= prev.peekBudget) return prev;
-      return { ...prev, peeksUsed: prev.peeksUsed + 1 };
+      return { ...prev, peeksUsed: prev.peeksUsed + 1, helpPlaying: true };
+    }
+    case 'helpEnd': {
+      if (!prev.helpPlaying) return prev;
+      return { ...prev, helpPlaying: false, idleMs: 0 };
     }
     case 'addItem': {
       if (prev.phase !== 'cooking') return prev;
@@ -616,7 +626,7 @@ export function step(prev: GameState, event: GameEvent): GameState {
           const frozen = idleMs >= 10000;
           const hintsUsed =
             s.hintsUsed + (idleMs >= hintDelayMs(s.dimensions, s.level, s.assist) && s.hintsUsed === 0 ? 1 : 0);
-          const left = frozen ? s.patienceLeftMs : s.patienceLeftMs - ms;
+          const left = frozen || s.helpPlaying ? s.patienceLeftMs : s.patienceLeftMs - ms;
           if (left <= 0) {
             return finishOrder(
               { ...s, cookingMs, idleMs, hintsUsed, patienceLeftMs: 0 },

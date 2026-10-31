@@ -152,6 +152,25 @@ describe('decoupled dimensions', () => {
     const blocked = step(s, { type: 'peek' });
     expect(blocked.peeksUsed).toBe(1);
   });
+
+  it('help replay pauses patience until it ends', () => {
+    let s: GameState = {
+      ...initialState({ seed: 5, savedLevel: 1 }),
+      phase: 'cooking',
+      peeksUsed: 0,
+      peekBudget: 2,
+      patienceTotalMs: 20000,
+      patienceLeftMs: 20000,
+    };
+    s = step(s, { type: 'peek' });
+    expect(s.helpPlaying).toBe(true);
+    s = step(s, { type: 'tick', ms: 3000 });
+    expect(s.patienceLeftMs).toBe(20000);
+    s = step(s, { type: 'helpEnd' });
+    expect(s.helpPlaying).toBe(false);
+    s = step(s, { type: 'tick', ms: 3000 });
+    expect(s.patienceLeftMs).toBe(17000);
+  });
 });
 
 describe('mastery-aware generation', () => {

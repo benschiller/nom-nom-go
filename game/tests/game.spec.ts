@@ -74,24 +74,24 @@ test('a wrong serve retries the same order and a corrected retry advances', asyn
   await expect(page.getByTestId('wrong-feedback')).toHaveCount(0);
 });
 
-test('Level 2 uses one merged inventory and hides the order until peeked', async ({ page }) => {
+test('Level 2 uses one merged inventory and Head Chef help replays the order', async ({ page }) => {
   await page.goto(TEST_URL);
   await page.getByTestId('go-button').click();
   await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'cooking', { timeout: 30_000 });
-  await expect(page.getByTestId('ticket-hidden')).toBeVisible();
-  await page.getByTestId('ticket-monitor').click();
+  await expect(page.getByTestId('ticket-monitor')).toHaveCount(0);
   await expect(page.getByTestId('ticket-hidden')).toHaveCount(0);
+  const pipsBefore = await page.getByTestId('help-pips').locator('span').count();
+  await page.getByTestId('chef-help').click();
+  await expect(page.locator('[data-help-active="true"]').first()).toBeVisible({ timeout: 10_000 });
+  await expect
+    .poll(async () => page.getByTestId('help-pips').locator('span').count(), { timeout: 10_000 })
+    .toBe(pipsBefore);
+  await expect(page.getByTestId('chef-help')).toBeEnabled();
   for (let i = 0; i < 3; i++) await playCorrectOrder(page);
   await page.getByTestId('continue-button').click();
   await expect(page.getByTestId('stage')).toHaveAttribute('data-level', '2');
   await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'cooking', { timeout: 30_000 });
   await expect(page.getByTestId('base-shelf')).toHaveCount(0);
-  const expected = (await page.getByTestId('ticket').getAttribute('data-expected'))?.trim().split(/\s+/) ?? [];
-  await page.locator(`[data-tray-item="${expected[0]}"]`).first().click();
-  await expect(page.getByTestId('ticket-hidden')).toBeVisible();
-  await page.getByTestId('ticket-monitor').click();
-  await expect(page.getByTestId('ticket-hidden')).toHaveCount(0);
-  await expect(page.getByTestId('ticket').locator('[data-item]').first()).toBeVisible();
 });
 
 test('power button replaces the parent gate in play and hold-resets completely', async ({ page }) => {
