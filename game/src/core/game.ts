@@ -7,8 +7,7 @@ import {
   defaultDimensions,
   easeForLevel,
   emptyRuns,
-  hintDelayMs,
-  kioskMsForDims,
+  orderingMsForDims,
   patienceForOrder,
   peekBudgetFor,
   trayTargetFor,
@@ -22,15 +21,17 @@ import { makeRng } from './rng';
 export type Phase =
   | 'title'
   | 'levelIntro'
-  | 'kiosk'
-  | 'printing'
-  | 'callout'
+  | 'ordering'
+  | 'goWipe'
   | 'cooking'
   | 'serveResult'
   | 'levelResult'
   | 'bossEnding'
   | 'closed'
   | 'poweredOff';
+
+/** How long the Go! wipe sweeps before cooking (and patience) starts. */
+export const GO_WIPE_MS = 700;
 
 export interface ServeResult {
   kind: 'correct' | 'wrong' | 'timeout';
@@ -76,7 +77,13 @@ export interface GameState {
   orderIndex: number;
   built: string[];
   phaseMs: number;
+  /** Items revealed so far at the kitchen window (sill row length). */
+  orderingShown: number;
+  /** Deprecated alias of orderingShown, kept in sync for older tooling. */
   kioskShown: number;
+  /** True once the window-ordering voice chain has finished. */
+  orderingDone: boolean;
+  /** Deprecated aliases of orderingDone, kept in sync. */
   printDone: boolean;
   calloutDone: boolean;
   patienceTotalMs: number;
@@ -110,6 +117,8 @@ export interface GameState {
 export type GameEvent =
   | { type: 'go' }
   | { type: 'tick'; ms: number }
+  | { type: 'orderingFinished' }
+  /** Deprecated alias of orderingFinished. */
   | { type: 'calloutFinished' }
   | { type: 'addItem'; item: string }
   | { type: 'peek' }
@@ -165,7 +174,9 @@ export function initialState(opts: StartOptions = {}): GameState {
     orderIndex: 0,
     built: [],
     phaseMs: 0,
+    orderingShown: 0,
     kioskShown: 0,
+    orderingDone: false,
     printDone: false,
     calloutDone: false,
     patienceTotalMs: 0,
@@ -230,10 +241,12 @@ function startBatch(s: GameState, level: number, preserveProgress: boolean): Gam
     bankedProgress: banked > 0 ? 0 : s.bankedProgress,
     assist: failed >= 2,
     sawtoothAppliedFor: [...new Set([...s.sawtoothAppliedFor, level])],
-    phase: 'kiosk',
+    phase: 'ordering',
     phaseMs: 0,
+    orderingShown: 0,
     kioskShown: 0,
     built: [...first.prebuilt],
+    orderingDone: false,
     printDone: false,
     calloutDone: false,
     result: null,
@@ -247,7 +260,9 @@ function startTry(s: GameState, level: number): GameState {
 
 function tutorialFor(s: GameState, level: number, order: Order): string | null {
   const seen = new Set(s.tutorialsSeen);
-  if (s.orders.length === 0 && level === 1 && !seen.has('firstOrder')) return 'firstOrder';
+  // The main loop (watch, listen, HELP, build, bell) is taught by the
+  // distinct pre-Level-1 tutorial intro, not by coaching during an order,
+  // so Level 1 has no in-cooking tutorial.
   if (level === 2 && !seen.has('baseShelf')) return 'baseShelf';
   if (level === 3 && !seen.has('doubles')) return 'doubles';
   if (level === 4 && !seen.has('lookalikes')) return 'lookalikes';
@@ -354,7 +369,7 @@ function capOrder(order: Order, cap: number): Order {
 
 function advanceAfterResult(s: GameState): GameState {
   const cleared = { ...s, result: null, pendingEvents: [] as string[] };
-  // First wrong serve: same order again from the kiosk, so the player can
+  // First wrong serve: same order again at the window, so the player can
   // re-watch and re-hear it. Getting it on the retry proceeds as normal.
   if (s.result?.kind === 'wrong' && s.attemptsThisOrder === 0) {
     const order = orderOf(s);
@@ -362,10 +377,12 @@ function advanceAfterResult(s: GameState): GameState {
       return {
         ...cleared,
         attemptsThisOrder: 1,
-        phase: 'kiosk',
+        phase: 'ordering',
         phaseMs: 0,
+        orderingShown: 0,
         kioskShown: 0,
         built: [...order.prebuilt],
+        orderingDone: false,
         printDone: false,
         calloutDone: false,
       };
@@ -422,10 +439,12 @@ function advanceAfterResult(s: GameState): GameState {
       orders,
       attemptsThisOrder: 0,
       orderIndex: s.orderIndex + 1,
-      phase: 'kiosk',
+      phase: 'ordering',
       phaseMs: 0,
+      orderingShown: 0,
       kioskShown: 0,
       built: [...next.prebuilt],
+      orderingDone: false,
       printDone: false,
       calloutDone: false,
       tutorial: tutorialFor(s, s.level, next),
@@ -481,13 +500,15 @@ function withTutorialDismissed(s: GameState): GameState {
 }
 
 export function step(prev: GameState, event: GameEvent): GameState {
-  // calloutFinished is allowed through while paused: the voice may finish
-  // in the background, and dropping it would strand the game in callout.
+  // orderingFinished is allowed through while paused: the voice may finish
+  // in the background, and dropping it would strand the game in ordering.
   if (
     prev.paused &&
     event.type !== 'resume' &&
     event.type !== 'tick' &&
+    event.type !== 'orderingFinished' &&
     event.type !== 'calloutFinished' &&
+    event.type !== 'helpEnd' &&
     event.type !== 'powerReset'
   )
     return prev;
@@ -513,8 +534,9 @@ export function step(prev: GameState, event: GameEvent): GameState {
     case 'continue': {
       if (prev.phase === 'levelResult') return continueFromLevelResult(prev);
       if (prev.phase === 'levelIntro') {
-        // startTry already set phase kiosk; levelIntro is a wrapper: go straight to kiosk of current orders.
-        return { ...prev, phase: 'kiosk', phaseMs: 0 };
+        // startTry already set phase ordering; levelIntro is a wrapper:
+        // go straight to ordering at the kitchen window.
+        return { ...prev, phase: 'ordering', phaseMs: 0 };
       }
       return prev;
     }
@@ -525,11 +547,12 @@ export function step(prev: GameState, event: GameEvent): GameState {
     case 'tutorialDone': {
       return withTutorialDismissed(prev);
     }
+    case 'orderingFinished':
     case 'calloutFinished': {
-      const s = { ...prev, calloutDone: true };
-      if (s.phase === 'callout' && (s.printDone || orderOf(s)?.broken === 'speaker'))
-        return beginCooking({ ...s, printDone: true });
-      if (s.phase === 'printing' && s.printDone) return beginCooking(s);
+      const s = { ...prev, orderingDone: true, calloutDone: true, printDone: true };
+      // The Go! wipe normally starts cooking on its tick; if the voice
+      // chain finishes during the wipe, cooking starts straight away.
+      if (s.phase === 'goWipe') return beginCooking(s);
       return s;
     }
     case 'peek': {
@@ -593,47 +616,43 @@ export function step(prev: GameState, event: GameEvent): GameState {
       const s: GameState = { ...prev, phaseMs: prev.phaseMs + ms };
       switch (s.phase) {
         case 'levelIntro':
-          return s.phaseMs >= 1600 ? { ...s, phase: 'kiosk', phaseMs: 0 } : s;
-        case 'kiosk': {
+          return s.phaseMs >= 1600 ? { ...s, phase: 'ordering', phaseMs: 0 } : s;
+        case 'ordering': {
           const order = orderOf(s);
           if (!order) return s;
           const shown = Math.min(
             order.ticket.length,
-            Math.floor(s.phaseMs / Math.max(1, kioskSpeed(s))) + (s.phaseMs > 0 ? 1 : 0),
+            Math.floor(s.phaseMs / Math.max(1, orderingSpeed(s))) + (s.phaseMs > 0 ? 1 : 0),
           );
-          const totalMs = order.ticket.length * kioskSpeed(s) + 700;
+          const totalMs = order.ticket.length * orderingSpeed(s) + 700;
           if (s.phaseMs >= totalMs)
-            return { ...s, phase: 'printing', phaseMs: 0, kioskShown: order.ticket.length, printDone: false };
-          return { ...s, kioskShown: shown };
+            return {
+              ...s,
+              phase: 'goWipe',
+              phaseMs: 0,
+              orderingShown: order.ticket.length,
+              kioskShown: order.ticket.length,
+            };
+          return { ...s, orderingShown: shown, kioskShown: shown };
         }
-        case 'printing': {
-          if (s.phaseMs >= 600) {
-            const done = { ...s, printDone: true };
-            const order = orderOf(done);
-            if (order?.broken === 'speaker') return { ...done, phase: 'callout', phaseMs: 0, calloutDone: true };
-            return { ...done, phase: 'callout', phaseMs: 0 };
-          }
-          return s;
-        }
-        case 'callout': {
-          // Cooking begins via calloutFinished event from the audio layer.
-          // Safety: if no audio layer (tests), UI dispatches calloutFinished.
-          return s;
-        }
+        case 'goWipe':
+          // Patience starts only after the wipe, in beginCooking.
+          return s.phaseMs >= GO_WIPE_MS ? beginCooking(s) : s;
         case 'cooking': {
           const cookingMs = s.cookingMs + ms;
           const idleMs = s.idleMs + ms;
+          // No idle hint: HELP via the Head Chef button is the only help.
+          // Patience still freezes after a long idle (the child may be
+          // talking on the call), but nothing glows.
           const frozen = idleMs >= 10000;
-          const hintsUsed =
-            s.hintsUsed + (idleMs >= hintDelayMs(s.dimensions, s.level, s.assist) && s.hintsUsed === 0 ? 1 : 0);
           const left = frozen || s.helpPlaying ? s.patienceLeftMs : s.patienceLeftMs - ms;
           if (left <= 0) {
             return finishOrder(
-              { ...s, cookingMs, idleMs, hintsUsed, patienceLeftMs: 0 },
+              { ...s, cookingMs, idleMs, patienceLeftMs: 0 },
               { kind: 'timeout', mistake: 'timeout', fast: false, highlight: null },
             );
           }
-          return { ...s, cookingMs, idleMs, hintsUsed, patienceLeftMs: left };
+          return { ...s, cookingMs, idleMs, patienceLeftMs: left };
         }
         case 'serveResult': {
           const hold = s.result?.kind === 'correct' ? 2500 : s.result?.kind === 'wrong' ? 2500 : 1200;
@@ -648,10 +667,11 @@ export function step(prev: GameState, event: GameEvent): GameState {
   }
 }
 
-// Kiosk speed may be scaled by UI test mode via a multiplier stored outside core:
-// core uses the encode dimension; UI test mode dispatches larger tick steps instead.
-function kioskSpeed(s: GameState): number {
-  return kioskMsForDims(s.dimensions);
+// Ordering speed may be scaled by UI test mode via a multiplier stored
+// outside core: core uses the encode dimension; UI test mode dispatches
+// larger tick steps instead.
+function orderingSpeed(s: GameState): number {
+  return orderingMsForDims(s.dimensions);
 }
 
 export { orderOf as currentOrder };

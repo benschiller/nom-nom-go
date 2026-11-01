@@ -77,6 +77,12 @@ export function playSfx(name: Sfx): void {
       tone(240, 200, 'sine', 0.06, 0.12);
       break;
     case 'nom':
+      // Distinctive two-syllable "Nom Nom" for a correct serve.
+      tone(220, 110, 'sawtooth', 0.06);
+      tone(170, 110, 'sawtooth', 0.06, 0.13);
+      tone(220, 110, 'sawtooth', 0.06, 0.3);
+      tone(170, 140, 'sawtooth', 0.06, 0.43);
+      break;
     case 'gobble':
       tone(180, 100, 'sawtooth', 0.05);
       tone(150, 100, 'sawtooth', 0.05, 0.1);
@@ -199,7 +205,7 @@ export function calloutClipIds(ticket: readonly string[]): string[] {
   return ids;
 }
 
-/** Clip ids to speak when ticket[index] first appears at the kiosk. */
+/** Clip ids to speak when ticket[index] first appears at the window. */
 export function itemClipIds(ticket: readonly string[], index: number): string[] {
   const runs = runsOf(ticket);
   const run = runs.find((r) => r.start === index);
@@ -221,7 +227,7 @@ export async function playCallout(ticket: readonly string[]): Promise<void> {
   }
 }
 
-/** Speak one kiosk item as it pops up, so seeing and hearing happen together. */
+/** Speak one window item as it joins the sill row, so seeing and hearing happen together. */
 export async function playKioskItem(ticket: readonly string[], index: number): Promise<void> {
   if (!soundOn) return;
   for (const id of itemClipIds(ticket, index)) {

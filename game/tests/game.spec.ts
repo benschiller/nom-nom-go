@@ -22,6 +22,29 @@ test('boots and Go! starts the game', async ({ page }) => {
   await expect(page.getByTestId('stage')).not.toHaveAttribute('data-phase', 'title');
 });
 
+test('orders at the kitchen window: sill row in order, then Nom Nom', async ({ page }) => {
+  await page.goto('/?test=1&seed=99&speed=2');
+  await page.getByTestId('go-button').click();
+  await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'ordering', { timeout: 30_000 });
+  await expect(page.getByTestId('kiosk-items')).toHaveCount(0);
+  await expect(page.getByTestId('window-monster')).toHaveAttribute('data-position', 'centre');
+  const expected = (await page.getByTestId('ticket').getAttribute('data-expected'))?.trim().split(/\s+/) ?? [];
+  expect(expected.length).toBeGreaterThan(0);
+  await expect.poll(async () => page.locator('[data-sill-item]').count(), { timeout: 30_000 }).toBe(expected.length);
+  const sill = await page
+    .locator('[data-sill-item]')
+    .evaluateAll((els) => els.map((el) => el.getAttribute('data-sill-item')));
+  expect(sill).toEqual(expected);
+  await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'cooking', { timeout: 30_000 });
+  await expect(page.getByTestId('window-monster')).toHaveAttribute('data-position', 'side');
+  for (const item of expected) {
+    await page.locator(`[data-tray-item="${item}"]`).first().click();
+  }
+  await page.getByTestId('bell').click();
+  await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'serveResult', { timeout: 30_000 });
+  await expect(page.getByTestId('nom-nom')).toBeVisible();
+});
+
 test('no thumbs-up blocks the tray and confetti clears after a correct serve', async ({ page }) => {
   await page.goto(TEST_URL);
   await page.getByTestId('go-button').click();

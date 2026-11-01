@@ -10,7 +10,9 @@ import {
 } from '../content/content';
 import { makeRng, shuffled, type Rng } from './rng';
 
-export type BrokenChannel = 'speaker' | 'monitor' | 'kiosk';
+/** After the one-screen merge only the speaker can break: the kiosk
+ * screen (snow) is gone and the printer/monitor gag was retired Oct 30. */
+export type BrokenChannel = 'speaker';
 
 export interface Order {
   dish: DishId;
@@ -137,8 +139,8 @@ export function generateOrder(
   }
   const tray = shuffled(rng, [...traySet]);
 
-  const broken: BrokenChannel | null =
-    level >= 5 ? (['speaker', 'monitor', 'kiosk'] as BrokenChannel[])[Math.floor(rngFloat(rng) * 3)] : null;
+  // From Level 5 the speaker is the one broken channel on every order.
+  const broken: BrokenChannel | null = level >= 5 ? 'speaker' : null;
 
   return { dish, monster, expected, ticket, prebuilt, tray, broken };
 }

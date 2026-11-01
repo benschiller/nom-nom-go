@@ -125,8 +125,11 @@ export function patienceForOrder(
   return Math.round(base * (assist ? 1.3 : 1) * (broken ? 1.15 : 1));
 }
 
-export const kioskMsForDims = (dims: Dimensions): number =>
+export const orderingMsForDims = (dims: Dimensions): number =>
   Math.min(1050, Math.max(480, Math.round(1050 * Math.pow(0.93, dims.encode))));
+
+/** Deprecated alias of orderingMsForDims. */
+export const kioskMsForDims = orderingMsForDims;
 
 export function hintDelayMs(dims: Dimensions, level: number, assist: boolean): number {
   if (assist) return 2000;

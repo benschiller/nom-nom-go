@@ -8,7 +8,7 @@ I live in the UAE. My son is seven and lives in the USA. We have been apart for 
 
 ## How it plays
 
-Silly monsters pull up to a food truck and order burgers, pizzas, and sundaes. My son watches the order at the kiosk and hears the Head Chef call it out. The Head Chef is my voice. Then he builds the dish by tapping ingredients in the right order before the monster runs out of patience. If he gets stuck, he taps the Head Chef button and hears the call-out again while each ingredient lights up in order.
+Silly monsters order burgers, pizzas, and sundaes right at the kitchen window. The monster babbles its order one item at a time, the Head Chef repeats each item in my voice, the ingredient lights up in the bar, and a picture of it joins the row on the window sill. A Go! wipe sweeps across, the monster steps aside to wait, and my son builds the dish by tapping ingredients in the right order before the monster runs out of patience. A correct dish gets a gobble, a dance, and a happy "Nom Nom". If he gets stuck, the only help is the Head Chef button: he hears the call-out again while each ingredient lights up in order.
 
 There are six levels. The last is a Rush hour boss. When it ends, the kitchen closes for the night, and that is the end of the session. The next time he powers the game on, the kitchen opens fresh for the next customers.
 

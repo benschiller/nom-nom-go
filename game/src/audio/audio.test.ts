@@ -19,7 +19,7 @@ describe('call-out grammar', () => {
     ]);
   });
 
-  it('speaks each kiosk item only when its run first appears', () => {
+  it('speaks each window item only when its run first appears', () => {
     const ticket = ['cheese', 'pickles', 'pickles'];
     expect(itemClipIds(ticket, 0)).toEqual(['phrase.order_up', 'ing.cheese']);
     expect(itemClipIds(ticket, 1)).toEqual(['phrase.and', 'amount.double', 'ing.pickles']);

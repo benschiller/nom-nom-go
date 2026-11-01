@@ -59,8 +59,6 @@ export interface RunResult {
   completed: boolean;
 }
 
-const CALLOUT_BASE_MS = 600;
-const CALLOUT_PER_ITEM_MS = 900;
 const LEVEL_RESULT_PAUSE_MS = 4000;
 
 /** Drive the real reducer with a persona bot and estimate wall-clock time. */
@@ -86,12 +84,8 @@ export function simulateRun(persona: Persona, seed: number): RunResult {
   while (!s.bossBeaten && guard++ < 4000) {
     if (s.phase === 'levelIntro') {
       tick(1600);
-    } else if (s.phase === 'kiosk' || s.phase === 'printing') {
+    } else if (s.phase === 'ordering' || s.phase === 'goWipe') {
       tick(200);
-    } else if (s.phase === 'callout') {
-      const items = s.orders[s.orderIndex]?.ticket.length ?? 0;
-      add(CALLOUT_BASE_MS + items * CALLOUT_PER_ITEM_MS);
-      s = step(s, { type: 'calloutFinished' });
     } else if (s.phase === 'cooking') {
       const order = s.orders[s.orderIndex];
       if (!order) break;

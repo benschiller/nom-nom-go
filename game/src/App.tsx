@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { DISH_EMOJI, MONSTERS } from './content/content';
-import { bankedTarget, hintDelayMs } from './core/difficulty';
+import { MONSTERS } from './content/content';
+import { bankedTarget } from './core/difficulty';
 import { currentOrder } from './core/game';
 import { defaultSave } from './core/save';
 import {
+  playGibberish,
   playKioskItem,
   playSfx,
   setSoundOn,
@@ -61,7 +62,8 @@ export default function App(): React.JSX.Element {
   return <GameShell />;
 }
 
-const TOUR_STEPS = 6;
+/** Distinct pre-Level-1 intro: watch, listen, HELP, build, bell. */
+const TOUR_STEPS = 5;
 
 function TourDemo({ step }: { step: number }): React.JSX.Element {
   const iconRow = (ids: string[], size = 120) => (
@@ -94,47 +96,30 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
   );
   switch (step) {
     case 0:
+      // Watch: the monster orders at the kitchen window, sill row grows.
       return panel(
-        '#ff9f45',
-        <>
+        '#7fd4c9',
+        <div data-testid="tour-watch">
           <span style={{ fontSize: 130 }}>👾</span>
           <span style={{ fontSize: 90 }}>👀</span>
           {iconRow(['cheese', 'lettuce'], 110)}
-        </>,
+        </div>,
       );
     case 1:
-      return panel(
-        '#203040',
-        <>
-          <span style={{ fontSize: 72 }}>🔊</span>
-          {iconRow(['cheese', 'lettuce'], 110)}
-        </>,
-      );
-    case 2:
-      return panel(
-        '#d9f2d0',
-        <>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <div style={{ display: 'flex', gap: 14 }}>
-              <ItemIcon id="cheese" size={120} glow />
-              <ItemIcon id="lettuce" size={120} />
-              <ItemIcon id="pickles" size={120} />
-            </div>
-            <span className="bob" style={{ fontSize: 64 }}>
-              👆
-            </span>
-          </div>
-          <span style={{ fontSize: 44 }}>➜</span>
-          <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'center' }}>
-            <span style={{ fontSize: 52 }}>🍞</span>
-            <ItemIcon id="cheese" size={92} />
-          </div>
-        </>,
-      );
-    case 3:
+      // Listen: the Head Chef repeats the order in Dad's voice.
       return panel(
         '#ffe9b8',
-        <>
+        <div data-testid="tour-listen">
+          <span style={{ fontSize: 110 }}>👨‍🍳</span>
+          <span style={{ fontSize: 72 }}>🔊</span>
+          {iconRow(['cheese', 'lettuce'], 110)}
+        </div>,
+      );
+    case 2:
+      // HELP: tap the Head Chef; the bar highlights in order.
+      return panel(
+        '#fff8ec',
+        <div data-testid="tour-help">
           <span
             style={{
               width: 150,
@@ -157,24 +142,39 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
             <ItemIcon id="pickles" size={120} />
           </div>
           <span style={{ fontSize: 54 }}>🔊</span>
-        </>,
+        </div>,
       );
-    case 4:
+    case 3:
+      // Build: tap the ingredient bar in order.
       return panel(
-        '#fff8ec',
-        <>
-          <span style={{ ...BTN, width: 150, height: 150, fontSize: 68 }}>↩️</span>
-          <span style={{ ...BTN, width: 150, height: 150, fontSize: 68 }}>🗑️</span>
-        </>,
+        '#d9f2d0',
+        <div data-testid="tour-build">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', gap: 14 }}>
+              <ItemIcon id="cheese" size={120} glow />
+              <ItemIcon id="lettuce" size={120} />
+              <ItemIcon id="pickles" size={120} />
+            </div>
+            <span className="bob" style={{ fontSize: 64 }}>
+              👆
+            </span>
+          </div>
+          <span style={{ fontSize: 44 }}>➜</span>
+          <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'center' }}>
+            <span style={{ fontSize: 52 }}>🍞</span>
+            <ItemIcon id="cheese" size={92} />
+          </div>
+        </div>,
       );
     default:
+      // Bell: serve; the monster says Nom Nom and a star lights.
       return panel(
         '#bfe8ff',
-        <>
+        <div data-testid="tour-bell">
           <span style={{ fontSize: 110 }}>🔔</span>
           <span style={{ fontSize: 90 }}>👾😋</span>
-          <span style={{ fontSize: 54 }}>😊 😐 😤</span>
-        </>,
+          <span style={{ fontSize: 54 }}>⭐</span>
+        </div>,
       );
   }
 }
@@ -194,6 +194,7 @@ function Tour({
   return (
     <div
       data-testid="tour"
+      data-tutorial="true"
       data-step={step}
       style={{
         position: 'absolute',
@@ -380,7 +381,6 @@ function GameShell(): React.JSX.Element {
   const transportRef = useRef<Transport | null>(null);
   const seqRef = useRef(0);
   const lastDadBeat = useRef(0);
-  const calloutKey = useRef('');
   const voiceChain = useRef<Promise<void>>(Promise.resolve());
   const spoken = useRef<{ key: string; count: number }>({ key: '', count: 0 });
 
@@ -440,47 +440,37 @@ function GameShell(): React.JSX.Element {
 
   // Phase sound effects.
   const order = currentOrder(state);
-  // Dad speaks each item at the kiosk as it pops up: seeing and hearing
-  // happen together. Clips queue on one chain so they never overlap.
-  // A broken speaker turns each item into a burst of static instead.
+  // At the kitchen window the monster orders in gibberish, one item at a
+  // time, and the Head Chef repeats each item in Dad's voice as it joins
+  // the sill row. Clips queue on one chain so they never overlap. A
+  // broken speaker turns the Head Chef repeat into a burst of static;
+  // the monster gibberish and the highlights still run.
   useEffect(() => {
-    if (state.phase !== 'kiosk' || !order) return;
+    if (state.phase !== 'ordering' || !order) return;
     const key = `${state.level}-${state.orderIndex}-${state.tryCount}-${state.attemptsThisOrder}`;
     if (spoken.current.key !== key) {
       spoken.current = { key, count: 0 };
       voiceChain.current = Promise.resolve();
     }
     playSfx('pop');
-    while (spoken.current.count < state.kioskShown) {
+    while (spoken.current.count < state.orderingShown) {
       const index = spoken.current.count;
       spoken.current.count++;
       if (isTestMode() || !store.getSave().soundOn) continue;
-      if (order.broken === 'speaker') {
-        voiceChain.current = voiceChain.current.then(() => playSfx('static'));
-      } else {
-        const ticket = order.ticket;
-        voiceChain.current = voiceChain.current.then(() => playKioskItem(ticket, index));
-      }
+      const monster = MONSTERS.find((m) => m.id === order.monster);
+      const ticket = order.ticket;
+      voiceChain.current = voiceChain.current.then(async () => {
+        playGibberish(monster?.pitch ?? 1);
+        await new Promise((r) => setTimeout(r, 160));
+        if (order.broken === 'speaker') playSfx('static');
+        else await playKioskItem(ticket, index);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.kioskShown, state.phase]);
-
-  // Cooking starts once the last kiosk item has been spoken (or static).
-  useEffect(() => {
-    if (state.phase !== 'callout' || !order) return;
-    const key = `${state.level}-${state.orderIndex}-${state.tryCount}-${state.attemptsThisOrder}`;
-    if (calloutKey.current === key) return;
-    calloutKey.current = key;
-    if (isTestMode() || !store.getSave().soundOn) {
-      dispatch({ type: 'calloutFinished' });
-      return;
-    }
-    void voiceChain.current.then(() => dispatch({ type: 'calloutFinished' }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.phase, state.orderIndex]);
+  }, [state.orderingShown, state.phase]);
 
   useEffect(() => {
-    if (state.phase === 'serveResult' && state.result?.kind === 'correct') playSfx('gobble');
+    if (state.phase === 'serveResult' && state.result?.kind === 'correct') playSfx('nom');
     if (state.phase === 'serveResult' && state.result?.kind === 'wrong') playSfx('oops');
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -622,23 +612,47 @@ function GameShell(): React.JSX.Element {
             }}
           >
             <Emoji size={180}>👨‍🍳👋</Emoji>
-            <div data-testid="level-pips" style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+            <div style={{ fontSize: 72, marginTop: 8 }}>🚚</div>
+            <div
+              data-testid="level-pips"
+              style={{
+                display: 'flex',
+                gap: 10,
+                marginTop: 6,
+                background: '#fff3e2',
+                border: '5px solid rgba(90,50,20,.35)',
+                borderRadius: 20,
+                padding: '10px 22px',
+              }}
+            >
               {Array.from({ length: state.level }, (_, i) => (
                 <span key={i} style={{ fontSize: 52 }}>
                   ⭐
                 </span>
               ))}
             </div>
+            <motion.div
+              data-testid="level-wipe"
+              aria-hidden
+              initial={{ x: '-110%' }}
+              animate={{ x: '110%' }}
+              transition={{ duration: 1.4, ease: 'easeInOut' }}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: '#f2b035',
+                opacity: 0.35,
+                pointerEvents: 'none',
+              }}
+            />
           </div>
         )}
 
-        {(state.phase === 'kiosk' || state.phase === 'printing' || state.phase === 'callout') && order && (
-          <Kiosk state={state} />
-        )}
-
-        {(state.phase === 'cooking' || state.phase === 'serveResult') && order && (
-          <Kitchen state={state} dispatch={dispatch} testAttrs={testAttrs} />
-        )}
+        {(state.phase === 'ordering' ||
+          state.phase === 'goWipe' ||
+          state.phase === 'cooking' ||
+          state.phase === 'serveResult') &&
+          order && <Kitchen state={state} dispatch={dispatch} testAttrs={testAttrs} />}
 
         {state.phase === 'levelResult' && (
           <div
@@ -912,56 +926,6 @@ function GameShell(): React.JSX.Element {
   );
 }
 
-function Kiosk({ state }: { state: ReturnType<typeof useGame>['state'] }): React.JSX.Element {
-  const order = currentOrder(state);
-  if (!order) return <></>;
-  const monster = MONSTERS.find((m) => m.id === order.monster);
-  const snow = order.broken === 'kiosk';
-  return (
-    <div style={{ position: 'absolute', inset: 0 }}>
-      <div style={{ position: 'absolute', left: 60, top: 240, fontSize: 190 }} className="bob">
-        {monster?.emoji}
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          left: 430,
-          top: 170,
-          width: 620,
-          height: 480,
-          background: '#ff9f45',
-          borderRadius: 36,
-          border: '6px solid rgba(90,50,20,.4)',
-          padding: 24,
-        }}
-      >
-        <div style={{ fontSize: 92, textAlign: 'center' }}>🚚 {DISH_EMOJI[order.dish]}</div>
-        <div
-          data-testid="kiosk-items"
-          style={{
-            display: 'flex',
-            gap: 14,
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            marginTop: 22,
-            minHeight: 150,
-          }}
-        >
-          {snow ? (
-            <span style={{ fontSize: 110 }}>📺❄️</span>
-          ) : (
-            order.ticket.slice(0, state.kioskShown).map((id, i) => (
-              <motion.div key={`${id}-${i}`} initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
-                <ItemIcon id={id} size={130} />
-              </motion.div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Kitchen({
   state,
   dispatch,
@@ -995,16 +959,17 @@ function Kitchen({
         : fraction > 0.33
           ? '😐👆'
           : '😤💨';
-  const hintId =
-    state.phase === 'cooking' && state.idleMs >= hintDelayMs(state.dimensions, state.level, state.assist)
-      ? order.ticket[state.built.length - order.prebuilt.length]
-      : undefined;
+  const ordering = state.phase === 'ordering';
+  const wiping = state.phase === 'goWipe';
+  // The item the Head Chef is naming right now at the window.
+  const orderingId = ordering && state.orderingShown > 0 ? order.ticket[state.orderingShown - 1] : undefined;
   // One merged inventory, generated per order at exactly level + 3 items.
   const mergedItems = order.tray;
   const highlight = state.result?.highlight;
-  // No ticket on this screen. Wrong-serve feedback points at the tray item.
-  const wrongTrayId =
-    state.phase === 'serveResult' && highlight?.side === 'expected' ? order.expected[highlight.index] : undefined;
+  // Wrong serve: a wrong built item highlights on the dish; a missing
+  // item highlights on the window sill row (ticket index into the sill).
+  const wrongSillIndex =
+    state.phase === 'serveResult' && highlight?.side === 'expected' ? highlight.index - order.prebuilt.length : -1;
   // HELP: Head Chef replays the call-out. Each tray item grows in ticket
   // order, in sync with its clip (static bursts when the speaker is broken).
   // Budget and the patience pause live in the core (peek / helpPlaying).
@@ -1038,9 +1003,9 @@ function Kitchen({
 
   return (
     <div style={{ position: 'absolute', inset: 0, background: '#2a9d8f' }}>
-      {/* Kitchen master layout (locked still): tall window, dominant dish,
-          horizontal tray, controls below it. No order bar on this screen.
-          Test hook only: the expected order for automated play. */}
+      {/* One-screen kitchen master: the monster orders at this serving
+          window, then waits at its side while the child cooks. Test hook
+          only: the expected order for automated play. */}
       <div data-testid="ticket" {...testAttrs} style={{ display: 'none' }} aria-hidden />
       <div
         aria-hidden
@@ -1061,20 +1026,81 @@ function Kitchen({
         }}
       >
         <div
-          style={{
-            position: 'absolute',
-            right: 60,
-            bottom: -30,
-            fontSize: 300,
-            lineHeight: 1,
-            display: 'flex',
-            alignItems: 'flex-end',
-          }}
+          data-testid="window-monster"
+          data-position={ordering ? 'centre' : 'side'}
+          style={
+            ordering
+              ? {
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  bottom: -20,
+                  fontSize: 340,
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                }
+              : {
+                  position: 'absolute',
+                  right: 60,
+                  bottom: -30,
+                  fontSize: 300,
+                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                }
+          }
         >
-          <span>{monster?.emoji}</span>
+          <span className={state.phase === 'serveResult' && state.result?.kind === 'correct' ? 'bob' : undefined}>
+            {monster?.emoji}
+          </span>
           <span style={{ fontSize: 110, marginLeft: -70, marginBottom: 130 }}>{emotion}</span>
         </div>
+        {state.phase === 'serveResult' && state.result?.kind === 'correct' && (
+          <div
+            data-testid="nom-nom"
+            className="bob"
+            style={{
+              position: 'absolute',
+              right: 300,
+              top: 36,
+              background: '#fff',
+              border: '4px solid rgba(90,50,20,.4)',
+              borderRadius: 24,
+              padding: '10px 22px',
+              fontSize: 52,
+              fontWeight: 900,
+              color: '#d35400',
+            }}
+          >
+            Nom Nom!
+          </div>
+        )}
       </div>
+      {wiping && (
+        <motion.div
+          data-testid="go-wipe"
+          aria-hidden
+          initial={{ x: '-105%' }}
+          animate={{ x: '105%' }}
+          transition={{ duration: 0.65, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: '#ffd93d',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 190,
+            fontWeight: 900,
+            color: '#d35400',
+            zIndex: 20,
+            pointerEvents: 'none',
+          }}
+        >
+          Go! ▶
+        </motion.div>
+      )}
       {/* Build area */}
       <div
         data-testid="build-area"
@@ -1091,6 +1117,7 @@ function Kitchen({
           alignItems: 'flex-end',
           justifyContent: 'center',
           paddingBottom: 18,
+          opacity: ordering ? 0.25 : 1,
         }}
       >
         {state.phase === 'serveResult' && state.result?.kind === 'wrong' && (
@@ -1140,7 +1167,45 @@ function Kitchen({
           )}
         </div>
       </div>
-      {/* Horizontal ingredient bar (master layout). HELP and wrong-serve
+      {/* Window sill picture row: sits on the sill above the build area
+          so it stays visible while the dish is built in front of it. */}
+      <div
+        data-testid="sill-row"
+        data-ordering-count={ordering ? state.orderingShown : order.ticket.length}
+        style={{
+          position: 'absolute',
+          left: 42,
+          top: 428,
+          display: 'flex',
+          gap: 8,
+          alignItems: 'center',
+          minHeight: 84,
+          background: 'rgba(255,233,184,.95)',
+          border: '4px solid rgba(90,50,20,.3)',
+          borderRadius: 16,
+          padding: '4px 10px',
+          zIndex: 5,
+        }}
+      >
+        {(ordering ? order.ticket.slice(0, state.orderingShown) : order.ticket).map((id, i) => (
+          <motion.span
+            key={`${id}-${i}`}
+            data-sill-item={id}
+            data-sill-index={i}
+            data-wrong={i === wrongSillIndex ? 'true' : undefined}
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={{ scale: i === wrongSillIndex ? 1.25 : 1, opacity: 1 }}
+            style={{
+              display: 'block',
+              outline: i === wrongSillIndex ? '7px solid #ff595e' : undefined,
+              borderRadius: 60,
+            }}
+          >
+            <ItemIcon id={id} size={72} />
+          </motion.span>
+        ))}
+      </div>
+      {/* Horizontal ingredient bar (master layout). HELP and ordering
           feedback grow/highlight items here. */}
       <div
         data-testid="tray"
@@ -1161,29 +1226,33 @@ function Kitchen({
         }}
       >
         {mergedItems.map((id) => {
-          const active = id === helpId || id === wrongTrayId;
+          const isHelp = id === helpId;
+          const isOrdering = ordering && id === orderingId;
+          const active = isHelp || isOrdering;
           return (
             <button
               key={id}
               data-tray-item={id}
               data-base-item={id}
-              data-help-active={id === helpId ? 'true' : undefined}
+              data-help-active={isHelp ? 'true' : undefined}
+              data-ordering-active={isOrdering ? 'true' : undefined}
+              disabled={state.phase !== 'cooking'}
               style={{
                 background: 'none',
                 border: 'none',
                 padding: 0,
-                transform: id === helpId ? 'scale(1.35)' : undefined,
+                transform: active ? 'scale(1.35)' : undefined,
                 outline: active ? '7px solid #ffd93d' : undefined,
                 borderRadius: 60,
                 transition: 'transform 160ms ease',
-                zIndex: id === helpId ? 3 : undefined,
+                zIndex: active ? 3 : undefined,
               }}
               onClick={() => {
                 playSfx('tap');
                 dispatch({ type: 'addItem', item: id });
               }}
             >
-              <ItemIcon id={id} size={104} glow={hintId === id && helpId === undefined} />
+              <ItemIcon id={id} size={104} />
             </button>
           );
         })}
@@ -1246,6 +1315,7 @@ function Kitchen({
         <button
           data-testid="undo"
           aria-label="Undo"
+          disabled={state.phase !== 'cooking'}
           style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
           onClick={() => dispatch({ type: 'undo' })}
         >
@@ -1254,6 +1324,7 @@ function Kitchen({
         <button
           data-testid="bell"
           aria-label="Serve"
+          disabled={state.phase !== 'cooking'}
           style={{
             ...BTN,
             width: 150,
@@ -1274,6 +1345,7 @@ function Kitchen({
         <button
           data-testid="trash"
           aria-label="Clear dish"
+          disabled={state.phase !== 'cooking'}
           style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
           onClick={() => dispatch({ type: 'trash' })}
         >
@@ -1284,7 +1356,7 @@ function Kitchen({
         data-testid="try-stars"
         style={{
           position: 'absolute',
-          left: 1304,
+          left: 1064,
           top: 800,
           width: 272,
           height: 80,
