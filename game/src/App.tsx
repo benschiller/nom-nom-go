@@ -15,6 +15,7 @@ import {
 } from './audio/audio';
 import { isTestMode, testSpeed, useGame } from './ui/store';
 import { Emoji, ItemIcon } from './ui/ItemIcon';
+import { Art, monsterPoseFor, preloadArt } from './ui/Art';
 import { ParentArea } from './ui/ParentArea';
 import { Confetti } from './ui/Confetti';
 import { DadRoute } from './net/DadViews';
@@ -99,9 +100,8 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
       // Watch: the monster orders at the kitchen window, sill row grows.
       return panel(
         '#7fd4c9',
-        <div data-testid="tour-watch">
-          <span style={{ fontSize: 130 }}>👾</span>
-          <span style={{ fontSize: 90 }}>👀</span>
+        <div data-testid="tour-watch" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <Art id="monster.gobbler.tap" height={150} fallback={<span style={{ fontSize: 130 }}>👾</span>} />
           {iconRow(['cheese', 'lettuce'], 110)}
         </div>,
       );
@@ -109,9 +109,9 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
       // Listen: the Head Chef repeats the order in Dad's voice.
       return panel(
         '#ffe9b8',
-        <div data-testid="tour-listen">
-          <span style={{ fontSize: 110 }}>👨‍🍳</span>
-          <span style={{ fontSize: 72 }}>🔊</span>
+        <div data-testid="tour-listen" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <Art id="chef.hatch" height={150} fallback={<span style={{ fontSize: 110 }}>👨‍🍳</span>} />
+          <Art id="prop.speakerOn" size={72} fallback={<span style={{ fontSize: 72 }}>🔊</span>} />
           {iconRow(['cheese', 'lettuce'], 110)}
         </div>,
       );
@@ -120,28 +120,14 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
       return panel(
         '#fff8ec',
         <div data-testid="tour-help">
-          <span
-            style={{
-              width: 150,
-              height: 150,
-              borderRadius: '50%',
-              background: '#fff',
-              border: '5px solid rgba(90,50,20,.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 84,
-            }}
-          >
-            👨‍🍳
-          </span>
+          <Art id="chef.helpFace" size={150} fallback={<span style={{ fontSize: 84 }}>👨‍🍳</span>} />
           <span style={{ fontSize: 44 }}>➜</span>
           <div style={{ display: 'flex', gap: 14 }}>
             <ItemIcon id="cheese" size={120} glow />
             <ItemIcon id="lettuce" size={120} />
             <ItemIcon id="pickles" size={120} />
           </div>
-          <span style={{ fontSize: 54 }}>🔊</span>
+          <Art id="prop.speakerOn" size={54} fallback={<span style={{ fontSize: 54 }}>🔊</span>} />
         </div>,
       );
     case 3:
@@ -155,14 +141,14 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
               <ItemIcon id="lettuce" size={120} />
               <ItemIcon id="pickles" size={120} />
             </div>
-            <span className="bob" style={{ fontSize: 64 }}>
-              👆
+            <span className="bob">
+              <Art id="ui.glove" size={64} fallback={<span style={{ fontSize: 64 }}>👆</span>} />
             </span>
           </div>
           <span style={{ fontSize: 44 }}>➜</span>
           <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'center' }}>
-            <span style={{ fontSize: 52 }}>🍞</span>
-            <ItemIcon id="cheese" size={92} />
+            <Art id="dish.bunBottom" width={92} height={52} fallback={<span style={{ fontSize: 52 }}>🍞</span>} />
+            <ItemIcon id="cheese" size={92} variant="dish" />
           </div>
         </div>,
       );
@@ -170,10 +156,10 @@ function TourDemo({ step }: { step: number }): React.JSX.Element {
       // Bell: serve; the monster says Nom Nom and a star lights.
       return panel(
         '#bfe8ff',
-        <div data-testid="tour-bell">
-          <span style={{ fontSize: 110 }}>🔔</span>
-          <span style={{ fontSize: 90 }}>👾😋</span>
-          <span style={{ fontSize: 54 }}>⭐</span>
+        <div data-testid="tour-bell" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <Art id="prop.bell" size={110} fallback={<span style={{ fontSize: 110 }}>🔔</span>} />
+          <Art id="monster.gobbler.dance" height={130} fallback={<span style={{ fontSize: 90 }}>👾</span>} />
+          <Art id="ui.star.lit" size={54} fallback={<span style={{ fontSize: 54 }}>⭐</span>} />
         </div>,
       );
   }
@@ -228,19 +214,25 @@ function Tour({
       </button>
       <div data-testid="tour-pips" style={{ display: 'flex', gap: 12 }} aria-hidden>
         {Array.from({ length: TOUR_STEPS }, (_, i) => (
-          <span
+          <Art
             key={i}
-            style={{
-              width: 30,
-              height: 30,
-              borderRadius: '50%',
-              background: i <= step ? '#d35400' : 'rgba(90,50,20,.2)',
-              display: 'block',
-            }}
+            id={i <= step ? 'ui.pip.lit' : 'ui.pip.unlit'}
+            size={30}
+            fallback={
+              <span
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: '50%',
+                  background: i <= step ? '#d35400' : 'rgba(90,50,20,.2)',
+                  display: 'block',
+                }}
+              />
+            }
           />
         ))}
       </div>
-      <div style={{ fontSize: 110, lineHeight: 1 }}>👨‍🍳👉</div>
+      <Art id="chef.point" height={110} fallback={<span style={{ fontSize: 110, lineHeight: 1 }}>👨‍🍳👉</span>} />
       <TourDemo step={step} />
       <div style={{ display: 'flex', gap: 18, alignItems: 'center', minHeight: 150 }}>
         {step > 0 ? (
@@ -280,7 +272,7 @@ function HoldButton({
 }: {
   testId: string;
   label: string;
-  icon: string;
+  icon: React.ReactNode;
   onComplete: () => void;
   style: React.CSSProperties;
 }): React.JSX.Element {
@@ -438,6 +430,11 @@ function GameShell(): React.JSX.Element {
     setSoundOn(store.getSave().soundOn);
   }, [store]);
 
+  // Preload the next screens' plates so transitions do not flash placeholders.
+  useEffect(() => {
+    preloadArt(['env.kitchen', 'env.levelTruck', 'env.night.closed', 'monster.og.idle']);
+  }, []);
+
   // Phase sound effects.
   const order = currentOrder(state);
   // At the kitchen window the monster orders in gibberish, one item at a
@@ -572,16 +569,38 @@ function GameShell(): React.JSX.Element {
               gap: 18,
             }}
           >
-            <div style={{ fontSize: 110, fontWeight: 900, color: '#d35400', textShadow: '0 4px 0 #fff' }}>
+            <Art
+              id="env.title"
+              width={1600}
+              height={900}
+              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+            />
+            <div
+              style={{
+                fontSize: 110,
+                fontWeight: 900,
+                color: '#d35400',
+                textShadow: '0 4px 0 #fff',
+                position: 'relative',
+              }}
+            >
               Nom Nom Go!
             </div>
-            <div className="bob" style={{ fontSize: 150 }}>
-              🚚 👾 🍔
+            <div className="bob" style={{ position: 'relative' }}>
+              <Art id="monster.og.idle" height={170} fallback={<span style={{ fontSize: 150 }}>👾</span>} />
             </div>
             <motion.button
               data-testid="go-button"
               whileTap={{ scale: 0.94 }}
-              style={{ ...BTN, width: 320, height: 170, fontSize: 64, fontWeight: 900, background: '#6bcb77' }}
+              style={{
+                ...BTN,
+                width: 320,
+                height: 170,
+                fontSize: 64,
+                fontWeight: 900,
+                background: '#6bcb77',
+                position: 'relative',
+              }}
               onClick={() => {
                 unlockAudio();
                 if (!isTestMode() && !store.getSave().tutorialsSeen.includes('tour')) setTourStep(0);
@@ -593,7 +612,7 @@ function GameShell(): React.JSX.Element {
             <HoldButton
               testId="parent-gate"
               label="Parent area — press and hold"
-              icon="👨‍🍳"
+              icon={<Art id="chef.helpFace" size={84} fallback={<span>👨‍🍳</span>} />}
               onComplete={() => setParentOpen(true)}
               style={{ position: 'absolute', left: 24, bottom: 24, background: '#fff3e2' }}
             />
@@ -611,8 +630,18 @@ function GameShell(): React.JSX.Element {
               justifyContent: 'center',
             }}
           >
-            <Emoji size={180}>👨‍🍳👋</Emoji>
-            <div style={{ fontSize: 72, marginTop: 8 }}>🚚</div>
+            <Art
+              id="env.levelTruck"
+              width={1600}
+              height={900}
+              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+            />
+            <Art
+              id="chef.hello"
+              height={220}
+              style={{ position: 'relative' }}
+              fallback={<Emoji size={180}>👨‍🍳👋</Emoji>}
+            />
             <div
               data-testid="level-pips"
               style={{
@@ -623,12 +652,11 @@ function GameShell(): React.JSX.Element {
                 border: '5px solid rgba(90,50,20,.35)',
                 borderRadius: 20,
                 padding: '10px 22px',
+                position: 'relative',
               }}
             >
               {Array.from({ length: state.level }, (_, i) => (
-                <span key={i} style={{ fontSize: 52 }}>
-                  ⭐
-                </span>
+                <Art key={i} id="ui.pip.lit" size={52} fallback={<span style={{ fontSize: 52 }}>⭐</span>} />
               ))}
             </div>
             <motion.div
@@ -640,11 +668,13 @@ function GameShell(): React.JSX.Element {
               style={{
                 position: 'absolute',
                 inset: 0,
-                background: '#f2b035',
                 opacity: 0.35,
                 pointerEvents: 'none',
+                overflow: 'hidden',
               }}
-            />
+            >
+              <Art id="env.goWipe" width={1600} height={900} style={{ objectFit: 'cover' }} />
+            </motion.div>
           </div>
         )}
 
@@ -666,12 +696,19 @@ function GameShell(): React.JSX.Element {
               gap: 16,
             }}
           >
-            <Emoji size={160}>{state.starsTry >= bankedTarget(state.level) ? '👨‍🍳🎉' : '👨‍🍳💪'}</Emoji>
+            <Art
+              id="chef.cheer"
+              height={200}
+              fallback={<Emoji size={160}>{state.starsTry >= bankedTarget(state.level) ? '👨‍🍳🎉' : '👨‍🍳💪'}</Emoji>}
+            />
             <div data-testid="result-stars" style={{ display: 'flex', gap: 12 }}>
               {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
-                <span key={i} style={{ fontSize: 84, opacity: i < state.starsTry ? 1 : 0.25 }}>
-                  ⭐
-                </span>
+                <Art
+                  key={i}
+                  id={i < state.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
+                  size={84}
+                  fallback={<span style={{ fontSize: 84, opacity: i < state.starsTry ? 1 : 0.25 }}>⭐</span>}
+                />
               ))}
             </div>
             <button
@@ -682,7 +719,7 @@ function GameShell(): React.JSX.Element {
                 dispatch({ type: 'continue' });
               }}
             >
-              ➡️
+              <Art id="prop.play" size={72} fallback={<span>➡️</span>} />
             </button>
           </div>
         )}
@@ -698,8 +735,14 @@ function GameShell(): React.JSX.Element {
               justifyContent: 'center',
             }}
           >
-            <div className="bob" style={{ fontSize: 170 }}>
-              🚚🌙 👨‍🍳🥱👋
+            <Art
+              id="env.night.goodbye"
+              width={1600}
+              height={900}
+              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+            />
+            <div className="bob" style={{ position: 'relative' }}>
+              <Art id="chef.goodbye" height={200} fallback={<span style={{ fontSize: 170 }}>👨‍🍳👋</span>} />
             </div>
           </div>
         )}
@@ -717,14 +760,19 @@ function GameShell(): React.JSX.Element {
               gap: 26,
             }}
           >
-            <div style={{ fontSize: 150 }}>🚚🌙💤</div>
+            <Art
+              id="env.night.closed"
+              width={1600}
+              height={900}
+              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+            />
             <button
               data-testid="power-off"
               aria-label="Power off"
-              style={{ ...BTN, width: 170, height: 170, borderRadius: '50%', fontSize: 76 }}
+              style={{ ...BTN, width: 170, height: 170, borderRadius: '50%', fontSize: 76, position: 'relative' }}
               onClick={() => dispatch({ type: 'powerOff' })}
             >
-              ⏻
+              <Art id="ui.powerOff" size={76} fallback={<span>⏻</span>} />
             </button>
           </div>
         )}
@@ -758,7 +806,7 @@ function GameShell(): React.JSX.Element {
                 dispatch({ type: 'powerOn' });
               }}
             >
-              ⏻
+              <Art id="ui.powerOn" size={88} fallback={<span>⏻</span>} />
             </button>
           </div>
         )}
@@ -783,7 +831,7 @@ function GameShell(): React.JSX.Element {
                 dispatch({ type: 'resume' });
               }}
             >
-              ▶️
+              <Art id="prop.play" size={84} fallback={<span>▶️</span>} />
             </button>
           </div>
         )}
@@ -804,7 +852,7 @@ function GameShell(): React.JSX.Element {
             }}
             onClick={() => dispatch({ type: 'pause' })}
           >
-            ⏸️
+            <Art id="prop.pause" size={72} fallback={<span>⏸️</span>} />
           </button>
         )}
 
@@ -821,8 +869,9 @@ function GameShell(): React.JSX.Element {
               pointerEvents: 'none',
             }}
           >
-            <span className="bob" style={{ fontSize: 84 }}>
-              👨‍🍳👉 👆
+            <span className="bob" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Art id="chef.point" height={84} fallback={<span style={{ fontSize: 84 }}>👨‍🍳👉</span>} />
+              <Art id="ui.glove" size={64} fallback={<span style={{ fontSize: 64 }}>👆</span>} />
             </span>
           </div>
         )}
@@ -845,7 +894,7 @@ function GameShell(): React.JSX.Element {
               pointerEvents: 'none',
             }}
           >
-            👋
+            <Art id="ui.badgeDad" size={110} fallback={<span>👋</span>} />
           </div>
         )}
         {glove && state.phase === 'cooking' && (
@@ -861,7 +910,7 @@ function GameShell(): React.JSX.Element {
               zIndex: 28,
             }}
           >
-            🧤
+            <Art id="ui.glove" size={92} fallback={<span>🧤</span>} />
           </div>
         )}
         {cheer && (
@@ -869,14 +918,18 @@ function GameShell(): React.JSX.Element {
             data-testid="dad-cheer"
             style={{ position: 'absolute', left: 540, top: 190, fontSize: 96, pointerEvents: 'none', zIndex: 29 }}
           >
-            {cheer === 'heart' ? '❤️' : cheer === 'wow' ? '🤩' : '👍'}
+            <Art
+              id={cheer === 'heart' ? 'cheer.heart' : cheer === 'wow' ? 'cheer.wow' : 'cheer.thumbs'}
+              size={110}
+              fallback={<span>{cheer === 'heart' ? '❤️' : cheer === 'wow' ? '🤩' : '👍'}</span>}
+            />
           </div>
         )}
         {state.phase !== 'title' && state.phase !== 'closed' && state.phase !== 'poweredOff' && (
           <HoldButton
             testId="power-reset"
             label="Power — press and hold to reset completely"
-            icon="⏻"
+            icon={<Art id="ui.powerOn" size={64} fallback={<span>⏻</span>} />}
             onComplete={resetCompletely}
             style={{
               position: 'absolute',
@@ -917,7 +970,7 @@ function GameShell(): React.JSX.Element {
             zIndex: 100,
           }}
         >
-          <div style={{ fontSize: 120 }}>📱↪️</div>
+          <Art id="ui.rotate" size={140} fallback={<span style={{ fontSize: 120 }}>📱↪️</span>} />
         </div>
       )}
 
@@ -947,18 +1000,12 @@ function Kitchen({
   if (!order) return <></>;
   const monster = MONSTERS.find((m) => m.id === order.monster);
   const fraction = state.patienceTotalMs > 0 ? state.patienceLeftMs / state.patienceTotalMs : 1;
-  const emotion =
-    state.phase === 'serveResult'
-      ? state.result?.kind === 'correct'
-        ? '😋💃'
-        : state.result?.kind === 'wrong'
-          ? '😕👋'
-          : '👋'
-      : fraction > 0.66
-        ? '😊'
-        : fraction > 0.33
-          ? '😐👆'
-          : '😤💨';
+  const pose = monsterPoseFor({
+    phase: state.phase,
+    patienceFraction: fraction,
+    resultKind: state.result?.kind ?? null,
+    phaseMs: state.phaseMs,
+  });
   const ordering = state.phase === 'ordering';
   const wiping = state.phase === 'goWipe';
   // The item the Head Chef is naming right now at the window.
@@ -1003,14 +1050,11 @@ function Kitchen({
 
   return (
     <div style={{ position: 'absolute', inset: 0, background: '#2a9d8f' }}>
+      <Art id="env.kitchen" width={1600} height={900} style={{ position: 'absolute', inset: 0, objectFit: 'cover' }} />
       {/* One-screen kitchen master: the monster orders at this serving
           window, then waits at its side while the child cooks. Test hook
           only: the expected order for automated play. */}
       <div data-testid="ticket" {...testAttrs} style={{ display: 'none' }} aria-hidden />
-      <div
-        aria-hidden
-        style={{ position: 'absolute', left: 0, top: 0, width: 784, height: 640, background: '#ff8c69' }}
-      />
       <div
         data-testid="serving-window"
         style={{
@@ -1019,8 +1063,6 @@ function Kitchen({
           top: 24,
           width: 1232,
           height: 496,
-          background: '#7fd4c9',
-          border: '8px solid #f2b035',
           borderRadius: 12,
           overflow: 'hidden',
         }}
@@ -1052,9 +1094,20 @@ function Kitchen({
           }
         >
           <span className={state.phase === 'serveResult' && state.result?.kind === 'correct' ? 'bob' : undefined}>
-            {monster?.emoji}
+            <Art
+              id={`monster.${order.monster}.${pose}`}
+              height={ordering ? 360 : 320}
+              fallback={<span style={{ fontSize: ordering ? 340 : 300 }}>{monster?.emoji}</span>}
+            />
           </span>
-          <span style={{ fontSize: 110, marginLeft: -70, marginBottom: 130 }}>{emotion}</span>
+          {order.broken === 'speaker' && (
+            <Art
+              id="prop.speakerStatic"
+              size={84}
+              style={{ position: 'absolute', left: 12, top: 12 }}
+              fallback={<span style={{ fontSize: 54 }}>🔇</span>}
+            />
+          )}
         </div>
         {state.phase === 'serveResult' && state.result?.kind === 'correct' && (
           <div
@@ -1064,16 +1117,18 @@ function Kitchen({
               position: 'absolute',
               right: 300,
               top: 36,
-              background: '#fff',
-              border: '4px solid rgba(90,50,20,.4)',
-              borderRadius: 24,
-              padding: '10px 22px',
+              width: 300,
+              height: 130,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               fontSize: 52,
               fontWeight: 900,
               color: '#d35400',
             }}
           >
-            Nom Nom!
+            <Art id="ui.nomBubble" width={300} height={130} style={{ position: 'absolute', inset: 0 }} />
+            <span style={{ position: 'relative' }}>Nom Nom!</span>
           </div>
         )}
       </div>
@@ -1087,7 +1142,6 @@ function Kitchen({
           style={{
             position: 'absolute',
             inset: 0,
-            background: '#ffd93d',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1096,9 +1150,16 @@ function Kitchen({
             color: '#d35400',
             zIndex: 20,
             pointerEvents: 'none',
+            overflow: 'hidden',
           }}
         >
-          Go! ▶
+          <Art
+            id="env.goWipe"
+            width={1600}
+            height={900}
+            style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+          />
+          <span style={{ position: 'relative' }}>Go! ▶</span>
         </motion.div>
       )}
       {/* Build area */}
@@ -1125,7 +1186,7 @@ function Kitchen({
             data-testid="wrong-feedback"
             style={{ position: 'absolute', right: 18, top: 12, fontSize: 72, pointerEvents: 'none' }}
           >
-            👨‍🍳👉
+            <Art id="chef.point" height={72} fallback={<span>👨‍🍳👉</span>} />
           </div>
         )}
         <div
@@ -1138,7 +1199,9 @@ function Kitchen({
               state.phase === 'serveResult' && state.result?.kind === 'wrong' ? 'shakeX 0.4s ease-in-out 2' : undefined,
           }}
         >
-          {order.dish === 'burger' && <span style={{ fontSize: 58 }}>🍞</span>}
+          {order.dish === 'burger' && (
+            <Art id="dish.bunBottom" width={130} height={58} fallback={<span style={{ fontSize: 58 }}>🍞</span>} />
+          )}
           {state.built.map((id, i) => (
             <button
               key={i}
@@ -1149,6 +1212,9 @@ function Kitchen({
                 background: 'none',
                 border: 'none',
                 padding: 0,
+                // Dish layers are flat stickers: overlap them so the stack
+                // reads as one dish instead of floating slices.
+                marginTop: i === 0 ? 0 : -34,
                 outline: highlight?.side === 'built' && highlight.index === i ? '8px solid #ff595e' : undefined,
                 borderRadius: 60,
               }}
@@ -1159,11 +1225,11 @@ function Kitchen({
                 }
               }}
             >
-              <ItemIcon id={id} size={92} />
+              <ItemIcon id={id} size={92} variant="dish" />
             </button>
           ))}
           {state.phase === 'serveResult' && state.result?.kind === 'correct' && order.dish === 'burger' && (
-            <span style={{ fontSize: 58 }}>🍞</span>
+            <Art id="dish.bunTop" width={130} height={58} fallback={<span style={{ fontSize: 58 }}>🍞</span>} />
           )}
         </div>
       </div>
@@ -1201,7 +1267,7 @@ function Kitchen({
               borderRadius: 60,
             }}
           >
-            <ItemIcon id={id} size={72} />
+            <ItemIcon id={id} size={72} variant="sill" />
           </motion.span>
         ))}
       </div>
@@ -1278,7 +1344,7 @@ function Kitchen({
         }}
         onClick={() => void onHelp()}
       >
-        👨‍🍳
+        <Art id="chef.helpFace" size={88} fallback={<span>👨‍🍳</span>} />
       </button>
       <div
         data-testid="help-pips"
@@ -1286,16 +1352,22 @@ function Kitchen({
         aria-hidden
       >
         {Array.from({ length: state.peekBudget }, (_, i) => (
-          <span
+          <Art
             key={i}
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: '50%',
-              display: 'block',
-              background: i < state.peekBudget - state.peeksUsed ? '#ffd93d' : 'rgba(90,50,20,.25)',
-              border: '3px solid rgba(90,50,20,.4)',
-            }}
+            id={i < state.peekBudget - state.peeksUsed ? 'ui.pip.lit' : 'ui.pip.unlit'}
+            size={22}
+            fallback={
+              <span
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: '50%',
+                  display: 'block',
+                  background: i < state.peekBudget - state.peeksUsed ? '#ffd93d' : 'rgba(90,50,20,.25)',
+                  border: '3px solid rgba(90,50,20,.4)',
+                }}
+              />
+            }
           />
         ))}
       </div>
@@ -1319,7 +1391,7 @@ function Kitchen({
           style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
           onClick={() => dispatch({ type: 'undo' })}
         >
-          ↩️
+          <Art id="prop.undo" size={64} fallback={<span>↩️</span>} />
         </button>
         <button
           data-testid="bell"
@@ -1340,7 +1412,7 @@ function Kitchen({
             dispatch({ type: 'serve' });
           }}
         >
-          🔔
+          <Art id="prop.bell" size={92} fallback={<span>🔔</span>} />
         </button>
         <button
           data-testid="trash"
@@ -1349,7 +1421,7 @@ function Kitchen({
           style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
           onClick={() => dispatch({ type: 'trash' })}
         >
-          🗑️
+          <Art id="prop.trash" size={64} fallback={<span>🗑️</span>} />
         </button>
       </div>
       <div
@@ -1367,12 +1439,18 @@ function Kitchen({
         }}
       >
         {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
-          <span
+          <Art
             key={i}
-            style={{ fontSize: bankedTarget(state.level) > 3 ? 36 : 52, opacity: i < state.starsTry ? 1 : 0.25 }}
-          >
-            ⭐
-          </span>
+            id={i < state.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
+            size={bankedTarget(state.level) > 3 ? 36 : 52}
+            fallback={
+              <span
+                style={{ fontSize: bankedTarget(state.level) > 3 ? 36 : 52, opacity: i < state.starsTry ? 1 : 0.25 }}
+              >
+                ⭐
+              </span>
+            }
+          />
         ))}
       </div>
       {state.streak && (

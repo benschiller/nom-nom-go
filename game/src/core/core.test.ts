@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { ITEMS, itemsFor } from '../content/content';
+import { ITEMS, MONSTERS, itemsFor } from '../content/content';
 import { classifyMismatch } from './compare';
 import { deserialize, initialState, serialize, step, type GameState } from './game';
 import { toMirror } from './mirror';
@@ -251,10 +251,12 @@ describe('game flow', () => {
   });
 
   it('caps the next order at the failed length after a second miss', () => {
-    const { orders } = generateTryOrders(2, 5);
+    // Seed fixture: needs orders[0] shorter than orders[1]; the exact seed
+    // changed when OG joined MONSTERS and shifted the shuffle stream.
+    const { orders } = generateTryOrders(2, 7);
     expect(orders[0].ticket.length).toBeLessThan(orders[1].ticket.length);
     let s: GameState = {
-      ...initialState({ seed: 5, savedLevel: 2 }),
+      ...initialState({ seed: 7, savedLevel: 2 }),
       level: 2,
       phase: 'cooking' as const,
       orders,
@@ -441,8 +443,19 @@ describe('content coverage', () => {
     const clips = JSON.parse(readFileSync('public/audio/clips.json', 'utf8')) as { clips: { id: string }[] };
     const clipIds = new Set(clips.clips.map((c) => c.id));
     for (const item of ITEMS) expect(clipIds.has(`ing.${item.id}`), item.id).toBe(true);
-    const manifest = JSON.parse(readFileSync('public/art/manifest.json', 'utf8')) as { assets: { id: string }[] };
+    const manifest = JSON.parse(readFileSync('public/art/manifest.json', 'utf8')) as {
+      v: number;
+      assets: { id: string }[];
+    };
+    expect(manifest.v).toBe(2);
     const artIds = new Set(manifest.assets.map((a) => a.id));
-    for (const item of ITEMS) expect(artIds.has(`item.${item.id}`), item.id).toBe(true);
+    for (const item of ITEMS) {
+      expect(artIds.has(`item.${item.id}.tray`), item.id).toBe(true);
+      expect(artIds.has(`item.${item.id}.dish`), item.id).toBe(true);
+    }
+    for (const m of MONSTERS) expect(artIds.has(`monster.${m.id}.idle`), m.id).toBe(true);
+    expect(artIds.has('monster.og.dance')).toBe(true);
+    expect(artIds.has('dish.bunBottom')).toBe(true);
+    expect(artIds.has('dish.bunTop')).toBe(true);
   });
 });
