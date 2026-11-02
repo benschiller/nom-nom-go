@@ -1,0 +1,4603 @@
+{
+  "v": 2,
+  "stage": "1600x900",
+  "style_block": "Flat sticker illustration for a children's kitchen game, bold dark outlines on every shape, flat solid fills with subtle grain, no gradients, no painterly shading, no photoreal light, saturated cheerful palette, simple rounded silhouette readable by shape first at small size, match the attached reference image exactly in style, line weight and palette. No text, no letters, no numbers, no watermark, no logo.",
+  "chroma_block": "Single subject centred on a solid pure magenta #FF00FF background, subject occupies 80% of frame, generous padding on all sides, nothing else in frame.",
+  "negative_block": "Do not resemble Om Nom, Toca Boca characters or any existing franchise character. Not scary, not realistic, not photographic, not 3D-render, not pixel-art.",
+  "models": {
+    "image": "muse-image-1.0",
+    "qa": "muse-spark-1.3",
+    "sam": "sam-3.1"
+  },
+  "note": "OG (og_002) gets a full pose set in addition to style-anchor and app-icon roles. Integration into gameplay is out of scope for this manifest.",
+  "assets": [
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.title",
+      "category": "env",
+      "mode": "edit",
+      "subject": "Remove all text, the logotype, the play button, every monster and the chef. Keep the coral food truck, awning, sky, pavement and confetti as a clean empty backdrop plate.",
+      "refs": [
+        "generated_images/approved/title-intro-master.png"
+      ],
+      "size": "1536x1024",
+      "export": {
+        "w": 3200,
+        "h": 1800,
+        "alpha": false
+      },
+      "display": "1600x900",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters",
+        "composition matches the master",
+        "top-right call corner is plain scenery only"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.kitchen",
+      "category": "env",
+      "mode": "edit",
+      "subject": "Remove the monster, all food, dishes, stars, buttons and every UI element. Keep the kitchen interior, serving window, counter and ingredient bar as a clean empty set plate.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1536x1024",
+      "export": {
+        "w": 3200,
+        "h": 1800,
+        "alpha": false
+      },
+      "display": "1600x900",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters",
+        "composition matches the master",
+        "top-right call corner is plain scenery only"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.levelTruck",
+      "category": "env",
+      "mode": "edit",
+      "subject": "Remove the chef, all pips, stars and text from the sign so the mustard sign board is blank. Keep truck, posts, sky and pavement as a clean plate.",
+      "refs": [
+        "generated_images/approved/level-transition-master.png"
+      ],
+      "size": "1536x1024",
+      "export": {
+        "w": 3200,
+        "h": 1800,
+        "alpha": false
+      },
+      "display": "1600x900",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters",
+        "composition matches the master",
+        "top-right call corner is plain scenery only"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.night.goodbye",
+      "category": "env",
+      "mode": "edit",
+      "subject": "Remove every character. Keep the night truck with warm light glowing from the open serving hatch and windows, moon and stars, as a clean empty plate.",
+      "refs": [
+        "generated_images/approved/end-game-night-master.png"
+      ],
+      "size": "1536x1024",
+      "export": {
+        "w": 3200,
+        "h": 1800,
+        "alpha": false
+      },
+      "display": "1600x900",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters",
+        "composition matches the master",
+        "top-right call corner is plain scenery only"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.night.closed",
+      "category": "env",
+      "mode": "edit",
+      "subject": "Remove every character, close the serving hatch shutter fully and dim the lights low for closing time. Keep the night truck, moon and stars as a clean empty plate.",
+      "refs": [
+        "generated_images/approved/end-game-night-master.png"
+      ],
+      "size": "1536x1024",
+      "export": {
+        "w": 3200,
+        "h": 1800,
+        "alpha": false
+      },
+      "display": "1600x900",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters",
+        "composition matches the master",
+        "top-right call corner is plain scenery only"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.goWipe",
+      "category": "env",
+      "mode": "edit",
+      "subject": "Keep only the full-screen diagonal wipe graphic as a flat mustard-yellow wipe panel with a subtle sticker edge. Remove the monster, kitchen, all food and any text or letters.",
+      "refs": [
+        "generated_images/approved/order-at-window-3-go-wipe.png"
+      ],
+      "size": "1536x1024",
+      "export": {
+        "w": 3200,
+        "h": 1800,
+        "alpha": false
+      },
+      "display": "1600x900",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters",
+        "composition matches the master",
+        "top-right call corner is plain scenery only"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.idle",
+      "category": "monster",
+      "mode": "derive",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: standing idle, facing camera, arms relaxed at sides, calm cheerful smile. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.walk",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: mid-stride walk toward camera, one foot forward, arms swinging happily. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.tap",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: one arm raised tapping forward at a kitchen window, mouth open mid-babble, leaning in eagerly. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.happy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: big delighted grin, eyes bright and round, arms slightly open with joy. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.fidgety",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: fingertips tapping together, eyebrows raised, shifting weight foot-to-foot, impatient but cute. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.grumpy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: small steam puffs from sides of head, eyebrows lowered, arms crossed, one foot tapping, grumpy but never scary or mean. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.gobble",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: mouth stretched wide open mid-gobble, cheeks bulging, eyes squeezed shut in delight, hands up near mouth. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.dance",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: mid-dance bounce, both arms up, one foot lifted, huge open-mouth grin. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.confused",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: head tilted to one side, one eyebrow raised, small round o mouth, one hand scratching top of head. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.leave",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch. Pose: body turned half-away, one arm waving goodbye, small friendly smile, one foot stepping away. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/gobbler_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "gobbler monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.idle",
+      "category": "monster",
+      "mode": "derive",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: standing idle, facing camera, arms relaxed at sides, calm cheerful smile. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.walk",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: mid-stride walk toward camera, one foot forward, arms swinging happily. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.tap",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: one arm raised tapping forward at a kitchen window, mouth open mid-babble, leaning in eagerly. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.happy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: big delighted grin, eyes bright and round, arms slightly open with joy. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.fidgety",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: fingertips tapping together, eyebrows raised, shifting weight foot-to-foot, impatient but cute. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.grumpy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: small steam puffs from sides of head, eyebrows lowered, arms crossed, one foot tapping, grumpy but never scary or mean. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.gobble",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: mouth stretched wide open mid-gobble, cheeks bulging, eyes squeezed shut in delight, hands up near mouth. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.dance",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: mid-dance bounce, both arms up, one foot lifted, huge open-mouth grin. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.confused",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: head tilted to one side, one eyebrow raised, small round o mouth, one hand scratching top of head. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.doubleTrouble.leave",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes. Pose: body turned half-away, one arm waving goodbye, small friendly smile, one foot stepping away. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/double_trouble_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "doubleTrouble monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.idle",
+      "category": "monster",
+      "mode": "derive",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: standing idle, facing camera, arms relaxed at sides, calm cheerful smile. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.walk",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: mid-stride walk toward camera, one foot forward, arms swinging happily. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.tap",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: one arm raised tapping forward at a kitchen window, mouth open mid-babble, leaning in eagerly. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.happy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: big delighted grin, eyes bright and round, arms slightly open with joy. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.fidgety",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: fingertips tapping together, eyebrows raised, shifting weight foot-to-foot, impatient but cute. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.grumpy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: small steam puffs from sides of head, eyebrows lowered, arms crossed, one foot tapping, grumpy but never scary or mean. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.gobble",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: mouth stretched wide open mid-gobble, cheeks bulging, eyes squeezed shut in delight, hands up near mouth. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.dance",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: mid-dance bounce, both arms up, one foot lifted, huge open-mouth grin. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.confused",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: head tilted to one side, one eyebrow raised, small round o mouth, one hand scratching top of head. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.sneezer.leave",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Sneezer, one enormous round teal nose taking up most of the face with big shiny nostrils, small happy eyes above the nose, tiny mouth underneath, small round mint-green body, short arms and legs with big feet, messy tufts of hair, lighter aqua belly. Pose: body turned half-away, one arm waving goodbye, small friendly smile, one foot stepping away. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/sneezer_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "sneezer monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.idle",
+      "category": "monster",
+      "mode": "derive",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: standing idle, facing camera, arms relaxed at sides, calm cheerful smile. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.walk",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: mid-stride walk toward camera, one foot forward, arms swinging happily. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.tap",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: one arm raised tapping forward at a kitchen window, mouth open mid-babble, leaning in eagerly. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.happy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: big delighted grin, eyes bright and round, arms slightly open with joy. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.fidgety",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: fingertips tapping together, eyebrows raised, shifting weight foot-to-foot, impatient but cute. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.grumpy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: small steam puffs from sides of head, eyebrows lowered, arms crossed, one foot tapping, grumpy but never scary or mean. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.gobble",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: mouth stretched wide open mid-gobble, cheeks bulging, eyes squeezed shut in delight, hands up near mouth. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.dance",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: mid-dance bounce, both arms up, one foot lifted, huge open-mouth grin. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.confused",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: head tilted to one side, one eyebrow raised, small round o mouth, one hand scratching top of head. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.fussy.leave",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Fussy, neat dressed-up monster with one round gold monocle over one eye on a thin chain, neat red bow tie at the neck, tidy mustard-yellow body with cream belly, one eyebrow raised, slender build, longer arms, short legs with tidy pointed feet, small neat combed hair tuft. Pose: body turned half-away, one arm waving goodbye, small friendly smile, one foot stepping away. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/fussy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "fussy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.idle",
+      "category": "monster",
+      "mode": "derive",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: standing idle, facing camera, arms relaxed at sides, calm cheerful smile. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.walk",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: mid-stride walk toward camera, one foot forward, arms swinging happily. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.tap",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: one arm raised tapping forward at a kitchen window, mouth open mid-babble, leaning in eagerly. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.happy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: big delighted grin, eyes bright and round, arms slightly open with joy. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.fidgety",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: fingertips tapping together, eyebrows raised, shifting weight foot-to-foot, impatient but cute. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.grumpy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: small steam puffs from sides of head, eyebrows lowered, arms crossed, one foot tapping, grumpy but never scary or mean. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.gobble",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: mouth stretched wide open mid-gobble, cheeks bulging, eyes squeezed shut in delight, hands up near mouth. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.dance",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: mid-dance bounce, both arms up, one foot lifted, huge open-mouth grin. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.confused",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: head tilted to one side, one eyebrow raised, small round o mouth, one hand scratching top of head. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.speedy.leave",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly. Pose: body turned half-away, one arm waving goodbye, small friendly smile, one foot stepping away. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/speedy_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "speedy monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.idle",
+      "category": "monster",
+      "mode": "derive",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: standing idle, facing camera, arms relaxed at sides, calm cheerful smile. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.walk",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: mid-stride walk toward camera, one foot forward, arms swinging happily. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.tap",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: one arm raised tapping forward at a kitchen window, mouth open mid-babble, leaning in eagerly. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.happy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: big delighted grin, eyes bright and round, arms slightly open with joy. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.fidgety",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: fingertips tapping together, eyebrows raised, shifting weight foot-to-foot, impatient but cute. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.grumpy",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: small steam puffs from sides of head, eyebrows lowered, arms crossed, one foot tapping, grumpy but never scary or mean. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.gobble",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: mouth stretched wide open mid-gobble, cheeks bulging, eyes squeezed shut in delight, hands up near mouth. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.dance",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: mid-dance bounce, both arms up, one foot lifted, huge open-mouth grin. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.confused",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: head tilted to one side, one eyebrow raised, small round o mouth, one hand scratching top of head. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.leave",
+      "category": "monster",
+      "mode": "generate",
+      "subject": "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline. Pose: body turned half-away, one arm waving goodbye, small friendly smile, one foot stepping away. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "h340 centre / h300 side",
+      "sam": "og monster character",
+      "qa": [
+        "same character identity as the reference master",
+        "correct pose and expression for the named pose",
+        "full body with no cropped head or feet",
+        "friendly and non-scary for a 7-year-old",
+        "no text",
+        "silhouette distinct from the other monsters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.hello",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: waving hello with one hand, big friendly smile. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.point",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: pointing forward with one hand as if teaching, friendly smile. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.thumbs-up",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: giving a thumbs up, proud smile. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.cheer",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: cheering with both arms up, joyful open-mouth smile. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.think",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: thinking, one hand on chin, looking up thoughtfully. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.surprised",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: surprised, eyebrows up, mouth in a small o, hands slightly raised. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.clap",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: clapping hands together, delighted smile. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.goodbye",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, white chef hat and uniform. Pose: waving goodbye with one hand, warm sleepy smile. Full body, facing camera.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "280",
+      "sam": "chef character",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "correct pose",
+        "full body, nothing cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.helpFace",
+      "category": "chef",
+      "mode": "generate",
+      "subject": "The same Head Chef dad character as the reference, head and shoulders only, big friendly encouraging smile, centred for a circular button crop, white chef hat.",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 circle",
+      "sam": "chef head",
+      "qa": [
+        "same Head Chef identity as the reference",
+        "head centred for circle crop",
+        "friendly expression",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.hatch",
+      "category": "chef",
+      "mode": "derive",
+      "subject": "Head Chef in the serving hatch, from the approved hatch master.",
+      "refs": [
+        "generated_images/approved/head-chef-dad-hatch.png"
+      ],
+      "size": "1536x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "hatch",
+      "sam": "chef character in window",
+      "qa": [
+        "same Head Chef identity",
+        "nothing important cropped",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.patty.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a round flat grilled beef patty with speckled sear marks. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a round flat grilled beef patty with speckled sear marks",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.patty.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a round flat grilled beef patty with speckled sear marks for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a round flat grilled beef patty with speckled sear marks",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.tomato.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a single round tomato slice with seed pockets. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a single round tomato slice with seed pockets",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.tomato.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a single round tomato slice with seed pockets for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a single round tomato slice with seed pockets",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pineapple.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a single round pineapple ring slice with fibrous stripes. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a single round pineapple ring slice with fibrous stripes",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pineapple.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a single round pineapple ring slice with fibrous stripes for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a single round pineapple ring slice with fibrous stripes",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.lettuce.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a frilly green lettuce leaf. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a frilly green lettuce leaf",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.lettuce.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a frilly green lettuce leaf for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a frilly green lettuce leaf",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.avocado.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: avocado slices fanned, green flesh with darker skin edge. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "avocado slices fanned, green flesh with darker skin edge",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.avocado.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of avocado slices fanned, green flesh with darker skin edge for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "avocado slices fanned, green flesh with darker skin edge",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.ketchup.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a glossy red ketchup drizzle swirl. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a glossy red ketchup drizzle swirl",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.ketchup.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a glossy red ketchup drizzle swirl for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a glossy red ketchup drizzle swirl",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.salsa.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a chunky red salsa dollop with visible diced pieces. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a chunky red salsa dollop with visible diced pieces",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.salsa.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a chunky red salsa dollop with visible diced pieces for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a chunky red salsa dollop with visible diced pieces",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cheese.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a square orange cheese slice with draped corners. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a square orange cheese slice with draped corners",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cheese.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a square orange cheese slice with draped corners for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a square orange cheese slice with draped corners",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pickles.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: three round green pickle slices with seeds. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "three round green pickle slices with seeds",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pickles.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of three round green pickle slices with seeds for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "three round green pickle slices with seeds",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.onionRings.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: two pale golden onion rings. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "two pale golden onion rings",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.onionRings.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of two pale golden onion rings for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "two pale golden onion rings",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.crispyOnions.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a burger: a small pile of golden crispy fried onion strands. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a small pile of golden crispy fried onion strands",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.crispyOnions.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a small pile of golden crispy fried onion strands for stacking on a burger, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a small pile of golden crispy fried onion strands",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.crust.thin.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: a thin round pizza crust base, pale golden, viewed flat from above. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a thin round pizza crust base, pale golden, viewed flat from above",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.crust.thin.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a thin round pizza crust base, pale golden, viewed flat from above for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a thin round pizza crust base, pale golden, viewed flat from above",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.crust.thick.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: a thick puffy round pizza crust base with raised edge, viewed flat from above. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a thick puffy round pizza crust base with raised edge, viewed flat from above",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.crust.thick.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a thick puffy round pizza crust base with raised edge, viewed flat from above for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a thick puffy round pizza crust base with raised edge, viewed flat from above",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sauce.redSmooth.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: a smooth red tomato sauce spread circle for pizza. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a smooth red tomato sauce spread circle for pizza",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sauce.redSmooth.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a smooth red tomato sauce spread circle for pizza for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a smooth red tomato sauce spread circle for pizza",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sauce.redChunky.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: a chunky red tomato sauce spread with visible tomato pieces for pizza. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a chunky red tomato sauce spread with visible tomato pieces for pizza",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sauce.redChunky.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a chunky red tomato sauce spread with visible tomato pieces for pizza for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a chunky red tomato sauce spread with visible tomato pieces for pizza",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sauce.white.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: a creamy white sauce spread circle for pizza. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a creamy white sauce spread circle for pizza",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sauce.white.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a creamy white sauce spread circle for pizza for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a creamy white sauce spread circle for pizza",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pepperoni.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: beef pepperoni slices, deep red with speckled fat. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "beef pepperoni slices, deep red with speckled fat",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pepperoni.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of beef pepperoni slices, deep red with speckled fat for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "beef pepperoni slices, deep red with speckled fat",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pizzaTomato.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: fresh tomato slices for pizza with seed pockets. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "fresh tomato slices for pizza with seed pockets",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.pizzaTomato.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of fresh tomato slices for pizza with seed pockets for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "fresh tomato slices for pizza with seed pockets",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.greenPepper.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: green bell pepper rings and strips. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "green bell pepper rings and strips",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.greenPepper.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of green bell pepper rings and strips for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "green bell pepper rings and strips",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.basil.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: fresh green basil leaves with veins. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "fresh green basil leaves with veins",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.basil.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of fresh green basil leaves with veins for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "fresh green basil leaves with veins",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.mushroom.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: sliced mushrooms with tan caps and gills. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "sliced mushrooms with tan caps and gills",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.mushroom.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of sliced mushrooms with tan caps and gills for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "sliced mushrooms with tan caps and gills",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.olives.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: sliced black olive rings. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "sliced black olive rings",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.olives.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of sliced black olive rings for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "sliced black olive rings",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.turkey.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: pale turkey slices, folded. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "pale turkey slices, folded",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.turkey.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of pale turkey slices, folded for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "pale turkey slices, folded",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.corn.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a pizza: a small pile of yellow corn kernels. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a small pile of yellow corn kernels",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.corn.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a small pile of yellow corn kernels for stacking on a pizza, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a small pile of yellow corn kernels",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cup.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: an empty striped sundae cup, blue and white. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "an empty striped sundae cup, blue and white",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cup.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of an empty striped sundae cup, blue and white for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "an empty striped sundae cup, blue and white",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cone.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: an empty waffle cone with criss-cross pattern. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "an empty waffle cone with criss-cross pattern",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cone.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of an empty waffle cone with criss-cross pattern for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "an empty waffle cone with criss-cross pattern",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.scoop.vanilla.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a single round vanilla ice cream scoop, creamy white. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a single round vanilla ice cream scoop, creamy white",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.scoop.vanilla.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a single round vanilla ice cream scoop, creamy white for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a single round vanilla ice cream scoop, creamy white",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.scoop.chocolate.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a single round chocolate ice cream scoop, brown. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a single round chocolate ice cream scoop, brown",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.scoop.chocolate.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a single round chocolate ice cream scoop, brown for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a single round chocolate ice cream scoop, brown",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.scoop.strawberry.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a single round strawberry ice cream scoop, pink with speckles. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a single round strawberry ice cream scoop, pink with speckles",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.scoop.strawberry.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a single round strawberry ice cream scoop, pink with speckles for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a single round strawberry ice cream scoop, pink with speckles",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cherry.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a single glossy red cherry with stem. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a single glossy red cherry with stem",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.cherry.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a single glossy red cherry with stem for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a single glossy red cherry with stem",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.grape.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a single round purple grape with highlight. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a single round purple grape with highlight",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.grape.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a single round purple grape with highlight for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a single round purple grape with highlight",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.whippedCream.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a fluffy whipped cream swirl dollop. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a fluffy whipped cream swirl dollop",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.whippedCream.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a fluffy whipped cream swirl dollop for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a fluffy whipped cream swirl dollop",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.marshmallow.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: two white marshmallows, soft cylinders. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "two white marshmallows, soft cylinders",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.marshmallow.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of two white marshmallows, soft cylinders for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "two white marshmallows, soft cylinders",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.chocChips.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a small pile of dark chocolate chips. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a small pile of dark chocolate chips",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.chocChips.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a small pile of dark chocolate chips for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a small pile of dark chocolate chips",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sprinkles.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a small pile of rainbow sprinkles. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a small pile of rainbow sprinkles",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.sprinkles.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a small pile of rainbow sprinkles for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a small pile of rainbow sprinkles",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.banana.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: banana slices, pale yellow rounds with centre star. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "banana slices, pale yellow rounds with centre star",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.banana.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of banana slices, pale yellow rounds with centre star for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "banana slices, pale yellow rounds with centre star",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.caramel.tray",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A single bold ingredient icon for a sundae: a golden caramel drizzle swirl. Chunky, instantly readable at tiny size, slight 3/4 view.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104 tray / 72 sill",
+      "sam": "a golden caramel drizzle swirl",
+      "qa": [
+        "ingredient is instantly recognisable",
+        "bold silhouette readable at 72px",
+        "no text",
+        "single ingredient only, no plate or extra food"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "item.caramel.dish",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of a golden caramel drizzle swirl for stacking on a sundae, viewed flat from slightly above, wide and flat like a sticker layer, no plate, no bowl, no shadow blob.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "a golden caramel drizzle swirl",
+      "qa": [
+        "reads as the same ingredient as its tray icon",
+        "flat layer suitable for stacking in a dish",
+        "no plate or bowl unless the ingredient is the cup or cone itself",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "dish.bunBottom",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of the bottom half of a burger bun, flat base with sesame top edge, viewed flat from slightly above, wide and flat like a sticker layer, no plate.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "the bottom half of a burger bun, flat base with sesame top edge",
+      "qa": [
+        "bun half is instantly recognisable",
+        "flat layer suitable for stacking",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "dish.bunTop",
+      "category": "ingredient",
+      "mode": "generate",
+      "subject": "A flat layer of the top half of a burger bun with sesame seeds, domed, viewed flat from slightly above, wide and flat like a sticker layer, no plate.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 256,
+        "h": 256,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92 in dish stack",
+      "sam": "the top half of a burger bun with sesame seeds, domed",
+      "qa": [
+        "bun half is instantly recognisable",
+        "flat layer suitable for stacking",
+        "no text"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.bell",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a golden service bell with a button on top. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "150",
+      "sam": "a golden service bell with a button on top",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.trash",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a small grey trash bin with a lid. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104",
+      "sam": "a small grey trash bin with a lid",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.undo",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a chunky curved undo arrow, mustard yellow with dark outline. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "104",
+      "sam": "a chunky curved undo arrow, mustard yellow with dark outline",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.pause",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: two chunky vertical pause bars in a rounded badge. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "140",
+      "sam": "two chunky vertical pause bars in a rounded badge",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.play",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a chunky green play triangle in a rounded badge. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "220",
+      "sam": "a chunky green play triangle in a rounded badge",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.speakerOn",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a speaker with sound waves coming out. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "120",
+      "sam": "a speaker with sound waves coming out",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.speakerStatic",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a speaker with electric static sparks and a cracked look, funny not scary. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "120",
+      "sam": "a speaker with electric static sparks and a cracked look, funny not scary",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.star.lit",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a single chunky gold star, lit and shiny. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "84",
+      "sam": "a single chunky gold star, lit and shiny",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.star.unlit",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a single chunky star outline, pale cream and dim, unlit. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "84",
+      "sam": "a single chunky star outline, pale cream and dim, unlit",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.pip.lit",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a single round level pip, lit orange and glowing. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "52",
+      "sam": "a single round level pip, lit orange and glowing",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.pip.unlit",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a single round level pip, dim cream and unlit. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "52",
+      "sam": "a single round level pip, dim cream and unlit",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.glove",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a white cartoon chef glove hand pointing with one finger. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "92",
+      "sam": "a white cartoon chef glove hand pointing with one finger",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.badgeDad",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a friendly cartoon dad chef face badge, smiling, white chef hat, inside a plain circle. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "140",
+      "sam": "a friendly cartoon dad chef face badge, smiling, white chef hat, inside a plain circle",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "cheer.thumbs",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a cheerful thumbs-up hand icon. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "120",
+      "sam": "a cheerful thumbs-up hand icon",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "cheer.heart",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a big red heart icon. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "120",
+      "sam": "a big red heart icon",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "cheer.wow",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a wow starburst badge with an excited open-mouth face, no text. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "120",
+      "sam": "a wow starburst badge with an excited open-mouth face, no text",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.powerOff",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a power symbol pictogram, chunky and clear. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "170",
+      "sam": "a power symbol pictogram, chunky and clear",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.powerOn",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a glowing power symbol pictogram in yellow on dark blue circle. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "190",
+      "sam": "a glowing power symbol pictogram in yellow on dark blue circle",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.rotate",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: a phone rotating sideways pictogram with a curved arrow. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "120",
+      "sam": "a phone rotating sideways pictogram with a curved arrow",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.nomBubble",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "A single chunky game UI icon: an empty white speech bubble with a chunky dark outline and a small tail, nothing inside. Bold, simple, readable at small size.",
+      "refs": [
+        "generated_images/approved/kitchen-master-stars_000.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 512,
+        "h": 512,
+        "alpha": true,
+        "fill": 0.8
+      },
+      "display": "300",
+      "sam": "an empty white speech bubble with a chunky dark outline and a small tail, nothing inside",
+      "qa": [
+        "icon meaning is instantly clear without text",
+        "chunky and readable at small size",
+        "no text or letters"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.appIcon",
+      "category": "prop",
+      "mode": "generate",
+      "subject": "App icon: the purple one-eyed OG monster face wearing a white chef hat, huge and centred, cheerful grin, bold sticker style on a coral-orange background, no text.",
+      "refs": [
+        "generated_images/approved/og_002.png"
+      ],
+      "size": "1024x1024",
+      "export": {
+        "w": 1024,
+        "h": 1024,
+        "alpha": false
+      },
+      "display": "PWA icon source",
+      "sam": null,
+      "qa": [
+        "OG monster identity matches the reference",
+        "chef hat clearly visible",
+        "reads at 48px",
+        "no text"
+      ]
+    }
+  ]
+}
