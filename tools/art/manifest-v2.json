@@ -14,31 +14,6 @@
     {
       "status": "pending",
       "version": 1,
-      "id": "env.title",
-      "category": "env",
-      "mode": "edit",
-      "subject": "Remove all text, the logotype, the play button, every monster and the chef. Keep the coral food truck, awning, sky, pavement and confetti as a clean empty backdrop plate.",
-      "refs": [
-        "generated_images/approved/title-intro-master.png"
-      ],
-      "size": "1536x1024",
-      "export": {
-        "w": 3200,
-        "h": 1800,
-        "alpha": false
-      },
-      "display": "1600x900",
-      "sam": null,
-      "qa": [
-        "no text or letters",
-        "no characters",
-        "composition matches the master",
-        "top-right call corner is plain scenery only"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
       "id": "env.kitchen",
       "category": "env",
       "mode": "edit",
@@ -159,6 +134,181 @@
         "no characters",
         "composition matches the master",
         "top-right call corner is plain scenery only"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.wave",
+      "category": "monster",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "green",
+      "sam": "purple monster",
+      "refs": [
+        "generated_images/approved/og_002.png",
+        "generated_images/production/refs/title/monster.og.wave.png"
+      ],
+      "ref_notes": [
+        "Character identity reference (approved character sheet): match this character exactly.",
+        "Pose and framing reference only (taken from the approved title storyboard): copy this pose, expression and proportions exactly, but ignore its background and anything behind the subject."
+      ],
+      "subject": "OG, tall purple one-eyed monster, one huge single eye, wide happy open-mouth smile with pink tongue, smooth purple skin with a lighter lavender oval belly patch, long arms with small hands, long legs with big flat feet. Pose: standing tall facing camera, waving hello with its left arm raised high beside its head, other arm relaxed at its side. Full body, nothing cropped, no drop shadow, no ground.",
+      "place_frac": [
+        0.05156,
+        0.40781,
+        0.2875,
+        0.87578
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.wave",
+      "category": "monster",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "magenta",
+      "sam": "orange monster",
+      "refs": [
+        "generated_images/approved/gobbler_002.png",
+        "generated_images/production/refs/title/monster.gobbler.wave.png"
+      ],
+      "ref_notes": [
+        "Character identity reference (approved character sheet): match this character exactly.",
+        "Pose and framing reference only (taken from the approved title storyboard): copy this pose, expression and proportions exactly, but ignore its background and anything behind the subject."
+      ],
+      "subject": "Gobbler, round orange monster whose body is one big belly with a cream belly patch, one large eye above two small eyes, wide smile with two small teeth, tiny tuft of hair, short stubby arms and legs with big round feet. Pose: standing facing camera, waving hello with its right arm raised high, other arm relaxed. Full body, nothing cropped, no drop shadow, no ground.",
+      "place_frac": [
+        0.72344,
+        0.48906,
+        0.95729,
+        0.89609
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.windowWave",
+      "category": "chef",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "magenta",
+      "sam": "chef",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png",
+        "generated_images/production/refs/title/chef.windowWave.png"
+      ],
+      "ref_notes": [
+        "Character identity reference (approved Head Chef): match this character exactly.",
+        "Pose and framing reference only (taken from the approved title storyboard): copy this pose, expression and proportions exactly, but ignore its background and anything behind the subject."
+      ],
+      "subject": "The Head Chef: friendly older man with warm brown skin, short grey hair, tall white chef hat, white double-breasted chef jacket. Upper body from the waist up, facing camera, big warm smile, waving hello with his left hand raised beside his head. No counter, no window, no drop shadow.",
+      "place_frac": [
+        0.38854,
+        0.37031,
+        0.55937,
+        0.58047
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.goButton",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "magenta",
+      "sam": "green circle button",
+      "refs": [
+        "generated_images/production/refs/title/ui.goButton.png"
+      ],
+      "ref_notes": [
+        "Exact design reference: reproduce this button exactly, alone."
+      ],
+      "subject": "A big round play button: a perfect circle filled with bright green, a thick dark outline, and a large rounded white play triangle in the centre pointing right. Flat, no text, no drop shadow.",
+      "place_frac": [
+        0.40781,
+        0.70391,
+        0.59635,
+        0.97656
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.title",
+      "category": "env",
+      "mode": "derive",
+      "subject": "Title background plate supplied by the user: coral food truck with empty serving window, sky, hills, ground and confetti extended to every edge.",
+      "refs": [
+        "generated_images/production/import/extended_edge.png"
+      ],
+      "size": "import",
+      "export": {
+        "w": 2400,
+        "h": 1600,
+        "alpha": false,
+        "max_side": 2400
+      },
+      "display": "2000x1333 bleed box, safe 1600x900 centre",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters and an empty serving window",
+        "scenery continues to every edge with no seams or frames"
       ]
     },
     {
@@ -2067,7 +2217,8 @@
         "fill": 0.8
       },
       "display": "104 circle",
-      "sam": "chef head",
+      "sam": "chef",
+      "cutter": "sam-soft",
       "qa": [
         "same Head Chef identity as the reference",
         "head centred for circle crop",

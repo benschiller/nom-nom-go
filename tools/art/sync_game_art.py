@@ -26,12 +26,16 @@ FINALS = ROOT / "generated_images/production/final"
 OUT_DIR = ROOT / "game/public/art"
 SRC_MANIFEST = ROOT / "game/src/ui/artManifest.json"
 
+LEDGER = ROOT / "generated_images/production/ledger.json"
+
 # Cap each category at ~2x its stage display size (manifest `display`).
 MAX_SIDE = {"env": 1600, "monster": 680, "chef": 640}
+BLEED_MAX_SIDE = 2400  # bleed plates cover 2000x1333 stage units
 
 
 def main() -> int:
     manifest = json.loads(MANIFEST.read_text())
+    led = json.loads(LEDGER.read_text())
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     assets, missing, total = [], [], 0
     for entry in manifest["assets"]:
@@ -41,26 +45,38 @@ def main() -> int:
             missing.append(aid)
             continue
         dst = OUT_DIR / f"{aid}.webp"
-        cap = MAX_SIDE.get(cat)
+        cap = entry["export"].get("max_side") or (BLEED_MAX_SIDE if entry["mode"] == "bleed" else MAX_SIDE.get(cat))
         img = Image.open(src)
-        if cap and max(img.size) > cap:
+        if dst.exists() and dst.stat().st_size > 0 and dst.stat().st_mtime >= src.stat().st_mtime:
+            img = Image.open(dst)  # up to date: skip the slow re-encode
+        elif cap and max(img.size) > cap:
             img.thumbnail((cap, cap), Image.LANCZOS)
             img.save(dst, "WEBP", quality=84, method=6)
         else:
             shutil.copyfile(src, dst)
             img = Image.open(dst)
         total += dst.stat().st_size
-        assets.append(
-            {
-                "id": aid,
-                "category": cat,
-                "file": f"/art/{aid}.webp",
-                "w": img.size[0],
-                "h": img.size[1],
-                "display": entry.get("display", ""),
-                "version": entry.get("version", 1),
-            }
-        )
+        rec = {
+            "id": aid,
+            "category": cat,
+            "file": f"/art/{aid}.webp",
+            "w": img.size[0],
+            "h": img.size[1],
+            "display": entry.get("display", ""),
+            "version": led.get(aid, {}).get("version", entry.get("version", 1)),
+        }
+        if entry["mode"] == "bleed":
+            rec["bleed"] = True
+        if entry.get("place_frac"):  # storyboard box for a separately generated piece
+            rec["placement"] = entry["place_frac"]
+        box = led.get(aid, {}).get("placement")
+        if entry["mode"] == "cut" and box:
+            # Element box as a fraction of its 3:2 master, so the game can
+            # place it exactly where the approved storyboard has it.
+            mw, mh = Image.open(ROOT / entry["refs"][0]).size
+            rec["placement"] = [round(box[0] / mw, 5), round(box[1] / mh, 5),
+                                round(box[2] / mw, 5), round(box[3] / mh, 5)]
+        assets.append(rec)
     if missing:
         print(f"MISSING FINALS ({len(missing)}): {', '.join(missing)}", file=sys.stderr)
         return 1

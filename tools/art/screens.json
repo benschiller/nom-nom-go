@@ -1,0 +1,79 @@
+{
+  "note": "Screen register for the art-integration skill (.muse/skills/art-integration). One entry per screen; `master` is the approved storyboard (3:2), shown in the game fit to the 1600-wide stage. `checklist` is what Spark judges the screenshot against, alongside the target.",
+  "viewports": {
+    "wide-16x9": [1280, 720],
+    "ipad-4x3": [1194, 834],
+    "iphone-2.17": [852, 393]
+  },
+  "screens": [
+    {
+      "id": "S1",
+      "name": "Title",
+      "phases": ["title"],
+      "master": "generated_images/approved/title-intro-master.png",
+      "capture": "title",
+      "assets": ["env.title", "ui.wordmark", "chef.windowWave", "monster.og.wave", "monster.gobbler.wave", "ui.goButton", "chef.helpFace"],
+      "checklist": [
+        "Nom Nom Go! logo above the truck: chunky letters, Nom coral, Nom mustard, Go! green, thick dark outline",
+        "coral food truck centred with yellow striped awnings, teal sky, hills and confetti dots",
+        "Head Chef waving inside the serving window",
+        "purple one-eyed OG standing on the ground left of the truck, waving",
+        "orange Gobbler standing on the ground right of the truck, waving",
+        "big round green play button with a white triangle and no text, on the ground below the truck",
+        "no other text and no rectangular buttons; scenery fills the whole screen with no bars"
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "Level intro",
+      "phases": ["levelIntro"],
+      "master": "generated_images/approved/level-transition-master.png",
+      "capture": "levelIntro",
+      "assets": ["env.levelTruck", "chef.hello", "ui.pip.lit"],
+      "checklist": []
+    },
+    {
+      "id": "S3",
+      "name": "Ordering",
+      "phases": ["ordering"],
+      "master": "generated_images/approved/order-at-window-1-centred-ordering.png",
+      "capture": "ordering",
+      "assets": ["env.kitchen"],
+      "checklist": []
+    },
+    {
+      "id": "S4",
+      "name": "Go! wipe",
+      "phases": ["goWipe"],
+      "master": "generated_images/approved/order-at-window-3-go-wipe.png",
+      "capture": "goWipe",
+      "assets": ["env.goWipe"],
+      "checklist": []
+    },
+    {
+      "id": "S5",
+      "name": "Cooking",
+      "phases": ["cooking"],
+      "master": "generated_images/approved/kitchen-master-stars_000.png",
+      "capture": "cooking",
+      "assets": ["env.kitchen", "prop.bell", "prop.trash", "prop.undo", "ui.star.lit", "chef.helpFace"],
+      "checklist": []
+    },
+    { "id": "S6", "name": "Serve result", "phases": ["serveResult"], "master": null, "capture": null, "assets": [], "checklist": [] },
+    { "id": "S7", "name": "Level result", "phases": ["levelResult"], "master": null, "capture": null, "assets": [], "checklist": [] },
+    {
+      "id": "S8",
+      "name": "Boss ending / Closed",
+      "phases": ["bossEnding", "closed"],
+      "master": "generated_images/approved/end-game-night-master.png",
+      "capture": null,
+      "assets": ["env.night.goodbye", "env.night.closed", "chef.goodbye"],
+      "checklist": []
+    },
+    { "id": "S9", "name": "Powered off", "phases": ["poweredOff"], "master": null, "capture": null, "assets": [], "checklist": [] },
+    { "id": "S10", "name": "Rotate overlay", "phases": [], "master": null, "capture": null, "assets": ["ui.rotate"], "checklist": [] },
+    { "id": "S11", "name": "Dad views", "phases": [], "master": null, "capture": null, "assets": ["chef.think", "cheer.thumbs", "cheer.heart", "cheer.wow"], "checklist": [] },
+    { "id": "S12", "name": "Parent area", "phases": [], "master": null, "capture": null, "assets": [], "checklist": [] },
+    { "id": "S13", "name": "PWA icon / splash", "phases": [], "master": "generated_images/approved/og_002.png", "capture": null, "assets": ["ui.appIcon"], "checklist": [] }
+  ]
+}

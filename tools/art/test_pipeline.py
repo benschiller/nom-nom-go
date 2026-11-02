@@ -41,16 +41,41 @@ def test_qa_image_not_black_for_transparent_sprite():
 
 def test_manifest_coverage():
     m = json.loads((Path(__file__).parent / "manifest-v2.json").read_text())
-    assert len(m["assets"]) == 173
-    assert sum(1 for a in m["assets"] if a["id"].startswith("monster.og.")) == 10
+    assert len(m["assets"]) == 178  # 173 production + 5 cut from the title master
+    assert sum(1 for a in m["assets"] if a["id"].startswith("monster.og.")) == 11  # 10 poses + wave
+    for a in m["assets"]:
+        if a["mode"] == "cut":
+            assert a["export"].get("trim") and len(a["crop"]) == 4, a["id"]
+            assert a.get("text_waiver", False) == (a["id"] == "ui.wordmark"), a["id"]
+        if a["mode"] == "bleed":
+            assert a["bleed"]["pad"] == [240, 160], a["id"]
     assert m["models"]["qa"] == "muse-spark-1.3"
     assert "contributor" not in json.dumps(m["models"])
     sizes = {a["size"] for a in m["assets"]}
-    assert sizes <= {"1024x1024", "1536x1024"}, sizes
+    assert sizes <= {"1024x1024", "1536x1024", "master"}, sizes
+
+
+def test_failed_rebuild_keeps_previous_final():
+    aid = "ui.star.lit"
+    final = art.FIN_DIR / f"{aid}.webp"
+    before_bytes, before_rec = final.read_bytes(), art.ledger()[aid]
+    try:
+        with art.keep_on_failure(aid) as guard:
+            final.write_bytes(b"broken")
+            art.record(aid, {**before_rec, "version": 99, "status": "quarantined", "last_issues": "x"})
+            guard.done("quarantined")
+        assert final.read_bytes() == before_bytes
+        after = art.ledger()[aid]
+        assert after["version"] == before_rec["version"] and after["status"] == "done"
+        assert after["rejected"][-1]["version"] == 99
+    finally:
+        final.write_bytes(before_bytes)
+        art.record(aid, before_rec)
 
 
 if __name__ == "__main__":
     test_chroma_removes_magenta_keeps_subject()
     test_qa_image_not_black_for_transparent_sprite()
     test_manifest_coverage()
+    test_failed_rebuild_keeps_previous_final()
     print("all pipeline checks passed")

@@ -15,7 +15,7 @@ import {
 } from './audio/audio';
 import { isTestMode, testSpeed, useGame } from './ui/store';
 import { Emoji, ItemIcon } from './ui/ItemIcon';
-import { Art, monsterPoseFor, preloadArt } from './ui/Art';
+import { Art, Backdrop, monsterPoseFor, preloadArt } from './ui/Art';
 import { ParentArea } from './ui/ParentArea';
 import { Confetti } from './ui/Confetti';
 import { DadRoute } from './net/DadViews';
@@ -54,6 +54,126 @@ const BTN: React.CSSProperties = {
   alignItems: 'center',
   justifyContent: 'center',
 };
+
+/**
+ * TITLE SCREEN LAYOUT — edit these numbers to move or resize pieces.
+ * Units: the game's 1600x900 stage (0,0 = top-left of the 16:9 safe area).
+ * left/top = top-left corner, width/height = size. Bigger left = further right,
+ * bigger top = further down. The dev server updates on save.
+ */
+const TITLE_LAYOUT = {
+  chef: { left: 581.5, top: 301.7, width: 337.7, height: 277.0 }, // in the truck window; bottom edge = counter line
+  og: { left: 82.5, top: 351.7, width: 377.5, height: 499.2 }, // purple monster, left
+  gobbler: { left: 1173.5, top: 438.3, width: 374.2, height: 434.2 }, // orange monster, right
+  goButton: { left: 675.1, top: 642.8, width: 256.4, height: 247.2 },
+  logo: { left: 175.8, top: 9.2, width: 1160.0, height: 168.3 },
+  parentButton: { left: 24, bottom: 24, size: 116 },
+} as const;
+
+type Box = { left: number; top: number; width: number; height: number };
+
+/** A title piece drawn in its TITLE_LAYOUT box. Standing characters sit on the box
+ *  bottom. `clip` fills the box width from the top and hides anything below the box
+ *  bottom (the chef behind the window counter). */
+function TitleArt({
+  id,
+  box,
+  className,
+  clip = false,
+}: {
+  id: string;
+  box: Box;
+  className?: string;
+  clip?: boolean;
+}): React.JSX.Element {
+  if (clip) {
+    return (
+      <div style={{ position: 'absolute', ...box, overflow: 'hidden', pointerEvents: 'none' }}>
+        <Art
+          id={id}
+          className={className}
+          width={box.width}
+          height={box.height}
+          style={{ objectFit: 'cover', objectPosition: '50% 0%' }}
+        />
+      </div>
+    );
+  }
+  return (
+    <Art
+      id={id}
+      className={className}
+      width={box.width}
+      height={box.height}
+      style={{ position: 'absolute', ...box, objectPosition: '50% 100%', pointerEvents: 'none' }}
+    />
+  );
+}
+
+/** Title logo as native text (crisp at any DPR, nothing to cut out): Fredoka Bold,
+ *  storyboard word colours and outline, auto-fitted to the storyboard's logo box.
+ *  Each letter bobs a little, staggered, so a wave runs through the word. */
+const WORDMARK_BOX = TITLE_LAYOUT.logo;
+const WORDMARK_WORDS: [string, string][] = [
+  ['Nom', '#F86848'],
+  ['Nom', '#F8C030'],
+  ['Go!', '#10C458'],
+];
+function Wordmark(): React.JSX.Element {
+  const row = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(1);
+  useEffect(() => {
+    // Fit the natural text width to the box once the logo font has loaded.
+    const measure = (): void => {
+      if (row.current) setFit(Math.min(1.4, (WORDMARK_BOX.width - 20) / row.current.scrollWidth));
+    };
+    measure();
+    void document.fonts.ready.then(measure);
+  }, []);
+  let n = 0;
+  return (
+    <div
+      role="img"
+      aria-label="Nom Nom Go!"
+      data-testid="wordmark"
+      style={{
+        position: 'absolute',
+        ...WORDMARK_BOX,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        ref={row}
+        aria-hidden
+        style={{
+          display: 'flex',
+          gap: 34,
+          whiteSpace: 'nowrap',
+          transform: `scale(${fit * 0.92}, ${fit})`,
+          fontFamily: 'Fredoka, system-ui, sans-serif',
+          fontWeight: 700,
+          fontSize: 150,
+          lineHeight: 1,
+          WebkitTextStroke: '13px #331230',
+          paintOrder: 'stroke fill',
+        }}
+      >
+        {WORDMARK_WORDS.map(([word, color], w) => (
+          <span key={w} style={{ display: 'flex', color }}>
+            {[...word].map((ch, i) => (
+              <span key={i} className="wave-letter" style={{ animationDelay: `${(n++ * 0.09).toFixed(2)}s` }}>
+                {ch}
+              </span>
+            ))}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function App(): React.JSX.Element {
   const hash = window.location.hash;
@@ -558,48 +678,25 @@ function GameShell(): React.JSX.Element {
         )}
 
         {state.phase === 'title' && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 18,
-            }}
-          >
-            <Art
-              id="env.title"
-              width={1600}
-              height={900}
-              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
-            />
-            <div
-              style={{
-                fontSize: 110,
-                fontWeight: 900,
-                color: '#d35400',
-                textShadow: '0 4px 0 #fff',
-                position: 'relative',
-              }}
-            >
-              Nom Nom Go!
-            </div>
-            <div className="bob" style={{ position: 'relative' }}>
-              <Art id="monster.og.idle" height={170} fallback={<span style={{ fontSize: 150 }}>👾</span>} />
-            </div>
+          <div data-testid="title-screen" style={{ position: 'absolute', inset: 0 }}>
+            {/* Storyboard: approved/title-intro-master.png. Each piece is generated
+                separately and placed in its storyboard box over the bleed plate. */}
+            <Backdrop id="env.title" />
+            <TitleArt id="chef.windowWave" box={TITLE_LAYOUT.chef} clip />
+            <TitleArt id="monster.og.wave" box={TITLE_LAYOUT.og} className="sway" />
+            <TitleArt id="monster.gobbler.wave" box={TITLE_LAYOUT.gobbler} className="sway sway-late" />
+            <Wordmark />
             <motion.button
               data-testid="go-button"
-              whileTap={{ scale: 0.94 }}
+              aria-label="Go"
+              whileTap={{ scale: 0.92 }}
               style={{
-                ...BTN,
-                width: 320,
-                height: 170,
-                fontSize: 64,
-                fontWeight: 900,
-                background: '#6bcb77',
-                position: 'relative',
+                position: 'absolute',
+                ...TITLE_LAYOUT.goButton,
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                borderRadius: '50%',
               }}
               onClick={() => {
                 unlockAudio();
@@ -607,14 +704,55 @@ function GameShell(): React.JSX.Element {
                 else startGame();
               }}
             >
-              ▶ Go!
+              {/* Pulse the image, not the button: a steady hit box for small fingers
+                  (and for Playwright's stability check). */}
+              <Art
+                id="ui.goButton"
+                className="pulse"
+                width={TITLE_LAYOUT.goButton.width}
+                height={TITLE_LAYOUT.goButton.height}
+                fallback={<span style={{ fontSize: 160 }}>▶</span>}
+              />
             </motion.button>
             <HoldButton
               testId="parent-gate"
               label="Parent area — press and hold"
-              icon={<Art id="chef.helpFace" size={84} fallback={<span>👨‍🍳</span>} />}
+              icon={
+                // Sticker badge: the chef's face fills the circle (shoulders cropped by it).
+                <span
+                  style={{
+                    width: TITLE_LAYOUT.parentButton.size - 12,
+                    height: TITLE_LAYOUT.parentButton.size - 12,
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    display: 'block',
+                  }}
+                >
+                  <Art
+                    id="chef.helpFace"
+                    width={104}
+                    height={104}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transform: 'scale(1.5) translateY(7%)',
+                    }}
+                    fallback={<span>👨‍🍳</span>}
+                  />
+                </span>
+              }
               onComplete={() => setParentOpen(true)}
-              style={{ position: 'absolute', left: 24, bottom: 24, background: '#fff3e2' }}
+              style={{
+                position: 'absolute',
+                left: TITLE_LAYOUT.parentButton.left,
+                bottom: TITLE_LAYOUT.parentButton.bottom,
+                width: TITLE_LAYOUT.parentButton.size,
+                height: TITLE_LAYOUT.parentButton.size,
+                padding: 0,
+                background: '#DA7C30', // orange fill from approved/order-at-window-1-centred-ordering.png
+                border: '6px solid #331230',
+              }}
             />
           </div>
         )}

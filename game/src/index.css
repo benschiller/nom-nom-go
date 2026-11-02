@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'Fredoka';
+  src: url('/fonts/fredoka-700-logo.woff') format('woff');
+  font-weight: 700;
+  font-display: block;
+}
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
 body {
@@ -15,3 +21,13 @@ button { font-family: inherit; cursor: pointer; }
 @keyframes shakeX { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
 .hint-glow { animation: glowPulse 1s ease-in-out infinite; }
 .bob { animation: bob 1.6s ease-in-out infinite; }
+/* Standing characters sway from their feet instead of hopping. */
+@keyframes sway { 0%,100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+.sway { transform-origin: 50% 100%; animation: sway 2.4s ease-in-out infinite; }
+.sway-late { animation-delay: -1.2s; }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.pulse { animation: pulse 1.4s ease-in-out infinite; }
+/* Title logo: each letter bobs a little, staggered, so a wave runs through it. */
+@keyframes wave-letter { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-9px) rotate(-2deg); } }
+.wave-letter { display: inline-block; animation: wave-letter 1.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sway, .pulse, .bob, .wave-letter { animation: none; } }
