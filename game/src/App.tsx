@@ -552,7 +552,7 @@ function GameShell(): React.JSX.Element {
 
   // Preload the next screens' plates so transitions do not flash placeholders.
   useEffect(() => {
-    preloadArt(['env.kitchen', 'env.levelTruck', 'env.night.closed', 'monster.og.idle']);
+    preloadArt(['env.kitchen', 'env.night.closed', 'monster.og.tap']);
   }, []);
 
   // Phase sound effects.
@@ -754,65 +754,6 @@ function GameShell(): React.JSX.Element {
                 border: '6px solid #331230',
               }}
             />
-          </div>
-        )}
-
-        {state.phase === 'levelIntro' && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Art
-              id="env.levelTruck"
-              width={1600}
-              height={900}
-              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
-            />
-            <Art
-              id="chef.hello"
-              height={220}
-              style={{ position: 'relative' }}
-              fallback={<Emoji size={180}>👨‍🍳👋</Emoji>}
-            />
-            <div
-              data-testid="level-pips"
-              style={{
-                display: 'flex',
-                gap: 10,
-                marginTop: 6,
-                background: '#fff3e2',
-                border: '5px solid rgba(90,50,20,.35)',
-                borderRadius: 20,
-                padding: '10px 22px',
-                position: 'relative',
-              }}
-            >
-              {Array.from({ length: state.level }, (_, i) => (
-                <Art key={i} id="ui.pip.lit" size={52} fallback={<span style={{ fontSize: 52 }}>⭐</span>} />
-              ))}
-            </div>
-            <motion.div
-              data-testid="level-wipe"
-              aria-hidden
-              initial={{ x: '-110%' }}
-              animate={{ x: '110%' }}
-              transition={{ duration: 1.4, ease: 'easeInOut' }}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                opacity: 0.35,
-                pointerEvents: 'none',
-                overflow: 'hidden',
-              }}
-            >
-              <Art id="env.goWipe" width={1600} height={900} style={{ objectFit: 'cover' }} />
-            </motion.div>
           </div>
         )}
 

@@ -86,7 +86,6 @@ ITEMS = [
 ]
 
 ENVS = [
-    ("env.kitchen", "kitchen-master-stars_000.png", "Remove the monster, all food, dishes, stars, buttons and every UI element. Keep the kitchen interior, serving window, counter and ingredient bar as a clean empty set plate."),
     ("env.levelTruck", "level-transition-master.png", "Remove the chef, all pips, stars and text from the sign so the mustard sign board is blank. Keep truck, posts, sky and pavement as a clean plate."),
     ("env.night.goodbye", "end-game-night-master.png", "Remove every character. Keep the night truck with warm light glowing from the open serving hatch and windows, moon and stars, as a clean empty plate."),
     ("env.night.closed", "end-game-night-master.png", "Remove every character, close the serving hatch shutter fully and dim the lights low for closing time. Keep the night truck, moon and stars as a clean empty plate."),
@@ -153,10 +152,59 @@ TITLE_QA = ["clean outline all the way round, even thickness", "nothing cropped"
             "matches the identity/design reference", "no drop shadow or background remnants"]
 TITLE_MASTER_SIZE = (1920, 1280)  # title-intro-master.png; the logo is native text in the game
 
+# Kitchen screens (ordering, Go! wipe, cooking). Targets: order-at-window-1/2/3
+# and kitchen-master-stars_000. The plate is generated whole and wide (the
+# bleed box): Muse Image cannot extend an existing picture's edges. Buttons
+# and the Go! band are generated alone on a key colour and SAM-soft cut; the
+# storyboard crops in refs/kitchen are design references only. "GO!" and the
+# play triangle on the band are native text/CSS in the game.
+KITCHEN_REFS = "generated_images/production/refs/kitchen"
+DESIGN_NOTE = "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+KITCHEN_PLATE = dict(
+    id="env.kitchen", category="env", mode="generate", size="1536x1024",
+    refs=[f"{APPROVED}/order-at-window-1-centred-ordering.png"],
+    ref_notes=["Style, palette and scenery reference (approved storyboard): copy its colours, line weight, coral window posts, "
+               "teal sky with darker teal rounded hills, and cream counter exactly. Do NOT copy its framing, the monster or any "
+               "button, badge or star: the new picture is a wider, empty view of the same kitchen."],
+    subject="Empty background plate of the inside of a food-truck kitchen, seen straight on. In the centre, a wide open serving "
+            "window: through it plain teal sky with soft darker-teal rounded hills along its bottom. Coral-red vertical posts with dark "
+            "outlines frame the left and right of the window, and a thin dark frame runs along its top. Around the window, plain flat teal "
+            "truck wall fills the margins on the left, right and top of the picture. A cream counter ledge runs across the full width of "
+            "the picture along the bottom of the window, drawn in gentle perspective with a dark outline on its back and front edges. "
+            "Below the counter, a plain flat cream counter front fills the bottom of the picture to the edges. Layout: the window opening "
+            "spans from 12% to 88% of the picture width; its top frame is at 13% of the picture height; the counter's back edge is at 54% "
+            "and its front edge at 60% of the picture height. Completely empty: no characters, no food, no shelves, no utensils, no "
+            "buttons, no stars, no icons, no objects.",
+    export={"w": 2400, "h": 1600, "alpha": False, "max_side": 2400},
+    display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
+    qa=["no text or letters", "no characters, food or objects", "empty serving window centred with coral posts both sides",
+        "plain wall and counter reach every edge"],
+)
+KITCHEN = [
+    dict(id="prop.undo", category="prop", key="magenta", sam="blue circle button",
+         refs=[f"{KITCHEN_REFS}/prop.undo.png"], ref_notes=[DESIGN_NOTE],
+         subject="A round button: a perfect circle filled with bright medium blue, a thick dark outline, and inside it a chunky "
+                 "U-shaped undo arrow in a deeper blue with a dark outline, its arrowhead pointing left. Flat, no text, no drop shadow."),
+    dict(id="prop.bell", category="prop", key="magenta", sam="yellow circle button",
+         refs=[f"{KITCHEN_REFS}/prop.bell.png"], ref_notes=[DESIGN_NOTE],
+         subject="A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden "
+                 "service bell with a small knob on top and a dark outline. Flat, no text, no drop shadow."),
+    dict(id="prop.trash", category="prop", key="green", sam="red circle button",
+         refs=[f"{KITCHEN_REFS}/prop.trash.png"], ref_notes=[DESIGN_NOTE],
+         subject="A round button: a perfect circle filled with bright tomato red, a thick dark outline, and inside it a red trash can "
+                 "with a lid and three vertical lines, drawn with a dark outline. Flat, no text, no drop shadow."),
+    dict(id="ui.goBand", category="prop", key="magenta", sam="yellow banner", size="1536x1024",
+         refs=[f"{KITCHEN_REFS}/ui.goBand.png"],
+         ref_notes=["Colour and texture reference only (approved Go! wipe storyboard): copy the yellow band's colours and its "
+                    "orange and pale-yellow speed streaks. Ignore the kitchen, the monster, the buttons, the letters and the triangle."],
+         subject="A long straight horizontal band of bright sunny yellow running across the whole width of the picture, about a "
+                 "quarter of the picture height tall, with long orange and pale-yellow speed streaks along its length and streaky, "
+                 "slightly ragged ends at the far left and far right. No outline, no letters, no triangle, nothing on it, no drop shadow."),
+]
+KITCHEN_QA = ["clean edge all the way round", "nothing cropped", "matches the design reference",
+              "no drop shadow or background remnants", "no text or letters"]
+
 PROPS = [
-    ("prop.bell", "a golden service bell with a button on top", 150),
-    ("prop.trash", "a small grey trash bin with a lid", 104),
-    ("prop.undo", "a chunky curved undo arrow, mustard yellow with dark outline", 104),
     ("prop.pause", "two chunky vertical pause bars in a rounded badge", 140),
     ("prop.play", "a chunky green play triangle in a rounded badge", 220),
     ("prop.speakerOn", "a speaker with sound waves coming out", 120),
@@ -219,6 +267,15 @@ def main():
             display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
             qa=["no text or letters", "no characters and an empty serving window",
                 "scenery continues to every edge with no seams or frames"],
+        ))
+    assets.append(asset(**KITCHEN_PLATE))
+    for spec in KITCHEN:
+        spec = dict(spec)
+        assets.append(asset(
+            id=spec.pop("id"), category=spec.pop("category"), mode="generate", cutter="sam-soft",
+            size=spec.pop("size", "1024x1024"), export={"alpha": True, "trim": True, "max_side": 1100 if spec["sam"] != "yellow banner" else 2400},
+            display="kitchen, placed by KITCHEN_LAYOUT in App.tsx", qa=KITCHEN_QA,
+            **spec,
         ))
     for mid, master, desc in MONSTERS:
         for pose, pose_line in POSES.items():

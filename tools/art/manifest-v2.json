@@ -14,31 +14,6 @@
     {
       "status": "pending",
       "version": 1,
-      "id": "env.kitchen",
-      "category": "env",
-      "mode": "edit",
-      "subject": "Remove the monster, all food, dishes, stars, buttons and every UI element. Keep the kitchen interior, serving window, counter and ingredient bar as a clean empty set plate.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1536x1024",
-      "export": {
-        "w": 3200,
-        "h": 1800,
-        "alpha": false
-      },
-      "display": "1600x900",
-      "sam": null,
-      "qa": [
-        "no text or letters",
-        "no characters",
-        "composition matches the master",
-        "top-right call corner is plain scenery only"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
       "id": "env.levelTruck",
       "category": "env",
       "mode": "edit",
@@ -310,6 +285,159 @@
         "no characters and an empty serving window",
         "scenery continues to every edge with no seams or frames"
       ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.kitchen",
+      "category": "env",
+      "mode": "generate",
+      "size": "1536x1024",
+      "refs": [
+        "generated_images/approved/order-at-window-1-centred-ordering.png"
+      ],
+      "ref_notes": [
+        "Style, palette and scenery reference (approved storyboard): copy its colours, line weight, coral window posts, teal sky with darker teal rounded hills, and cream counter exactly. Do NOT copy its framing, the monster or any button, badge or star: the new picture is a wider, empty view of the same kitchen."
+      ],
+      "subject": "Empty background plate of the inside of a food-truck kitchen, seen straight on. In the centre, a wide open serving window: through it plain teal sky with soft darker-teal rounded hills along its bottom. Coral-red vertical posts with dark outlines frame the left and right of the window, and a thin dark frame runs along its top. Around the window, plain flat teal truck wall fills the margins on the left, right and top of the picture. A cream counter ledge runs across the full width of the picture along the bottom of the window, drawn in gentle perspective with a dark outline on its back and front edges. Below the counter, a plain flat cream counter front fills the bottom of the picture to the edges. Layout: the window opening spans from 12% to 88% of the picture width; its top frame is at 13% of the picture height; the counter's back edge is at 54% and its front edge at 60% of the picture height. Completely empty: no characters, no food, no shelves, no utensils, no buttons, no stars, no icons, no objects.",
+      "export": {
+        "w": 2400,
+        "h": 1600,
+        "alpha": false,
+        "max_side": 2400
+      },
+      "display": "2000x1333 bleed box, safe 1600x900 centre",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters, food or objects",
+        "empty serving window centred with coral posts both sides",
+        "plain wall and counter reach every edge"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.undo",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "blue circle button",
+      "refs": [
+        "generated_images/production/refs/kitchen/prop.undo.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+      ],
+      "subject": "A round button: a perfect circle filled with bright medium blue, a thick dark outline, and inside it a chunky U-shaped undo arrow in a deeper blue with a dark outline, its arrowhead pointing left. Flat, no text, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.bell",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "yellow circle button",
+      "refs": [
+        "generated_images/production/refs/kitchen/prop.bell.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+      ],
+      "subject": "A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden service bell with a small knob on top and a dark outline. Flat, no text, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.trash",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "green",
+      "sam": "red circle button",
+      "refs": [
+        "generated_images/production/refs/kitchen/prop.trash.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+      ],
+      "subject": "A round button: a perfect circle filled with bright tomato red, a thick dark outline, and inside it a red trash can with a lid and three vertical lines, drawn with a dark outline. Flat, no text, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.goBand",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1536x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 2400
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "yellow banner",
+      "refs": [
+        "generated_images/production/refs/kitchen/ui.goBand.png"
+      ],
+      "ref_notes": [
+        "Colour and texture reference only (approved Go! wipe storyboard): copy the yellow band's colours and its orange and pale-yellow speed streaks. Ignore the kitchen, the monster, the buttons, the letters and the triangle."
+      ],
+      "subject": "A long straight horizontal band of bright sunny yellow running across the whole width of the picture, about a quarter of the picture height tall, with long orange and pale-yellow speed streaks along its length and streaky, slightly ragged ends at the far left and far right. No outline, no letters, no triangle, nothing on it, no drop shadow."
     },
     {
       "status": "pending",
@@ -4223,81 +4351,6 @@
         "bun half is instantly recognisable",
         "flat layer suitable for stacking",
         "no text"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
-      "id": "prop.bell",
-      "category": "prop",
-      "mode": "generate",
-      "subject": "A single chunky game UI icon: a golden service bell with a button on top. Bold, simple, readable at small size.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1024x1024",
-      "export": {
-        "w": 512,
-        "h": 512,
-        "alpha": true,
-        "fill": 0.8
-      },
-      "display": "150",
-      "sam": "a golden service bell with a button on top",
-      "qa": [
-        "icon meaning is instantly clear without text",
-        "chunky and readable at small size",
-        "no text or letters"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
-      "id": "prop.trash",
-      "category": "prop",
-      "mode": "generate",
-      "subject": "A single chunky game UI icon: a small grey trash bin with a lid. Bold, simple, readable at small size.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1024x1024",
-      "export": {
-        "w": 512,
-        "h": 512,
-        "alpha": true,
-        "fill": 0.8
-      },
-      "display": "104",
-      "sam": "a small grey trash bin with a lid",
-      "qa": [
-        "icon meaning is instantly clear without text",
-        "chunky and readable at small size",
-        "no text or letters"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
-      "id": "prop.undo",
-      "category": "prop",
-      "mode": "generate",
-      "subject": "A single chunky game UI icon: a chunky curved undo arrow, mustard yellow with dark outline. Bold, simple, readable at small size.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1024x1024",
-      "export": {
-        "w": 512,
-        "h": 512,
-        "alpha": true,
-        "fill": 0.8
-      },
-      "display": "104",
-      "sam": "a chunky curved undo arrow, mustard yellow with dark outline",
-      "qa": [
-        "icon meaning is instantly clear without text",
-        "chunky and readable at small size",
-        "no text or letters"
       ]
     },
     {

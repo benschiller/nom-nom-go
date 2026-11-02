@@ -82,9 +82,7 @@ export function simulateRun(persona: Persona, seed: number): RunResult {
   s = step(s, { type: 'go' });
   let guard = 0;
   while (!s.bossBeaten && guard++ < 4000) {
-    if (s.phase === 'levelIntro') {
-      tick(1600);
-    } else if (s.phase === 'ordering' || s.phase === 'goWipe') {
+    if (s.phase === 'ordering' || s.phase === 'goWipe') {
       tick(200);
     } else if (s.phase === 'cooking') {
       const order = s.orders[s.orderIndex];

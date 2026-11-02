@@ -137,8 +137,9 @@ describe('game flow', () => {
   it('reveals the order at the window in order and starts patience only after the Go! wipe', () => {
     let s = initialState({ seed: 99, savedLevel: 1 });
     s = step(s, { type: 'go' });
-    s = step(s, { type: 'tick', ms: 2000 });
+    // Go! leads straight to ordering at the window: no level-intro screen.
     expect(s.phase).toBe('ordering');
+    expect(s.orderingShown).toBe(0);
     const ticket = s.orders[s.orderIndex].ticket;
     s = step(s, { type: 'tick', ms: 100 });
     expect(s.orderingShown).toBe(1);
