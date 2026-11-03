@@ -445,6 +445,11 @@ export const MONSTERS: Monster[] = [
   { id: 'og', name: 'OG', emoji: '🟣', pitch: 0.9, formant: 500 },
 ];
 
+/** Every dish with complete content (items, bases, tests). */
 export const DISHES: DishId[] = ['burger', 'pizza', 'sundae'];
+/** Dishes dealt in play. The v1 (hackathon) launch is burger-only; pizza and
+ *  sundae stay content-complete as future development: add them back here
+ *  to turn them on. Nothing else needs to change. */
+export const ACTIVE_DISHES: readonly DishId[] = ['burger'];
 export const DISH_EMOJI: Record<DishId, string> = { burger: '🍔', pizza: '🍕', sundae: '🍨' };
 export const TOPPING_TYPES_BY_LEVEL: Record<number, number> = { 1: 2, 2: 2, 3: 3, 4: 3, 5: 3, 6: 4 };

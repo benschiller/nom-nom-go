@@ -365,6 +365,18 @@ function capOrder(order: Order, cap: number): Order {
   return { ...order, ticket, expected: [...order.prebuilt, ...ticket] };
 }
 
+/** Across a batch boundary, start the new batch on an order that does not
+ *  repeat the previous monster or ticket, nor its dish when the batch offers
+ *  another. Rotates (keeping batch order) rather than regenerating. */
+function rotatePastRepeat(orders: Order[], previous: Order): Order[] {
+  const otherDish = orders.some((o) => o.dish !== previous.dish);
+  const fresh = (o: Order): boolean =>
+    o.monster !== previous.monster &&
+    (otherDish ? o.dish !== previous.dish : o.ticket.join() !== previous.ticket.join());
+  const i = orders.findIndex(fresh);
+  return i <= 0 ? orders : [...orders.slice(i), ...orders.slice(0, i)];
+}
+
 function advanceAfterResult(s: GameState): GameState {
   const cleared = { ...s, result: null, pendingEvents: [] as string[] };
   // First wrong serve: same order again at the window, so the player can
@@ -422,7 +434,7 @@ function advanceAfterResult(s: GameState): GameState {
     return withStars;
   }
 
-  if (s.orderIndex < 2) {
+  if (s.orderIndex < s.orders.length - 1) {
     const failed = orderOf(s);
     // Option 1: after a second miss, the next order is capped at the failed
     // order's length, so a double miss is never followed by a longer order.
@@ -449,23 +461,17 @@ function advanceAfterResult(s: GameState): GameState {
     };
   }
   // Batch exhausted with progress still to bank: deal a fresh batch of
-  // rounds at the same level, keeping the banked correct count. Avoid an
-  // immediate dish or monster repeat across the batch boundary.
+  // rounds at the same level, keeping the banked correct count.
   const batch = startBatch(progressed, s.level, true);
   const previous = orderOf(s);
-  if (previous && batch.orders.length > 1) {
-    const first = batch.orders[0];
-    if (first.dish === previous.dish || first.monster === previous.monster) {
-      const rotated = [batch.orders[1], batch.orders[2], batch.orders[0]];
-      return {
-        ...batch,
-        orders: rotated,
-        built: [...rotated[0].prebuilt],
-        tutorial: tutorialFor(progressed, s.level, rotated[0]),
-      };
-    }
-  }
-  return batch;
+  const orders = previous ? rotatePastRepeat(batch.orders, previous) : batch.orders;
+  if (orders === batch.orders) return batch;
+  return {
+    ...batch,
+    orders,
+    built: [...orders[0].prebuilt],
+    tutorial: tutorialFor(progressed, s.level, orders[0]),
+  };
 }
 
 function continueFromLevelResult(s: GameState): GameState {

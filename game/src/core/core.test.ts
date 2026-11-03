@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { ITEMS, MONSTERS, itemsFor } from '../content/content';
+import { ACTIVE_DISHES, DISHES, ITEMS, MONSTERS, itemsFor } from '../content/content';
 import { classifyMismatch } from './compare';
 import { deserialize, initialState, serialize, step, type GameState } from './game';
 import { toMirror } from './mirror';
-import { generateOrder, generateTryOrders } from './orders';
+import { ORDERS_PER_BATCH, generateOrder, generateTryOrders } from './orders';
 import { orderingIntervalMs, patienceMs, perItemSeconds } from './pace';
 import { makeRng } from './rng';
 import { defaultSave, migrateSave, saveFromState } from './save';
@@ -14,8 +14,9 @@ describe('order generation', () => {
     for (let level = 1; level <= 6; level++) {
       for (let seed = 1; seed <= 30; seed++) {
         const { orders } = generateTryOrders(level, seed * 7919);
-        expect(orders).toHaveLength(3);
-        expect(new Set(orders.map((o) => o.dish)).size).toBe(3);
+        expect(orders).toHaveLength(ORDERS_PER_BATCH);
+        expect(orders.every((o) => ACTIVE_DISHES.includes(o.dish))).toBe(true);
+        expect(new Set(orders.map((o) => o.monster)).size).toBe(ORDERS_PER_BATCH);
         for (const order of orders) {
           for (const needed of new Set(order.ticket)) {
             expect(order.tray, `L${level} ${order.dish} needs ${needed}`).toContain(needed);
@@ -23,6 +24,29 @@ describe('order generation', () => {
           expect(order.tray.length, `L${level} ${order.dish} tray size`).toBe(level + 3);
           expect(new Set(order.tray).size).toBe(order.tray.length);
         }
+      }
+    }
+  });
+
+  it('v1 deals burgers only; pizza and sundae stay content-complete but off', () => {
+    expect(ACTIVE_DISHES).toEqual(['burger']);
+    for (let level = 1; level <= 6; level++) {
+      for (let seed = 1; seed <= 30; seed++) {
+        const { orders } = generateTryOrders(level, seed * 104729);
+        expect(orders.map((o) => o.dish)).toEqual(['burger', 'burger', 'burger']);
+        for (let i = 1; i < orders.length; i++) {
+          expect(orders[i].ticket, `L${level} seed ${seed} repeat`).not.toEqual(orders[i - 1].ticket);
+        }
+      }
+    }
+  });
+
+  it('turning all dishes back on deals one of each, solvable', () => {
+    for (let level = 1; level <= 6; level++) {
+      for (let seed = 1; seed <= 10; seed++) {
+        const { orders } = generateTryOrders(level, seed * 7919, {}, DISHES);
+        expect(new Set(orders.map((o) => o.dish)).size).toBe(3);
+        for (const order of orders) for (const id of new Set(order.ticket)) expect(order.tray).toContain(id);
       }
     }
   });
@@ -333,6 +357,37 @@ describe('game flow', () => {
     s = step(s, { type: 'continue' });
     expect(s.level).toBe(2);
     expect(s.starsTry).toBe(0);
+  });
+
+  it('never repeats a monster or ticket back-to-back, across batch boundaries too', () => {
+    for (let seed = 1; seed <= 40; seed++) {
+      // Level 6 needs 7 banked: several batches with misses force boundaries.
+      let s = initialState({ seed, savedLevel: 6 });
+      s = step(s, { type: 'go' });
+      s = { ...s, warmup: false, level: 6 };
+      let prev: { monster: string; ticket: string } | null = null;
+      let rounds = 0;
+      for (let round = 0; round < 12 && s.phase === 'ordering'; round++) {
+        const order = s.orders[s.orderIndex];
+        const cur = { monster: order.monster, ticket: order.ticket.join() };
+        if (prev) {
+          expect(cur.monster, `seed ${seed} round ${round}`).not.toBe(prev.monster);
+          expect(cur.ticket, `seed ${seed} round ${round}`).not.toBe(prev.ticket);
+        }
+        prev = cur;
+        // Miss every round (wrong serve, then a wrong retry of the same
+        // order): nothing banks, so batches keep turning over.
+        for (let attempt = 0; attempt < 2; attempt++) {
+          s = step(s, { type: 'tick', ms: 30000 });
+          s = step(s, { type: 'tick', ms: 1000 });
+          expect(s.phase).toBe('cooking');
+          s = step(s, { type: 'serve' });
+          s = step(s, { type: 'tick', ms: 3000 });
+        }
+        rounds++;
+      }
+      expect(rounds).toBe(12);
+    }
   });
 
   it('restores banked progress when starting the saved level', () => {

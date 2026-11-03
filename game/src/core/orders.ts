@@ -1,5 +1,5 @@
 import {
-  DISHES,
+  ACTIVE_DISHES,
   ITEM_BY_ID,
   MONSTERS,
   PREBUILT_BASE,
@@ -145,17 +145,37 @@ export function generateOrder(
   return { dish, monster, expected, ticket, prebuilt, tray, broken };
 }
 
+/** Orders dealt per batch (round set) at the kitchen window. */
+export const ORDERS_PER_BATCH = 3;
+
+const sameTicket = (a: Order, b: Order): boolean =>
+  a.dish === b.dish && a.ticket.length === b.ticket.length && a.ticket.every((id, i) => id === b.ticket[i]);
+
+/** Deal one batch: ORDERS_PER_BATCH orders, each from a different monster,
+ *  cycling through the active dishes (one of each when three are active).
+ *  Two orders in a row never share an identical ticket. */
 export function generateTryOrders(
   level: number,
   seed: number,
   opts: GenerateOptions = {},
+  dishes: readonly DishId[] = ACTIVE_DISHES,
 ): { orders: Order[]; rngState: number } {
   const rng = makeRng(seed);
-  const dishes = shuffled(rng, DISHES);
+  const dishOrder = shuffled(rng, [...dishes]);
   const monsters = shuffled(
     rng,
     MONSTERS.map((m) => m.id),
   );
-  const orders = dishes.map((dish, i) => generateOrder(level, dish, rng, monsters[i % monsters.length], opts));
+  const orders: Order[] = [];
+  for (let i = 0; i < ORDERS_PER_BATCH; i++) {
+    const dish = dishOrder[i % dishOrder.length];
+    const monster = monsters[i % monsters.length];
+    let order = generateOrder(level, dish, rng, monster, opts);
+    const prev = orders[i - 1];
+    for (let retry = 0; prev && sameTicket(order, prev) && retry < 8; retry++) {
+      order = generateOrder(level, dish, rng, monster, opts);
+    }
+    orders.push(order);
+  }
   return { orders, rngState: rng.state };
 }
