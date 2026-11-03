@@ -55,14 +55,20 @@ if (mode === 'pre-bash') {
 }
 
 if (mode === 'post-bash') {
-  if (/\bgh\s+pr\s+merge\b/.test(command)) {
+  // Only a real `gh pr merge` invocation (start of command or after a separator),
+  // not the words appearing inside a commit message or heredoc.
+  const firstLine = command.split('\n')[0];
+  if (/(?:^|[;&|]\s*)gh\s+pr\s+merge\b/.test(firstLine.trim())) {
+    let out = '';
     try {
-      const out = report(syncMain());
-      if (out) console.error(out);
+      out = report(syncMain());
     } catch (e) {
-      console.error(`git-guard: could not sync main after merge (${e.message})`);
+      out = `git-guard: could not sync main after merge (${e.message})`;
     }
-    process.exit(2); // exit 2 on PostToolUse feeds stderr back to Claude
+    if (out) {
+      console.error(out);
+      process.exit(2); // exit 2 on PostToolUse feeds stderr back to Claude
+    }
   }
   process.exit(0);
 }
