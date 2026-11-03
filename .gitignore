@@ -28,3 +28,6 @@ coverage/
 # test artifacts
 playwright-report/
 test-results/
+
+# playwright artifacts
+.playwright-mcp/
