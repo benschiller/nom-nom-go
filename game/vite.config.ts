@@ -1,10 +1,12 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { devGitGuard } from './scripts/devGitGuard';
 
 export default defineConfig({
   plugins: [
     react(),
+    devGitGuard(),
     VitePWA({
       registerType: 'prompt',
       injectRegister: null,
