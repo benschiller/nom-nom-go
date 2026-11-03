@@ -19,6 +19,8 @@ import { generateTryOrders, type Order } from './orders';
 
 export type Phase =
   | 'title'
+  /** First-play onboarding tour, between the title and the first order. */
+  | 'tour'
   | 'ordering'
   | 'goWipe'
   | 'cooking'
@@ -27,6 +29,15 @@ export type Phase =
   | 'bossEnding'
   | 'closed'
   | 'poweredOff';
+
+/** Steps in the first-play onboarding tour. */
+export const TOUR_STEPS = 3;
+
+/** Phases where play is live: the only ones a pause can freeze. Pausing
+ *  anywhere else (title, tour, results, night) has no meaning, so the
+ *  'pause' event is ignored there and never strands a menu screen. */
+const PAUSABLE: ReadonlySet<Phase> = new Set(['ordering', 'goWipe', 'cooking', 'serveResult']);
+export const isPausable = (phase: Phase): boolean => PAUSABLE.has(phase);
 
 /** How long the Go! wipe sweeps before cooking (and patience) starts. */
 export const GO_WIPE_MS = 700;
@@ -56,6 +67,8 @@ export interface TelemetryEntry {
 
 export interface GameState {
   phase: Phase;
+  /** Current step of the onboarding tour (0-based); meaningful only in the 'tour' phase. */
+  tourStep: number;
   paused: boolean;
   seed: number;
   rngState: number;
@@ -113,7 +126,11 @@ export interface GameState {
 }
 
 export type GameEvent =
-  | { type: 'go' }
+  /** Leave the title. `tour` asks for the onboarding tour first; the shell
+   *  decides (first play, or forced by a URL flag). */
+  | { type: 'go'; tour?: boolean }
+  /** Advance the onboarding tour; the last step starts Level 1. */
+  | { type: 'tourNext' }
   | { type: 'tick'; ms: number }
   | { type: 'orderingFinished' }
   /** Deprecated alias of orderingFinished. */
@@ -130,8 +147,7 @@ export type GameEvent =
   | { type: 'powerOff' }
   | { type: 'powerOn' }
   | { type: 'powerReset' }
-  | { type: 'tutorialDone' }
-  | { type: 'tourDone' };
+  | { type: 'tutorialDone' };
 
 export interface StartOptions {
   seed?: number;
@@ -156,6 +172,7 @@ export function initialState(opts: StartOptions = {}): GameState {
   return {
     phase: power === 'off' ? 'poweredOff' : boss ? 'closed' : 'title',
     paused: false,
+    tourStep: 0,
     seed: opts.seed ?? 1234,
     rngState: opts.seed ?? 1234,
     level: savedLevel,
@@ -497,6 +514,14 @@ function withTutorialDismissed(s: GameState): GameState {
   };
 }
 
+/** Title (and the first-play tour) lead straight to ordering at the kitchen
+ *  window: there is no separate level-intro screen. Returning players warm
+ *  up one level below their frontier. */
+function startFromTitle(s: GameState): GameState {
+  const warmup = s.savedLevel > 1;
+  return startTry({ ...s, warmup }, warmup ? s.savedLevel - 1 : s.savedLevel);
+}
+
 export function step(prev: GameState, event: GameEvent): GameState {
   // orderingFinished is allowed through while paused: the voice may finish
   // in the background, and dropping it would strand the game in ordering.
@@ -512,26 +537,25 @@ export function step(prev: GameState, event: GameEvent): GameState {
     return prev;
   switch (event.type) {
     case 'pause':
-      return { ...prev, paused: true };
+      return isPausable(prev.phase) ? { ...prev, paused: true } : prev;
     case 'resume':
       // Resuming counts as activity, so patience visibly moves again
       // instead of staying in the idle freeze until the next ingredient tap.
       return { ...prev, paused: false, idleMs: 0 };
     case 'go': {
       if (prev.phase !== 'title') return prev;
-      const startLevel = Math.max(1, prev.savedLevel - (prev.savedLevel > 1 ? 1 : 0));
-      const warmup = prev.savedLevel > 1;
-      // Title (and the first-play tutorial) lead straight to ordering at
-      // the kitchen window: there is no separate level-intro screen.
-      return startTry({ ...prev, warmup }, warmup ? startLevel : prev.savedLevel);
+      if (event.tour) return { ...prev, phase: 'tour', tourStep: 0, phaseMs: 0 };
+      return startFromTitle(prev);
+    }
+    case 'tourNext': {
+      if (prev.phase !== 'tour') return prev;
+      if (prev.tourStep < TOUR_STEPS - 1) return { ...prev, tourStep: prev.tourStep + 1 };
+      const seen = prev.tutorialsSeen.includes('tour') ? prev.tutorialsSeen : [...prev.tutorialsSeen, 'tour'];
+      return startFromTitle({ ...prev, tutorialsSeen: seen, tourStep: 0 });
     }
     case 'continue': {
       if (prev.phase === 'levelResult') return continueFromLevelResult(prev);
       return prev;
-    }
-    case 'tourDone': {
-      if (prev.tutorialsSeen.includes('tour')) return prev;
-      return { ...prev, tutorialsSeen: [...prev.tutorialsSeen, 'tour'] };
     }
     case 'tutorialDone': {
       return withTutorialDismissed(prev);

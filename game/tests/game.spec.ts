@@ -46,6 +46,28 @@ test('first-play tutorial: three steps, Go is the only control, then play starts
   await expect(page.getByTestId('stage')).not.toHaveAttribute('data-phase', 'title');
 });
 
+test('leaving the app mid-tutorial still leads to the first order, not the title', async ({ page }) => {
+  await page.goto(`${TEST_URL}&tour=1`);
+  await page.getByTestId('go-button').click();
+  await expect(page.getByTestId('tour')).toBeVisible();
+  await page.getByTestId('tour-next').click();
+  // Background the tab (iPad lock, app switch), then come back.
+  await page.evaluate(() => {
+    const setHidden = (hidden: boolean): void => {
+      Object.defineProperty(document, 'hidden', { configurable: true, get: () => hidden });
+      document.dispatchEvent(new Event('visibilitychange'));
+    };
+    setHidden(true);
+    setHidden(false);
+  });
+  await expect(page.getByTestId('resume-button')).toHaveCount(0);
+  await page.getByTestId('tour-next').click();
+  await page.getByTestId('tour-next').click();
+  await expect(page.getByTestId('tour')).toHaveCount(0);
+  await expect(page.getByTestId('title-screen')).toHaveCount(0);
+  await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', /ordering|goWipe|cooking/);
+});
+
 test('orders at the kitchen window: sill row in order, then Nom Nom', async ({ page }) => {
   await page.goto('/?test=1&seed=99&speed=2');
   await page.getByTestId('go-button').click();
