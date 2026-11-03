@@ -14,56 +14,6 @@
     {
       "status": "pending",
       "version": 1,
-      "id": "env.title",
-      "category": "env",
-      "mode": "edit",
-      "subject": "Remove all text, the logotype, the play button, every monster and the chef. Keep the coral food truck, awning, sky, pavement and confetti as a clean empty backdrop plate.",
-      "refs": [
-        "generated_images/approved/title-intro-master.png"
-      ],
-      "size": "1536x1024",
-      "export": {
-        "w": 3200,
-        "h": 1800,
-        "alpha": false
-      },
-      "display": "1600x900",
-      "sam": null,
-      "qa": [
-        "no text or letters",
-        "no characters",
-        "composition matches the master",
-        "top-right call corner is plain scenery only"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
-      "id": "env.kitchen",
-      "category": "env",
-      "mode": "edit",
-      "subject": "Remove the monster, all food, dishes, stars, buttons and every UI element. Keep the kitchen interior, serving window, counter and ingredient bar as a clean empty set plate.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1536x1024",
-      "export": {
-        "w": 3200,
-        "h": 1800,
-        "alpha": false
-      },
-      "display": "1600x900",
-      "sam": null,
-      "qa": [
-        "no text or letters",
-        "no characters",
-        "composition matches the master",
-        "top-right call corner is plain scenery only"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
       "id": "env.levelTruck",
       "category": "env",
       "mode": "edit",
@@ -160,6 +110,582 @@
         "composition matches the master",
         "top-right call corner is plain scenery only"
       ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.og.wave",
+      "category": "monster",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "green",
+      "sam": "purple monster",
+      "refs": [
+        "generated_images/approved/og_002.png",
+        "generated_images/production/refs/title/monster.og.wave.png"
+      ],
+      "ref_notes": [
+        "Character identity reference (approved character sheet): match this character exactly.",
+        "Pose and framing reference only (taken from the approved title storyboard): copy this pose, expression and proportions exactly, but ignore its background and anything behind the subject."
+      ],
+      "subject": "OG, tall purple one-eyed monster, one huge single eye, wide happy open-mouth smile with pink tongue, smooth purple skin with a lighter lavender oval belly patch, long arms with small hands, long legs with big flat feet. Pose: standing tall facing camera, waving hello with its left arm raised high beside its head, other arm relaxed at its side. Full body, nothing cropped, no drop shadow, no ground.",
+      "place_frac": [
+        0.05156,
+        0.40781,
+        0.2875,
+        0.87578
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.wave",
+      "category": "monster",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "magenta",
+      "sam": "orange monster",
+      "refs": [
+        "generated_images/approved/gobbler_002.png",
+        "generated_images/production/refs/title/monster.gobbler.wave.png"
+      ],
+      "ref_notes": [
+        "Character identity reference (approved character sheet): match this character exactly.",
+        "Pose and framing reference only (taken from the approved title storyboard): copy this pose, expression and proportions exactly, but ignore its background and anything behind the subject."
+      ],
+      "subject": "Gobbler, round orange monster whose body is one big belly with a cream belly patch, one large eye above two small eyes, wide smile with two small teeth, tiny tuft of hair, short stubby arms and legs with big round feet. Pose: standing facing camera, waving hello with its right arm raised high, other arm relaxed. Full body, nothing cropped, no drop shadow, no ground.",
+      "place_frac": [
+        0.72344,
+        0.48906,
+        0.95729,
+        0.89609
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "chef.windowWave",
+      "category": "chef",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "magenta",
+      "sam": "chef",
+      "refs": [
+        "generated_images/approved/head-chef-dad.png",
+        "generated_images/production/refs/title/chef.windowWave.png"
+      ],
+      "ref_notes": [
+        "Character identity reference (approved Head Chef): match this character exactly.",
+        "Pose and framing reference only (taken from the approved title storyboard): copy this pose, expression and proportions exactly, but ignore its background and anything behind the subject."
+      ],
+      "subject": "The Head Chef: friendly older man with warm brown skin, short grey hair, tall white chef hat, white double-breasted chef jacket. Upper body from the waist up, facing camera, big warm smile, waving hello with his left hand raised beside his head. No counter, no window, no drop shadow.",
+      "place_frac": [
+        0.38854,
+        0.37031,
+        0.55937,
+        0.58047
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.goButton",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "title, placed by master box",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the identity/design reference",
+        "no drop shadow or background remnants"
+      ],
+      "key": "magenta",
+      "sam": "green circle button",
+      "refs": [
+        "generated_images/production/refs/title/ui.goButton.png"
+      ],
+      "ref_notes": [
+        "Exact design reference: reproduce this button exactly, alone."
+      ],
+      "subject": "A big round play button: a perfect circle filled with bright green, a thick dark outline, and a large rounded white play triangle in the centre pointing right. Flat, no text, no drop shadow.",
+      "place_frac": [
+        0.40781,
+        0.70391,
+        0.59635,
+        0.97656
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.title",
+      "category": "env",
+      "mode": "derive",
+      "subject": "Title background plate supplied by the user: coral food truck with empty serving window, sky, hills, ground and confetti extended to every edge.",
+      "refs": [
+        "generated_images/production/import/extended_edge.png"
+      ],
+      "size": "import",
+      "export": {
+        "w": 2400,
+        "h": 1600,
+        "alpha": false,
+        "max_side": 2400
+      },
+      "display": "2000x1333 bleed box, safe 1600x900 centre",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters and an empty serving window",
+        "scenery continues to every edge with no seams or frames"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.tutorial",
+      "category": "env",
+      "mode": "generate",
+      "size": "1536x1024",
+      "refs": [
+        "generated_images/approved/tutorial-01.png"
+      ],
+      "ref_notes": [
+        "Style and colour reference (approved storyboard): copy only its warm cream paper background and the soft teal glow in the top-right corner. Ignore every object, icon, circle, button and character: the new picture is empty."
+      ],
+      "subject": "Empty background: warm cream paper colour with a very subtle soft grain, filling the whole picture. In the top-right corner, a soft cloudy teal-turquoise glow fades gently into the cream, covering about the right third of the top half; the rest is plain cream. Completely empty: no objects, no shapes, no outlines, no icons, no characters, no text.",
+      "export": {
+        "w": 2400,
+        "h": 1600,
+        "alpha": false,
+        "max_side": 2400
+      },
+      "display": "2000x1333 bleed box, safe 1600x900 centre",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no objects, icons or characters",
+        "cream paper with a soft teal glow top-right",
+        "no seams or frames"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "tut.lettuce",
+      "category": "tutorial",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "green leaf",
+      "refs": [
+        "generated_images/production/refs/tutorial/tut.lettuce.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+      ],
+      "subject": "A single big ruffled green lettuce leaf, tilted diagonally with its stem at the bottom left, bright green with a pale green central vein and branching veins, thick dark outline. Flat, no drop shadow, no ground."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "tut.tomato",
+      "category": "tutorial",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "red tomato",
+      "refs": [
+        "generated_images/production/refs/tutorial/tut.tomato.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+      ],
+      "subject": "A single whole round red tomato with a green leafy star-shaped top, a small white shine on its left side, thick dark outline. Flat, no drop shadow, no ground."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "tut.patty",
+      "category": "tutorial",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "burger patty on a bun",
+      "refs": [
+        "generated_images/production/refs/tutorial/tut.patty.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+      ],
+      "subject": "A thick bumpy brown cooked burger patty sitting on a golden-tan bottom bun with small speckles, seen from slightly above, thick dark outlines. Flat, no drop shadow, no ground."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "tut.glove",
+      "category": "tutorial",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "white glove hand",
+      "refs": [
+        "generated_images/production/refs/tutorial/tut.glove.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+      ],
+      "subject": "A white cartoon glove hand seen from the back, pointing its index finger diagonally down and to the right, other fingers curled, three short dark crease lines on the back of the hand, thick dark outline. Flat, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "tut.burger",
+      "category": "tutorial",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "burger",
+      "refs": [
+        "generated_images/production/refs/tutorial/tut.burger.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+      ],
+      "subject": "A tall stacked cheeseburger seen from the side, from top to bottom: domed golden sesame top bun, ruffled green lettuce, a thick yellow pineapple slice, a red tomato slice with a thin green edge, a brown patty, a yellow cheese slice with draped corners, a second brown patty, golden speckled bottom bun. Thick dark outlines, flat colours. No drop shadow, no plate."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "tut.bell",
+      "category": "tutorial",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "yellow circle",
+      "refs": [
+        "generated_images/production/refs/tutorial/tut.bell.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+      ],
+      "subject": "A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden service bell with a small loop handle on top and a round clapper below, a light shine on its left, dark outline. Flat, no text, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "monster.gobbler.point",
+      "category": "monster",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "qa": [
+        "clean outline all the way round, even thickness",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "orange monster",
+      "refs": [
+        "generated_images/approved/gobbler_002.png",
+        "generated_images/production/refs/tutorial/monster.gobbler.point.png"
+      ],
+      "ref_notes": [
+        "Character identity reference (approved character sheet): match this character exactly.",
+        "Pose and framing reference only (taken from the approved tutorial storyboard): copy this pose, expression and proportions exactly, but ignore its background, the red tile and anything behind the subject."
+      ],
+      "subject": "Gobbler, round orange monster whose body is one big belly with a cream belly patch, one large eye above two small eyes, wide smile with two small teeth, tiny tuft of hair, short stubby arms and legs with big round feet. Pose: standing facing camera, its right arm stretched out to the left side of the picture, pointing with one finger, other arm relaxed at its side. Full body, nothing cropped, no drop shadow, no ground."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "env.kitchen",
+      "category": "env",
+      "mode": "generate",
+      "size": "1536x1024",
+      "refs": [
+        "generated_images/approved/order-at-window-1-centred-ordering.png"
+      ],
+      "ref_notes": [
+        "Style, palette and scenery reference (approved storyboard): copy its colours, line weight, coral window posts, teal sky with darker teal rounded hills, and cream counter exactly. Do NOT copy its framing, the monster or any button, badge or star: the new picture is a wider, empty view of the same kitchen."
+      ],
+      "subject": "Empty background plate of the inside of a food-truck kitchen, seen straight on. In the centre, a wide open serving window: through it plain teal sky with soft darker-teal rounded hills along its bottom. Coral-red vertical posts with dark outlines frame the left and right of the window, and a thin dark frame runs along its top. Around the window, plain flat teal truck wall fills the margins on the left, right and top of the picture. A cream counter ledge runs across the full width of the picture along the bottom of the window, drawn in gentle perspective with a dark outline on its back and front edges. Below the counter, a plain flat cream counter front fills the bottom of the picture to the edges. Layout: the window opening spans from 12% to 88% of the picture width; its top frame is at 13% of the picture height; the counter's back edge is at 54% and its front edge at 60% of the picture height. Completely empty: no characters, no food, no shelves, no utensils, no buttons, no stars, no icons, no objects.",
+      "export": {
+        "w": 2400,
+        "h": 1600,
+        "alpha": false,
+        "max_side": 2400
+      },
+      "display": "2000x1333 bleed box, safe 1600x900 centre",
+      "sam": null,
+      "qa": [
+        "no text or letters",
+        "no characters, food or objects",
+        "empty serving window centred with coral posts both sides",
+        "plain wall and counter reach every edge"
+      ]
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.undo",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "blue circle button",
+      "refs": [
+        "generated_images/production/refs/kitchen/prop.undo.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+      ],
+      "subject": "A round button: a perfect circle filled with bright medium blue, a thick dark outline, and inside it a chunky U-shaped undo arrow in a deeper blue with a dark outline, its arrowhead pointing left. Flat, no text, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.bell",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "yellow circle button",
+      "refs": [
+        "generated_images/production/refs/kitchen/prop.bell.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+      ],
+      "subject": "A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden service bell with a small knob on top and a dark outline. Flat, no text, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "prop.trash",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1024x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 1100
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "green",
+      "sam": "red circle button",
+      "refs": [
+        "generated_images/production/refs/kitchen/prop.trash.png"
+      ],
+      "ref_notes": [
+        "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+      ],
+      "subject": "A round button: a perfect circle filled with bright tomato red, a thick dark outline, and inside it a red trash can with a lid and three vertical lines, drawn with a dark outline. Flat, no text, no drop shadow."
+    },
+    {
+      "status": "pending",
+      "version": 1,
+      "id": "ui.goBand",
+      "category": "prop",
+      "mode": "generate",
+      "cutter": "sam-soft",
+      "size": "1536x1024",
+      "export": {
+        "alpha": true,
+        "trim": true,
+        "max_side": 2400
+      },
+      "display": "kitchen, placed by KITCHEN_LAYOUT in App.tsx",
+      "qa": [
+        "clean edge all the way round",
+        "nothing cropped",
+        "matches the design reference",
+        "no drop shadow or background remnants",
+        "no text or letters"
+      ],
+      "key": "magenta",
+      "sam": "yellow banner",
+      "refs": [
+        "generated_images/production/refs/kitchen/ui.goBand.png"
+      ],
+      "ref_notes": [
+        "Colour and texture reference only (approved Go! wipe storyboard): copy the yellow band's colours and its orange and pale-yellow speed streaks. Ignore the kitchen, the monster, the buttons, the letters and the triangle."
+      ],
+      "subject": "A long straight horizontal band of bright sunny yellow running across the whole width of the picture, about a quarter of the picture height tall, with long orange and pale-yellow speed streaks along its length and streaky, slightly ragged ends at the far left and far right. No outline, no letters, no triangle, nothing on it, no drop shadow."
     },
     {
       "status": "pending",
@@ -2067,7 +2593,8 @@
         "fill": 0.8
       },
       "display": "104 circle",
-      "sam": "chef head",
+      "sam": "chef",
+      "cutter": "sam-soft",
       "qa": [
         "same Head Chef identity as the reference",
         "head centred for circle crop",
@@ -4072,81 +4599,6 @@
         "bun half is instantly recognisable",
         "flat layer suitable for stacking",
         "no text"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
-      "id": "prop.bell",
-      "category": "prop",
-      "mode": "generate",
-      "subject": "A single chunky game UI icon: a golden service bell with a button on top. Bold, simple, readable at small size.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1024x1024",
-      "export": {
-        "w": 512,
-        "h": 512,
-        "alpha": true,
-        "fill": 0.8
-      },
-      "display": "150",
-      "sam": "a golden service bell with a button on top",
-      "qa": [
-        "icon meaning is instantly clear without text",
-        "chunky and readable at small size",
-        "no text or letters"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
-      "id": "prop.trash",
-      "category": "prop",
-      "mode": "generate",
-      "subject": "A single chunky game UI icon: a small grey trash bin with a lid. Bold, simple, readable at small size.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1024x1024",
-      "export": {
-        "w": 512,
-        "h": 512,
-        "alpha": true,
-        "fill": 0.8
-      },
-      "display": "104",
-      "sam": "a small grey trash bin with a lid",
-      "qa": [
-        "icon meaning is instantly clear without text",
-        "chunky and readable at small size",
-        "no text or letters"
-      ]
-    },
-    {
-      "status": "pending",
-      "version": 1,
-      "id": "prop.undo",
-      "category": "prop",
-      "mode": "generate",
-      "subject": "A single chunky game UI icon: a chunky curved undo arrow, mustard yellow with dark outline. Bold, simple, readable at small size.",
-      "refs": [
-        "generated_images/approved/kitchen-master-stars_000.png"
-      ],
-      "size": "1024x1024",
-      "export": {
-        "w": 512,
-        "h": 512,
-        "alpha": true,
-        "fill": 0.8
-      },
-      "display": "104",
-      "sam": "a chunky curved undo arrow, mustard yellow with dark outline",
-      "qa": [
-        "icon meaning is instantly clear without text",
-        "chunky and readable at small size",
-        "no text or letters"
       ]
     },
     {

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { easeInOut, motion, useReducedMotion, useTime, useTransform } from 'motion/react';
 import { MONSTERS } from './content/content';
 import { bankedTarget } from './core/difficulty';
 import { currentOrder } from './core/game';
 import { defaultSave } from './core/save';
 import {
   playGibberish,
+  playClipById,
   playKioskItem,
   playSfx,
   setSoundOn,
@@ -15,6 +16,7 @@ import {
 } from './audio/audio';
 import { isTestMode, testSpeed, useGame } from './ui/store';
 import { Emoji, ItemIcon } from './ui/ItemIcon';
+import { Art, Backdrop, monsterPoseFor, preloadArt } from './ui/Art';
 import { ParentArea } from './ui/ParentArea';
 import { Confetti } from './ui/Confetti';
 import { DadRoute } from './net/DadViews';
@@ -54,6 +56,126 @@ const BTN: React.CSSProperties = {
   justifyContent: 'center',
 };
 
+/**
+ * TITLE SCREEN LAYOUT — edit these numbers to move or resize pieces.
+ * Units: the game's 1600x900 stage (0,0 = top-left of the 16:9 safe area).
+ * left/top = top-left corner, width/height = size. Bigger left = further right,
+ * bigger top = further down. The dev server updates on save.
+ */
+const TITLE_LAYOUT = {
+  chef: { left: 581.5, top: 301.7, width: 337.7, height: 277.0 }, // in the truck window; bottom edge = counter line
+  og: { left: 82.5, top: 351.7, width: 377.5, height: 499.2 }, // purple monster, left
+  gobbler: { left: 1173.5, top: 438.3, width: 374.2, height: 434.2 }, // orange monster, right
+  goButton: { left: 675.1, top: 642.8, width: 256.4, height: 247.2 },
+  logo: { left: 175.8, top: 9.2, width: 1160.0, height: 168.3 },
+  parentButton: { left: 24, bottom: 24, size: 116 },
+} as const;
+
+type Box = { left: number; top: number; width: number; height: number };
+
+/** A title piece drawn in its TITLE_LAYOUT box. Standing characters sit on the box
+ *  bottom. `clip` fills the box width from the top and hides anything below the box
+ *  bottom (the chef behind the window counter). */
+function TitleArt({
+  id,
+  box,
+  className,
+  clip = false,
+}: {
+  id: string;
+  box: Box;
+  className?: string;
+  clip?: boolean;
+}): React.JSX.Element {
+  if (clip) {
+    return (
+      <div style={{ position: 'absolute', ...box, overflow: 'hidden', pointerEvents: 'none' }}>
+        <Art
+          id={id}
+          className={className}
+          width={box.width}
+          height={box.height}
+          style={{ objectFit: 'cover', objectPosition: '50% 0%' }}
+        />
+      </div>
+    );
+  }
+  return (
+    <Art
+      id={id}
+      className={className}
+      width={box.width}
+      height={box.height}
+      style={{ position: 'absolute', ...box, objectPosition: '50% 100%', pointerEvents: 'none' }}
+    />
+  );
+}
+
+/** Title logo as native text (crisp at any DPR, nothing to cut out): Fredoka Bold,
+ *  storyboard word colours and outline, auto-fitted to the storyboard's logo box.
+ *  Each letter bobs a little, staggered, so a wave runs through the word. */
+const WORDMARK_BOX = TITLE_LAYOUT.logo;
+const WORDMARK_WORDS: [string, string][] = [
+  ['Nom', '#F86848'],
+  ['Nom', '#F8C030'],
+  ['Go!', '#10C458'],
+];
+function Wordmark(): React.JSX.Element {
+  const row = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(1);
+  useEffect(() => {
+    // Fit the natural text width to the box once the logo font has loaded.
+    const measure = (): void => {
+      if (row.current) setFit(Math.min(1.4, (WORDMARK_BOX.width - 20) / row.current.scrollWidth));
+    };
+    measure();
+    void document.fonts.ready.then(measure);
+  }, []);
+  let n = 0;
+  return (
+    <div
+      role="img"
+      aria-label="Nom Nom Go!"
+      data-testid="wordmark"
+      style={{
+        position: 'absolute',
+        ...WORDMARK_BOX,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}
+    >
+      <div
+        ref={row}
+        aria-hidden
+        style={{
+          display: 'flex',
+          gap: 34,
+          whiteSpace: 'nowrap',
+          transform: `scale(${fit * 0.92}, ${fit})`,
+          fontFamily: 'Fredoka, system-ui, sans-serif',
+          fontWeight: 700,
+          fontSize: 150,
+          lineHeight: 1,
+          WebkitTextStroke: '13px #331230',
+          paintOrder: 'stroke fill',
+        }}
+      >
+        {WORDMARK_WORDS.map(([word, color], w) => (
+          <span key={w} style={{ display: 'flex', color }}>
+            {[...word].map((ch, i) => (
+              <span key={i} className="wave-letter" style={{ animationDelay: `${(n++ * 0.09).toFixed(2)}s` }}>
+                {ch}
+              </span>
+            ))}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function App(): React.JSX.Element {
   const hash = window.location.hash;
   if (hash.startsWith('#dad') || hash.startsWith('#watch') || hash.startsWith('#pair')) {
@@ -62,210 +184,307 @@ export default function App(): React.JSX.Element {
   return <GameShell />;
 }
 
-/** Distinct pre-Level-1 intro: watch, listen, HELP, build, bell. */
-const TOUR_STEPS = 5;
+/**
+ * TUTORIAL LAYOUT (pre-Level-1 tour, 3 steps) — edit these numbers to move or
+ * resize pieces. Storyboards: approved/tutorial-01/02/03.png, fitted to the
+ * stage height and centred. Stage units as TITLE_LAYOUT. Tiles, progress dots
+ * and the golden arrow are native CSS/SVG; everything else is production art.
+ */
+const TUTORIAL_LAYOUT = {
+  pips: { top: 40, size: 78, gap: 22 }, // centred
+  goButton: { left: 688, top: 652, width: 224, height: 224 }, // same spot on every step
+  tile: { border: 10, radius: 34, inset: 0.07 }, // inset = icon padding as a fraction of the tile
+  step1: {
+    lettuce: { left: 292, top: 254, width: 334, height: 318 },
+    tomato: { left: 658, top: 254, width: 322, height: 318 },
+    gobbler: { left: 915, top: 321, width: 427, height: 472 }, // pointing at the tomato
+  },
+  step2: {
+    lettuce: { left: 347, top: 290, width: 243, height: 239 },
+    tomato: { left: 675, top: 290, width: 239, height: 239 },
+    patty: { left: 998, top: 290, width: 243, height: 239 },
+    glove: { left: 326, top: 205, width: 143, height: 141 }, // fingertip on the lettuce
+    carry: { left: 385, top: 300, width: 150, height: 150 }, // the lettuce the glove drags
+    arrow: { left: 352, top: 552, height: 88, shortWidth: 250, fullWidth: 800 }, // grows to under the patty
+  },
+  step3: {
+    burger: { left: 341, top: 194, width: 415, height: 468 },
+    bell: { left: 952, top: 316, width: 283, height: 274 },
+  },
+} as const;
 
-function TourDemo({ step }: { step: number }): React.JSX.Element {
-  const iconRow = (ids: string[], size = 120) => (
-    <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-      {ids.map((id, i) => (
-        <span key={`${id}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <ItemIcon id={id} size={size} />
-          {i < ids.length - 1 && <span style={{ fontSize: 36, color: '#8a5a33' }}>➜</span>}
-        </span>
-      ))}
-    </div>
-  );
-  const panel = (bg: string, children: React.ReactNode) => (
+const TOUR_STEPS = 3;
+/** First play shows the tour; `?tour=1` forces it (also in test mode, for e2e and screen QA). */
+const wantsTour = (seen: readonly string[]): boolean =>
+  new URLSearchParams(window.location.search).get('tour') === '1' || (!isTestMode() && !seen.includes('tour'));
+/** Step 2's drag loop (seconds) and its keyframe times: rest, drag, hold, fade. */
+const DRAG_LOOP = 2.6;
+const DRAG_TIMES = [0, 0.15, 0.65, 0.85, 1];
+
+/** A beige rounded tile (native CSS) holding one tutorial icon. */
+function TourTile({ box, children }: { box: Box; children?: React.ReactNode }): React.JSX.Element {
+  const t = TUTORIAL_LAYOUT.tile;
+  const pad = Math.round(box.width * t.inset);
+  return (
     <div
       style={{
-        background: bg,
-        borderRadius: 28,
-        border: '5px solid rgba(90,50,20,.25)',
-        padding: '28px 36px',
+        position: 'absolute',
+        ...box,
+        boxSizing: 'border-box',
+        background: '#ecc797',
+        border: `${t.border}px solid #1c1410`,
+        borderRadius: t.radius,
+        padding: pad,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 26,
-        minWidth: 760,
-        minHeight: 240,
       }}
     >
       {children}
     </div>
   );
-  switch (step) {
-    case 0:
-      // Watch: the monster orders at the kitchen window, sill row grows.
-      return panel(
-        '#7fd4c9',
-        <div data-testid="tour-watch">
-          <span style={{ fontSize: 130 }}>👾</span>
-          <span style={{ fontSize: 90 }}>👀</span>
-          {iconRow(['cheese', 'lettuce'], 110)}
-        </div>,
-      );
-    case 1:
-      // Listen: the Head Chef repeats the order in Dad's voice.
-      return panel(
-        '#ffe9b8',
-        <div data-testid="tour-listen">
-          <span style={{ fontSize: 110 }}>👨‍🍳</span>
-          <span style={{ fontSize: 72 }}>🔊</span>
-          {iconRow(['cheese', 'lettuce'], 110)}
-        </div>,
-      );
-    case 2:
-      // HELP: tap the Head Chef; the bar highlights in order.
-      return panel(
-        '#fff8ec',
-        <div data-testid="tour-help">
-          <span
-            style={{
-              width: 150,
-              height: 150,
-              borderRadius: '50%',
-              background: '#fff',
-              border: '5px solid rgba(90,50,20,.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 84,
-            }}
-          >
-            👨‍🍳
-          </span>
-          <span style={{ fontSize: 44 }}>➜</span>
-          <div style={{ display: 'flex', gap: 14 }}>
-            <ItemIcon id="cheese" size={120} glow />
-            <ItemIcon id="lettuce" size={120} />
-            <ItemIcon id="pickles" size={120} />
-          </div>
-          <span style={{ fontSize: 54 }}>🔊</span>
-        </div>,
-      );
-    case 3:
-      // Build: tap the ingredient bar in order.
-      return panel(
-        '#d9f2d0',
-        <div data-testid="tour-build">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <div style={{ display: 'flex', gap: 14 }}>
-              <ItemIcon id="cheese" size={120} glow />
-              <ItemIcon id="lettuce" size={120} />
-              <ItemIcon id="pickles" size={120} />
-            </div>
-            <span className="bob" style={{ fontSize: 64 }}>
-              👆
-            </span>
-          </div>
-          <span style={{ fontSize: 44 }}>➜</span>
-          <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'center' }}>
-            <span style={{ fontSize: 52 }}>🍞</span>
-            <ItemIcon id="cheese" size={92} />
-          </div>
-        </div>,
-      );
-    default:
-      // Bell: serve; the monster says Nom Nom and a star lights.
-      return panel(
-        '#bfe8ff',
-        <div data-testid="tour-bell">
-          <span style={{ fontSize: 110 }}>🔔</span>
-          <span style={{ fontSize: 90 }}>👾😋</span>
-          <span style={{ fontSize: 54 }}>⭐</span>
-        </div>,
-      );
-  }
 }
 
-function Tour({
-  step,
-  onNext,
-  onBack,
-  onSkip,
-}: {
-  step: number;
-  onNext: () => void;
-  onBack: () => void;
-  onSkip: () => void;
-}): React.JSX.Element {
+/** An icon that pops into its tile. */
+function PopIn({ id, emoji, still }: { id: string; emoji: string; still: boolean }): React.JSX.Element {
+  return (
+    <motion.div
+      initial={still ? false : { scale: 0, rotate: -12 }}
+      animate={{ scale: 1, rotate: 0 }}
+      transition={{ type: 'spring', stiffness: 420, damping: 16 }}
+      style={{ width: '100%', height: '100%' }}
+    >
+      <Art id={id} width="100%" height="100%" fallback={<Emoji size={140}>{emoji}</Emoji>} />
+    </motion.div>
+  );
+}
+
+/** Native golden arrow: one outlined path whose shaft stretches, so the head never distorts. */
+function arrowPath(len: number, h: number): string {
+  const head = h * 0.85;
+  const s0 = h * 0.3;
+  const s1 = h * 0.7;
+  const pad = 6;
+  const neck = len - head;
+  return `M${pad},${s0} L${neck},${s0} L${neck},${pad} L${len - pad},${h / 2} L${neck},${h - pad} L${neck},${s1} L${pad},${s1} Z`;
+}
+
+/** Step 2 on repeat: the glove picks up the lettuce and drags it to the patty
+ *  while the golden arrow stretches the same way. One clock drives both, so
+ *  they never drift apart. Reduced motion: the glove on the lettuce, arrow full. */
+function TourDragLoop({ still }: { still: boolean }): React.JSX.Element {
+  const l = TUTORIAL_LAYOUT.step2;
+  const a = l.arrow;
+  const dx = l.patty.left - l.lettuce.left;
+  const ease = [easeInOut, easeInOut, easeInOut, easeInOut];
+  const time = useTime();
+  const phase = useTransform(time, (t) => (still ? DRAG_TIMES[1] : ((t / 1000) % DRAG_LOOP) / DRAG_LOOP));
+  const x = useTransform(phase, DRAG_TIMES, [0, 0, dx, dx, dx], { ease });
+  const lift = useTransform(phase, DRAG_TIMES, [1, 1.12, 1.12, 1, 1]);
+  const fade = useTransform(phase, DRAG_TIMES, still ? [1, 1, 1, 1, 1] : [0, 1, 1, 1, 0]);
+  const arrowFade = useTransform(phase, DRAG_TIMES, still ? [1, 1, 1, 1, 1] : [1, 1, 1, 1, 0]);
+  const len = useTransform(
+    phase,
+    DRAG_TIMES,
+    still ? Array(5).fill(a.fullWidth) : [a.shortWidth, a.shortWidth, a.fullWidth, a.fullWidth, a.fullWidth],
+    { ease },
+  );
+  const d = useTransform(len, (v) => arrowPath(v, a.height));
+  return (
+    <>
+      <svg
+        data-testid="tour-arrow"
+        aria-hidden
+        width={a.fullWidth}
+        height={a.height}
+        style={{ position: 'absolute', left: a.left, top: a.top, overflow: 'visible', pointerEvents: 'none' }}
+      >
+        <motion.path
+          d={d}
+          style={{ opacity: arrowFade }}
+          fill="#f6c445"
+          stroke="#1c1410"
+          strokeWidth={9}
+          strokeLinejoin="round"
+        />
+      </svg>
+      <motion.div
+        data-testid="tour-drag"
+        aria-hidden
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'none', x, opacity: fade }}
+      >
+        <motion.div style={{ position: 'absolute', ...l.carry, scale: lift }}>
+          <Art id="tut.lettuce" width={l.carry.width} height={l.carry.height} fallback={<Emoji size={120}>🥬</Emoji>} />
+        </motion.div>
+        <Art
+          id="tut.glove"
+          width={l.glove.width}
+          height={l.glove.height}
+          style={{ position: 'absolute', ...l.glove }}
+          fallback={<span style={{ position: 'absolute', ...l.glove, fontSize: 110 }}>👆</span>}
+        />
+      </motion.div>
+    </>
+  );
+}
+
+/** Step 1: the order appears item by item, each said aloud like a real order. */
+function TourOrder({ still, soundOn }: { still: boolean; soundOn: boolean }): React.JSX.Element {
+  const l = TUTORIAL_LAYOUT.step1;
+  const [shown, setShown] = useState(still ? 2 : 0);
+  useEffect(() => {
+    const items = ['lettuce', 'tomato'];
+    const pitch = MONSTERS.find((m) => m.id === 'gobbler')?.pitch ?? 1;
+    let chain = Promise.resolve();
+    const timers = items.map((item, i) =>
+      window.setTimeout(
+        () => {
+          setShown(i + 1);
+          playSfx('pop');
+          if (isTestMode() || !soundOn) return;
+          chain = chain.then(async () => {
+            playGibberish(pitch);
+            await new Promise((r) => setTimeout(r, 160));
+            await playClipById(`ing.${item}`);
+          });
+        },
+        isTestMode() ? 50 + i * 50 : 700 + i * 1300,
+      ),
+    );
+    return () => timers.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div data-testid="tour-order" data-shown={shown}>
+      <TourTile box={l.lettuce}>{shown >= 1 && <PopIn id="tut.lettuce" emoji="🥬" still={still} />}</TourTile>
+      <TourTile box={l.tomato}>{shown >= 2 && <PopIn id="tut.tomato" emoji="🍅" still={still} />}</TourTile>
+      <TitleArt id="monster.gobbler.point" box={l.gobbler} className="sway" />
+    </div>
+  );
+}
+
+function TourStep({ step, soundOn }: { step: number; soundOn: boolean }): React.JSX.Element {
+  const still = useReducedMotion() ?? false;
+  if (step === 0) return <TourOrder still={still} soundOn={soundOn} />;
+  if (step === 1) {
+    const l = TUTORIAL_LAYOUT.step2;
+    return (
+      <div data-testid="tour-build">
+        <TourTile box={l.lettuce}>
+          <Art id="tut.lettuce" width="100%" height="100%" fallback={<Emoji size={120}>🥬</Emoji>} />
+        </TourTile>
+        <TourTile box={l.tomato}>
+          <Art id="tut.tomato" width="100%" height="100%" fallback={<Emoji size={120}>🍅</Emoji>} />
+        </TourTile>
+        <TourTile box={l.patty}>
+          <Art id="tut.patty" width="100%" height="100%" fallback={<Emoji size={120}>🍔</Emoji>} />
+        </TourTile>
+        <TourDragLoop still={still} />
+      </div>
+    );
+  }
+  return <TourBell still={still} />;
+}
+
+/** Step 3: the finished burger and the bell button that shimmies and tinkles. */
+function TourBell({ still }: { still: boolean }): React.JSX.Element {
+  const l = TUTORIAL_LAYOUT.step3;
+  useEffect(() => {
+    // Reduced motion: no shimmy (so no animation events), one tinkle on arrival.
+    if (still) playSfx('tinkle');
+  }, [still]);
+  return (
+    <div data-testid="tour-bell">
+      <motion.div
+        initial={still ? false : { scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+        style={{ position: 'absolute', ...l.burger }}
+      >
+        <Art id="tut.burger" width={l.burger.width} height={l.burger.height} fallback={<Emoji size={300}>🍔</Emoji>} />
+      </motion.div>
+      {/* Each shimmy of the bell tinkles; the sound rides the CSS animation's own events. */}
+      <div
+        className="ring"
+        style={{ position: 'absolute', ...l.bell }}
+        onAnimationStart={() => playSfx('tinkle')}
+        onAnimationIteration={() => playSfx('tinkle')}
+      >
+        <Art
+          id="tut.bell"
+          width={l.bell.width}
+          height={l.bell.height}
+          fallback={<span style={{ fontSize: 200 }}>🛎️</span>}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Pre-Level-1 tour: 1 the order appears, 2 drag to build, 3 ring the bell.
+ *  The Go button is the only control. */
+function Tour({ step, soundOn, onNext }: { step: number; soundOn: boolean; onNext: () => void }): React.JSX.Element {
   const last = step === TOUR_STEPS - 1;
+  const p = TUTORIAL_LAYOUT.pips;
   return (
     <div
       data-testid="tour"
-      data-tutorial="true"
       data-step={step}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        background: '#fdf3e3',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 22,
-        zIndex: 50,
-      }}
+      data-tutorial="true"
+      style={{ position: 'absolute', inset: 0, zIndex: 50, background: '#f7e8cc' }}
     >
-      <button
-        data-testid="tour-skip"
-        aria-label="Skip tour"
+      <Backdrop id="env.tutorial" />
+      <div
+        data-testid="tour-pips"
+        aria-hidden
         style={{
           position: 'absolute',
-          left: 24,
-          top: 24,
-          width: 110,
-          height: 110,
-          borderRadius: '50%',
-          fontSize: 44,
-          background: '#fff',
-          border: '4px solid rgba(90,50,20,.3)',
+          top: p.top,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          gap: p.gap,
         }}
-        onClick={onSkip}
       >
-        ✕
-      </button>
-      <div data-testid="tour-pips" style={{ display: 'flex', gap: 12 }} aria-hidden>
         {Array.from({ length: TOUR_STEPS }, (_, i) => (
           <span
             key={i}
+            data-lit={i <= step}
             style={{
-              width: 30,
-              height: 30,
+              width: p.size,
+              height: p.size,
+              boxSizing: 'border-box',
               borderRadius: '50%',
-              background: i <= step ? '#d35400' : 'rgba(90,50,20,.2)',
-              display: 'block',
+              border: '8px solid #1c1410',
+              background: i <= step ? '#f6c445' : 'transparent',
             }}
           />
         ))}
       </div>
-      <div style={{ fontSize: 110, lineHeight: 1 }}>👨‍🍳👉</div>
-      <TourDemo step={step} />
-      <div style={{ display: 'flex', gap: 18, alignItems: 'center', minHeight: 150 }}>
-        {step > 0 ? (
-          <button
-            data-testid="tour-back"
-            aria-label="Back"
-            style={{ ...BTN, width: 150, height: 140, fontSize: 60, background: '#fff' }}
-            onClick={onBack}
-          >
-            ◀
-          </button>
-        ) : (
-          <span style={{ width: 150 }} />
-        )}
-        <motion.button
-          data-testid="tour-next"
-          aria-label={last ? 'Start playing' : 'Next'}
-          whileTap={{ scale: 0.94 }}
-          style={{ ...BTN, width: 240, height: 150, fontSize: 68, background: '#6bcb77' }}
-          onClick={onNext}
-        >
-          {last ? '✓' : '▶'}
-        </motion.button>
-        <span style={{ width: 150 }} />
-      </div>
+      <TourStep key={step} step={step} soundOn={soundOn} />
+      <motion.button
+        data-testid="tour-next"
+        aria-label={last ? 'Start playing' : 'Next'}
+        whileTap={{ scale: 0.92 }}
+        style={{
+          position: 'absolute',
+          ...TUTORIAL_LAYOUT.goButton,
+          padding: 0,
+          border: 'none',
+          background: 'transparent',
+          borderRadius: '50%',
+        }}
+        onClick={onNext}
+      >
+        <Art
+          id="ui.goButton"
+          className="pulse"
+          width={TUTORIAL_LAYOUT.goButton.width}
+          height={TUTORIAL_LAYOUT.goButton.height}
+          fallback={<span style={{ fontSize: 160 }}>▶</span>}
+        />
+      </motion.button>
     </div>
   );
 }
@@ -280,7 +499,7 @@ function HoldButton({
 }: {
   testId: string;
   label: string;
-  icon: string;
+  icon: React.ReactNode;
   onComplete: () => void;
   style: React.CSSProperties;
 }): React.JSX.Element {
@@ -438,6 +657,11 @@ function GameShell(): React.JSX.Element {
     setSoundOn(store.getSave().soundOn);
   }, [store]);
 
+  // Preload the next screens' plates so transitions do not flash placeholders.
+  useEffect(() => {
+    preloadArt(['env.kitchen', 'env.night.closed', 'monster.og.tap']);
+  }, []);
+
   // Phase sound effects.
   const order = currentOrder(state);
   // At the kitchen window the monster orders in gibberish, one item at a
@@ -561,88 +785,80 @@ function GameShell(): React.JSX.Element {
         )}
 
         {state.phase === 'title' && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 18,
-            }}
-          >
-            <div style={{ fontSize: 110, fontWeight: 900, color: '#d35400', textShadow: '0 4px 0 #fff' }}>
-              Nom Nom Go!
-            </div>
-            <div className="bob" style={{ fontSize: 150 }}>
-              🚚 👾 🍔
-            </div>
+          <div data-testid="title-screen" style={{ position: 'absolute', inset: 0 }}>
+            {/* Storyboard: approved/title-intro-master.png. Each piece is generated
+                separately and placed in its storyboard box over the bleed plate. */}
+            <Backdrop id="env.title" />
+            <TitleArt id="chef.windowWave" box={TITLE_LAYOUT.chef} clip />
+            <TitleArt id="monster.og.wave" box={TITLE_LAYOUT.og} className="sway" />
+            <TitleArt id="monster.gobbler.wave" box={TITLE_LAYOUT.gobbler} className="sway sway-late" />
+            <Wordmark />
             <motion.button
               data-testid="go-button"
-              whileTap={{ scale: 0.94 }}
-              style={{ ...BTN, width: 320, height: 170, fontSize: 64, fontWeight: 900, background: '#6bcb77' }}
+              aria-label="Go"
+              whileTap={{ scale: 0.92 }}
+              style={{
+                position: 'absolute',
+                ...TITLE_LAYOUT.goButton,
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                borderRadius: '50%',
+              }}
               onClick={() => {
                 unlockAudio();
-                if (!isTestMode() && !store.getSave().tutorialsSeen.includes('tour')) setTourStep(0);
+                if (wantsTour(store.getSave().tutorialsSeen)) setTourStep(0);
                 else startGame();
               }}
             >
-              ▶ Go!
+              {/* Pulse the image, not the button: a steady hit box for small fingers
+                  (and for Playwright's stability check). */}
+              <Art
+                id="ui.goButton"
+                className="pulse"
+                width={TITLE_LAYOUT.goButton.width}
+                height={TITLE_LAYOUT.goButton.height}
+                fallback={<span style={{ fontSize: 160 }}>▶</span>}
+              />
             </motion.button>
             <HoldButton
               testId="parent-gate"
               label="Parent area — press and hold"
-              icon="👨‍🍳"
-              onComplete={() => setParentOpen(true)}
-              style={{ position: 'absolute', left: 24, bottom: 24, background: '#fff3e2' }}
-            />
-          </div>
-        )}
-
-        {state.phase === 'levelIntro' && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Emoji size={180}>👨‍🍳👋</Emoji>
-            <div style={{ fontSize: 72, marginTop: 8 }}>🚚</div>
-            <div
-              data-testid="level-pips"
-              style={{
-                display: 'flex',
-                gap: 10,
-                marginTop: 6,
-                background: '#fff3e2',
-                border: '5px solid rgba(90,50,20,.35)',
-                borderRadius: 20,
-                padding: '10px 22px',
-              }}
-            >
-              {Array.from({ length: state.level }, (_, i) => (
-                <span key={i} style={{ fontSize: 52 }}>
-                  ⭐
+              icon={
+                // Sticker badge: the chef's face fills the circle (shoulders cropped by it).
+                <span
+                  style={{
+                    width: TITLE_LAYOUT.parentButton.size - 12,
+                    height: TITLE_LAYOUT.parentButton.size - 12,
+                    borderRadius: '50%',
+                    overflow: 'hidden',
+                    display: 'block',
+                  }}
+                >
+                  <Art
+                    id="chef.helpFace"
+                    width={104}
+                    height={104}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                      transform: 'scale(1.5) translateY(7%)',
+                    }}
+                    fallback={<span>👨‍🍳</span>}
+                  />
                 </span>
-              ))}
-            </div>
-            <motion.div
-              data-testid="level-wipe"
-              aria-hidden
-              initial={{ x: '-110%' }}
-              animate={{ x: '110%' }}
-              transition={{ duration: 1.4, ease: 'easeInOut' }}
+              }
+              onComplete={() => setParentOpen(true)}
               style={{
                 position: 'absolute',
-                inset: 0,
-                background: '#f2b035',
-                opacity: 0.35,
-                pointerEvents: 'none',
+                left: TITLE_LAYOUT.parentButton.left,
+                bottom: TITLE_LAYOUT.parentButton.bottom,
+                width: TITLE_LAYOUT.parentButton.size,
+                height: TITLE_LAYOUT.parentButton.size,
+                padding: 0,
+                background: '#DA7C30', // orange fill from approved/order-at-window-1-centred-ordering.png
+                border: '6px solid #331230',
               }}
             />
           </div>
@@ -666,12 +882,19 @@ function GameShell(): React.JSX.Element {
               gap: 16,
             }}
           >
-            <Emoji size={160}>{state.starsTry >= bankedTarget(state.level) ? '👨‍🍳🎉' : '👨‍🍳💪'}</Emoji>
+            <Art
+              id="chef.cheer"
+              height={200}
+              fallback={<Emoji size={160}>{state.starsTry >= bankedTarget(state.level) ? '👨‍🍳🎉' : '👨‍🍳💪'}</Emoji>}
+            />
             <div data-testid="result-stars" style={{ display: 'flex', gap: 12 }}>
               {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
-                <span key={i} style={{ fontSize: 84, opacity: i < state.starsTry ? 1 : 0.25 }}>
-                  ⭐
-                </span>
+                <Art
+                  key={i}
+                  id={i < state.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
+                  size={84}
+                  fallback={<span style={{ fontSize: 84, opacity: i < state.starsTry ? 1 : 0.25 }}>⭐</span>}
+                />
               ))}
             </div>
             <button
@@ -682,7 +905,7 @@ function GameShell(): React.JSX.Element {
                 dispatch({ type: 'continue' });
               }}
             >
-              ➡️
+              <Art id="prop.play" size={72} fallback={<span>➡️</span>} />
             </button>
           </div>
         )}
@@ -698,8 +921,14 @@ function GameShell(): React.JSX.Element {
               justifyContent: 'center',
             }}
           >
-            <div className="bob" style={{ fontSize: 170 }}>
-              🚚🌙 👨‍🍳🥱👋
+            <Art
+              id="env.night.goodbye"
+              width={1600}
+              height={900}
+              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+            />
+            <div className="bob" style={{ position: 'relative' }}>
+              <Art id="chef.goodbye" height={200} fallback={<span style={{ fontSize: 170 }}>👨‍🍳👋</span>} />
             </div>
           </div>
         )}
@@ -717,14 +946,19 @@ function GameShell(): React.JSX.Element {
               gap: 26,
             }}
           >
-            <div style={{ fontSize: 150 }}>🚚🌙💤</div>
+            <Art
+              id="env.night.closed"
+              width={1600}
+              height={900}
+              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+            />
             <button
               data-testid="power-off"
               aria-label="Power off"
-              style={{ ...BTN, width: 170, height: 170, borderRadius: '50%', fontSize: 76 }}
+              style={{ ...BTN, width: 170, height: 170, borderRadius: '50%', fontSize: 76, position: 'relative' }}
               onClick={() => dispatch({ type: 'powerOff' })}
             >
-              ⏻
+              <Art id="ui.powerOff" size={76} fallback={<span>⏻</span>} />
             </button>
           </div>
         )}
@@ -758,7 +992,7 @@ function GameShell(): React.JSX.Element {
                 dispatch({ type: 'powerOn' });
               }}
             >
-              ⏻
+              <Art id="ui.powerOn" size={88} fallback={<span>⏻</span>} />
             </button>
           </div>
         )}
@@ -783,7 +1017,7 @@ function GameShell(): React.JSX.Element {
                 dispatch({ type: 'resume' });
               }}
             >
-              ▶️
+              <Art id="prop.play" size={84} fallback={<span>▶️</span>} />
             </button>
           </div>
         )}
@@ -804,7 +1038,7 @@ function GameShell(): React.JSX.Element {
             }}
             onClick={() => dispatch({ type: 'pause' })}
           >
-            ⏸️
+            <Art id="prop.pause" size={72} fallback={<span>⏸️</span>} />
           </button>
         )}
 
@@ -821,8 +1055,9 @@ function GameShell(): React.JSX.Element {
               pointerEvents: 'none',
             }}
           >
-            <span className="bob" style={{ fontSize: 84 }}>
-              👨‍🍳👉 👆
+            <span className="bob" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Art id="chef.point" height={84} fallback={<span style={{ fontSize: 84 }}>👨‍🍳👉</span>} />
+              <Art id="ui.glove" size={64} fallback={<span style={{ fontSize: 64 }}>👆</span>} />
             </span>
           </div>
         )}
@@ -845,7 +1080,7 @@ function GameShell(): React.JSX.Element {
               pointerEvents: 'none',
             }}
           >
-            👋
+            <Art id="ui.badgeDad" size={110} fallback={<span>👋</span>} />
           </div>
         )}
         {glove && state.phase === 'cooking' && (
@@ -861,7 +1096,7 @@ function GameShell(): React.JSX.Element {
               zIndex: 28,
             }}
           >
-            🧤
+            <Art id="ui.glove" size={92} fallback={<span>🧤</span>} />
           </div>
         )}
         {cheer && (
@@ -869,14 +1104,18 @@ function GameShell(): React.JSX.Element {
             data-testid="dad-cheer"
             style={{ position: 'absolute', left: 540, top: 190, fontSize: 96, pointerEvents: 'none', zIndex: 29 }}
           >
-            {cheer === 'heart' ? '❤️' : cheer === 'wow' ? '🤩' : '👍'}
+            <Art
+              id={cheer === 'heart' ? 'cheer.heart' : cheer === 'wow' ? 'cheer.wow' : 'cheer.thumbs'}
+              size={110}
+              fallback={<span>{cheer === 'heart' ? '❤️' : cheer === 'wow' ? '🤩' : '👍'}</span>}
+            />
           </div>
         )}
         {state.phase !== 'title' && state.phase !== 'closed' && state.phase !== 'poweredOff' && (
           <HoldButton
             testId="power-reset"
             label="Power — press and hold to reset completely"
-            icon="⏻"
+            icon={<Art id="ui.powerOn" size={64} fallback={<span>⏻</span>} />}
             onComplete={resetCompletely}
             style={{
               position: 'absolute',
@@ -893,8 +1132,7 @@ function GameShell(): React.JSX.Element {
         {tourStep !== null && (
           <Tour
             step={tourStep}
-            onBack={() => setTourStep((s) => (s !== null && s > 0 ? s - 1 : s))}
-            onSkip={finishTour}
+            soundOn={store.getSave().soundOn}
             onNext={() => (tourStep >= TOUR_STEPS - 1 ? finishTour() : setTourStep(tourStep + 1))}
           />
         )}
@@ -917,7 +1155,7 @@ function GameShell(): React.JSX.Element {
             zIndex: 100,
           }}
         >
-          <div style={{ fontSize: 120 }}>📱↪️</div>
+          <Art id="ui.rotate" size={140} fallback={<span style={{ fontSize: 120 }}>📱↪️</span>} />
         </div>
       )}
 
@@ -947,18 +1185,12 @@ function Kitchen({
   if (!order) return <></>;
   const monster = MONSTERS.find((m) => m.id === order.monster);
   const fraction = state.patienceTotalMs > 0 ? state.patienceLeftMs / state.patienceTotalMs : 1;
-  const emotion =
-    state.phase === 'serveResult'
-      ? state.result?.kind === 'correct'
-        ? '😋💃'
-        : state.result?.kind === 'wrong'
-          ? '😕👋'
-          : '👋'
-      : fraction > 0.66
-        ? '😊'
-        : fraction > 0.33
-          ? '😐👆'
-          : '😤💨';
+  const pose = monsterPoseFor({
+    phase: state.phase,
+    patienceFraction: fraction,
+    resultKind: state.result?.kind ?? null,
+    phaseMs: state.phaseMs,
+  });
   const ordering = state.phase === 'ordering';
   const wiping = state.phase === 'goWipe';
   // The item the Head Chef is naming right now at the window.
@@ -1003,14 +1235,11 @@ function Kitchen({
 
   return (
     <div style={{ position: 'absolute', inset: 0, background: '#2a9d8f' }}>
+      <Art id="env.kitchen" width={1600} height={900} style={{ position: 'absolute', inset: 0, objectFit: 'cover' }} />
       {/* One-screen kitchen master: the monster orders at this serving
           window, then waits at its side while the child cooks. Test hook
           only: the expected order for automated play. */}
       <div data-testid="ticket" {...testAttrs} style={{ display: 'none' }} aria-hidden />
-      <div
-        aria-hidden
-        style={{ position: 'absolute', left: 0, top: 0, width: 784, height: 640, background: '#ff8c69' }}
-      />
       <div
         data-testid="serving-window"
         style={{
@@ -1019,8 +1248,6 @@ function Kitchen({
           top: 24,
           width: 1232,
           height: 496,
-          background: '#7fd4c9',
-          border: '8px solid #f2b035',
           borderRadius: 12,
           overflow: 'hidden',
         }}
@@ -1052,9 +1279,20 @@ function Kitchen({
           }
         >
           <span className={state.phase === 'serveResult' && state.result?.kind === 'correct' ? 'bob' : undefined}>
-            {monster?.emoji}
+            <Art
+              id={`monster.${order.monster}.${pose}`}
+              height={ordering ? 360 : 320}
+              fallback={<span style={{ fontSize: ordering ? 340 : 300 }}>{monster?.emoji}</span>}
+            />
           </span>
-          <span style={{ fontSize: 110, marginLeft: -70, marginBottom: 130 }}>{emotion}</span>
+          {order.broken === 'speaker' && (
+            <Art
+              id="prop.speakerStatic"
+              size={84}
+              style={{ position: 'absolute', left: 12, top: 12 }}
+              fallback={<span style={{ fontSize: 54 }}>🔇</span>}
+            />
+          )}
         </div>
         {state.phase === 'serveResult' && state.result?.kind === 'correct' && (
           <div
@@ -1064,16 +1302,18 @@ function Kitchen({
               position: 'absolute',
               right: 300,
               top: 36,
-              background: '#fff',
-              border: '4px solid rgba(90,50,20,.4)',
-              borderRadius: 24,
-              padding: '10px 22px',
+              width: 300,
+              height: 130,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
               fontSize: 52,
               fontWeight: 900,
               color: '#d35400',
             }}
           >
-            Nom Nom!
+            <Art id="ui.nomBubble" width={300} height={130} style={{ position: 'absolute', inset: 0 }} />
+            <span style={{ position: 'relative' }}>Nom Nom!</span>
           </div>
         )}
       </div>
@@ -1087,7 +1327,6 @@ function Kitchen({
           style={{
             position: 'absolute',
             inset: 0,
-            background: '#ffd93d',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1096,9 +1335,16 @@ function Kitchen({
             color: '#d35400',
             zIndex: 20,
             pointerEvents: 'none',
+            overflow: 'hidden',
           }}
         >
-          Go! ▶
+          <Art
+            id="env.goWipe"
+            width={1600}
+            height={900}
+            style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+          />
+          <span style={{ position: 'relative' }}>Go! ▶</span>
         </motion.div>
       )}
       {/* Build area */}
@@ -1125,7 +1371,7 @@ function Kitchen({
             data-testid="wrong-feedback"
             style={{ position: 'absolute', right: 18, top: 12, fontSize: 72, pointerEvents: 'none' }}
           >
-            👨‍🍳👉
+            <Art id="chef.point" height={72} fallback={<span>👨‍🍳👉</span>} />
           </div>
         )}
         <div
@@ -1138,7 +1384,9 @@ function Kitchen({
               state.phase === 'serveResult' && state.result?.kind === 'wrong' ? 'shakeX 0.4s ease-in-out 2' : undefined,
           }}
         >
-          {order.dish === 'burger' && <span style={{ fontSize: 58 }}>🍞</span>}
+          {order.dish === 'burger' && (
+            <Art id="dish.bunBottom" width={130} height={58} fallback={<span style={{ fontSize: 58 }}>🍞</span>} />
+          )}
           {state.built.map((id, i) => (
             <button
               key={i}
@@ -1149,6 +1397,9 @@ function Kitchen({
                 background: 'none',
                 border: 'none',
                 padding: 0,
+                // Dish layers are flat stickers: overlap them so the stack
+                // reads as one dish instead of floating slices.
+                marginTop: i === 0 ? 0 : -34,
                 outline: highlight?.side === 'built' && highlight.index === i ? '8px solid #ff595e' : undefined,
                 borderRadius: 60,
               }}
@@ -1159,11 +1410,11 @@ function Kitchen({
                 }
               }}
             >
-              <ItemIcon id={id} size={92} />
+              <ItemIcon id={id} size={92} variant="dish" />
             </button>
           ))}
           {state.phase === 'serveResult' && state.result?.kind === 'correct' && order.dish === 'burger' && (
-            <span style={{ fontSize: 58 }}>🍞</span>
+            <Art id="dish.bunTop" width={130} height={58} fallback={<span style={{ fontSize: 58 }}>🍞</span>} />
           )}
         </div>
       </div>
@@ -1201,7 +1452,7 @@ function Kitchen({
               borderRadius: 60,
             }}
           >
-            <ItemIcon id={id} size={72} />
+            <ItemIcon id={id} size={72} variant="sill" />
           </motion.span>
         ))}
       </div>
@@ -1278,7 +1529,7 @@ function Kitchen({
         }}
         onClick={() => void onHelp()}
       >
-        👨‍🍳
+        <Art id="chef.helpFace" size={88} fallback={<span>👨‍🍳</span>} />
       </button>
       <div
         data-testid="help-pips"
@@ -1286,16 +1537,22 @@ function Kitchen({
         aria-hidden
       >
         {Array.from({ length: state.peekBudget }, (_, i) => (
-          <span
+          <Art
             key={i}
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: '50%',
-              display: 'block',
-              background: i < state.peekBudget - state.peeksUsed ? '#ffd93d' : 'rgba(90,50,20,.25)',
-              border: '3px solid rgba(90,50,20,.4)',
-            }}
+            id={i < state.peekBudget - state.peeksUsed ? 'ui.pip.lit' : 'ui.pip.unlit'}
+            size={22}
+            fallback={
+              <span
+                style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: '50%',
+                  display: 'block',
+                  background: i < state.peekBudget - state.peeksUsed ? '#ffd93d' : 'rgba(90,50,20,.25)',
+                  border: '3px solid rgba(90,50,20,.4)',
+                }}
+              />
+            }
           />
         ))}
       </div>
@@ -1319,7 +1576,7 @@ function Kitchen({
           style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
           onClick={() => dispatch({ type: 'undo' })}
         >
-          ↩️
+          <Art id="prop.undo" size={64} fallback={<span>↩️</span>} />
         </button>
         <button
           data-testid="bell"
@@ -1340,7 +1597,7 @@ function Kitchen({
             dispatch({ type: 'serve' });
           }}
         >
-          🔔
+          <Art id="prop.bell" size={92} fallback={<span>🔔</span>} />
         </button>
         <button
           data-testid="trash"
@@ -1349,7 +1606,7 @@ function Kitchen({
           style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
           onClick={() => dispatch({ type: 'trash' })}
         >
-          🗑️
+          <Art id="prop.trash" size={64} fallback={<span>🗑️</span>} />
         </button>
       </div>
       <div
@@ -1367,12 +1624,18 @@ function Kitchen({
         }}
       >
         {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
-          <span
+          <Art
             key={i}
-            style={{ fontSize: bankedTarget(state.level) > 3 ? 36 : 52, opacity: i < state.starsTry ? 1 : 0.25 }}
-          >
-            ⭐
-          </span>
+            id={i < state.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
+            size={bankedTarget(state.level) > 3 ? 36 : 52}
+            fallback={
+              <span
+                style={{ fontSize: bankedTarget(state.level) > 3 ? 36 : 52, opacity: i < state.starsTry ? 1 : 0.25 }}
+              >
+                ⭐
+              </span>
+            }
+          />
         ))}
       </div>
       {state.streak && (

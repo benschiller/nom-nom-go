@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { loadSave, persistSave } from '../core/save';
 import { parseMirror, type MirrorView } from '../core/mirror';
 import { ItemIcon } from '../ui/ItemIcon';
+import { Art } from '../ui/Art';
 import { LocalTransport, type Envelope, type Transport } from './transport';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -72,10 +73,15 @@ function PairView({ id }: { id: string | null }): React.JSX.Element {
     }, 1800);
     return () => clearTimeout(t);
   }, [id]);
-  if (!id) return <div style={{ fontSize: 90, textAlign: 'center', marginTop: 120 }}>👨‍🍳❌</div>;
+  if (!id)
+    return (
+      <div style={{ textAlign: 'center', marginTop: 120 }}>
+        <Art id="chef.surprised" height={110} fallback={<span style={{ fontSize: 90 }}>👨‍🍳❌</span>} />
+      </div>
+    );
   return (
-    <div data-testid="pair-confirm" style={{ fontSize: 110, textAlign: 'center', marginTop: 120 }}>
-      {done ? '…' : '👨‍🍳 ✅'}
+    <div data-testid="pair-confirm" style={{ textAlign: 'center', marginTop: 120 }}>
+      {done ? '…' : <Art id="chef.helpFace" size={110} fallback={<span style={{ fontSize: 110 }}>👨‍🍳 ✅</span>} />}
     </div>
   );
 }
@@ -156,29 +162,40 @@ function WatchView({ id }: { id: string | null }): React.JSX.Element {
         }
       >
         {!mirror || !online ? (
-          <div data-testid="dad-waiting" style={{ fontSize: 42 }}>
-            ⏳ Waiting for the kitchen…
+          <div data-testid="dad-waiting" style={{ fontSize: 42, textAlign: 'center' }}>
+            <Art id="chef.think" height={130} style={{ margin: '0 auto 10px' }} fallback={<span>⏳</span>} />
+            Waiting for the kitchen…
           </div>
         ) : (
           <>
             <div style={{ fontSize: 34 }}>
               Level {mirror.level} · {mirror.phase}
             </div>
+            {mirror.monster && (
+              <Art
+                id={`monster.${mirror.monster}.idle`}
+                height={120}
+                fallback={<span style={{ fontSize: 80 }}>👾</span>}
+              />
+            )}
             <div style={{ display: 'flex', gap: 8 }}>
               {mirror.ticket.map((tid, i) => (
-                <ItemIcon key={i} id={tid} size={92} />
+                <ItemIcon key={i} id={tid} size={92} variant="sill" />
               ))}
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               {mirror.built.map((bid, i) => (
-                <ItemIcon key={i} id={bid} size={80} />
+                <ItemIcon key={i} id={bid} size={80} variant="dish" />
               ))}
             </div>
-            <div>
+            <div style={{ display: 'flex', gap: 6 }}>
               {Array.from({ length: mirror.bankedTarget ?? 3 }, (_, i) => (
-                <span key={i} style={{ fontSize: 44, opacity: i < mirror.starsTry ? 1 : 0.25 }}>
-                  ⭐
-                </span>
+                <Art
+                  key={i}
+                  id={i < mirror.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
+                  size={44}
+                  fallback={<span style={{ fontSize: 44, opacity: i < mirror.starsTry ? 1 : 0.25 }}>⭐</span>}
+                />
               ))}
             </div>
           </>
@@ -190,21 +207,21 @@ function WatchView({ id }: { id: string | null }): React.JSX.Element {
           style={{ fontSize: 40, padding: '14px 18px', borderRadius: 18 }}
           onClick={() => cheer('thumbs')}
         >
-          👍
+          <Art id="cheer.thumbs" size={44} fallback={<span>👍</span>} />
         </button>
         <button
           data-testid="cheer-heart"
           style={{ fontSize: 40, padding: '14px 18px', borderRadius: 18 }}
           onClick={() => cheer('heart')}
         >
-          ❤️
+          <Art id="cheer.heart" size={44} fallback={<span>❤️</span>} />
         </button>
         <button
           data-testid="cheer-wow"
           style={{ fontSize: 30, padding: '14px 18px', borderRadius: 18, fontWeight: 800 }}
           onClick={() => cheer('wow')}
         >
-          WOW
+          <Art id="cheer.wow" size={44} fallback={<span>WOW</span>} />
         </button>
       </div>
     </div>

@@ -22,6 +22,30 @@ test('boots and Go! starts the game', async ({ page }) => {
   await expect(page.getByTestId('stage')).not.toHaveAttribute('data-phase', 'title');
 });
 
+test('first-play tutorial: three steps, Go is the only control, then play starts', async ({ page }) => {
+  await page.goto(`${TEST_URL}&tour=1`);
+  await page.getByTestId('go-button').click();
+  const tour = page.getByTestId('tour');
+  await expect(tour).toHaveAttribute('data-step', '0');
+  await expect(page.getByTestId('tour-order')).toHaveAttribute('data-shown', '2');
+  await expect(page.getByTestId('tour-skip')).toHaveCount(0);
+  await expect(page.getByTestId('tour-back')).toHaveCount(0);
+  await expect(tour.locator('button')).toHaveCount(1);
+  await expect(page.locator('[data-testid="tour-pips"] [data-lit="true"]')).toHaveCount(1);
+  await page.getByTestId('tour-next').click();
+  await expect(tour).toHaveAttribute('data-step', '1');
+  await expect(page.getByTestId('tour-arrow')).toBeVisible();
+  await expect(page.getByTestId('tour-drag')).toBeAttached();
+  await page.getByTestId('tour-next').click();
+  await expect(tour).toHaveAttribute('data-step', '2');
+  await expect(page.locator('[data-testid="tour-bell"] img[data-art="tut.bell"]')).toBeVisible();
+  await expect(page.getByTestId('tour-next')).toHaveAttribute('aria-label', 'Start playing');
+  await expect(page.locator('[data-testid="tour-pips"] [data-lit="true"]')).toHaveCount(3);
+  await page.getByTestId('tour-next').click();
+  await expect(tour).toHaveCount(0);
+  await expect(page.getByTestId('stage')).not.toHaveAttribute('data-phase', 'title');
+});
+
 test('orders at the kitchen window: sill row in order, then Nom Nom', async ({ page }) => {
   await page.goto('/?test=1&seed=99&speed=2');
   await page.getByTestId('go-button').click();

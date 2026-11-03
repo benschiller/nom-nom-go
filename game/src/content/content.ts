@@ -442,6 +442,7 @@ export const MONSTERS: Monster[] = [
   { id: 'sneezer', name: 'Sneezer', emoji: '👺', pitch: 1.4, formant: 1000 },
   { id: 'fussy', name: 'Fussy', emoji: '🧐', pitch: 1.0, formant: 600 },
   { id: 'speedy', name: 'Speedy', emoji: '😎', pitch: 1.3, formant: 850 },
+  { id: 'og', name: 'OG', emoji: '🟣', pitch: 0.9, formant: 500 },
 ];
 
 export const DISHES: DishId[] = ['burger', 'pizza', 'sundae'];

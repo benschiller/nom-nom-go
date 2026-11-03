@@ -16,11 +16,9 @@ import {
 } from './difficulty';
 import { defaultMastery, generationHints, updateMastery, type MasteryProfile } from './mastery';
 import { generateTryOrders, type Order } from './orders';
-import { makeRng } from './rng';
 
 export type Phase =
   | 'title'
-  | 'levelIntro'
   | 'ordering'
   | 'goWipe'
   | 'cooking'
@@ -523,21 +521,12 @@ export function step(prev: GameState, event: GameEvent): GameState {
       if (prev.phase !== 'title') return prev;
       const startLevel = Math.max(1, prev.savedLevel - (prev.savedLevel > 1 ? 1 : 0));
       const warmup = prev.savedLevel > 1;
-      const rng = makeRng(prev.seed);
-      void rng;
-      return {
-        ...startTry({ ...prev, warmup }, warmup ? startLevel : prev.savedLevel),
-        phase: 'levelIntro',
-        phaseMs: 0,
-      };
+      // Title (and the first-play tutorial) lead straight to ordering at
+      // the kitchen window: there is no separate level-intro screen.
+      return startTry({ ...prev, warmup }, warmup ? startLevel : prev.savedLevel);
     }
     case 'continue': {
       if (prev.phase === 'levelResult') return continueFromLevelResult(prev);
-      if (prev.phase === 'levelIntro') {
-        // startTry already set phase ordering; levelIntro is a wrapper:
-        // go straight to ordering at the kitchen window.
-        return { ...prev, phase: 'ordering', phaseMs: 0 };
-      }
       return prev;
     }
     case 'tourDone': {
@@ -615,8 +604,6 @@ export function step(prev: GameState, event: GameEvent): GameState {
       const ms = event.ms;
       const s: GameState = { ...prev, phaseMs: prev.phaseMs + ms };
       switch (s.phase) {
-        case 'levelIntro':
-          return s.phaseMs >= 1600 ? { ...s, phase: 'ordering', phaseMs: 0 } : s;
         case 'ordering': {
           const order = orderOf(s);
           if (!order) return s;

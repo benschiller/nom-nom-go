@@ -86,18 +86,184 @@ ITEMS = [
 ]
 
 ENVS = [
-    ("env.title", "title-intro-master.png", "Remove all text, the logotype, the play button, every monster and the chef. Keep the coral food truck, awning, sky, pavement and confetti as a clean empty backdrop plate."),
-    ("env.kitchen", "kitchen-master-stars_000.png", "Remove the monster, all food, dishes, stars, buttons and every UI element. Keep the kitchen interior, serving window, counter and ingredient bar as a clean empty set plate."),
     ("env.levelTruck", "level-transition-master.png", "Remove the chef, all pips, stars and text from the sign so the mustard sign board is blank. Keep truck, posts, sky and pavement as a clean plate."),
     ("env.night.goodbye", "end-game-night-master.png", "Remove every character. Keep the night truck with warm light glowing from the open serving hatch and windows, moon and stars, as a clean empty plate."),
     ("env.night.closed", "end-game-night-master.png", "Remove every character, close the serving hatch shutter fully and dim the lights low for closing time. Keep the night truck, moon and stars as a clean empty plate."),
     ("env.goWipe", "order-at-window-3-go-wipe.png", "Keep only the full-screen diagonal wipe graphic as a flat mustard-yellow wipe panel with a subtle sticker edge. Remove the monster, kitchen, all food and any text or letters."),
 ]
 
+# Screen-pass assets. Bleed plates: a 3:2 clean plate (1920x1280, the
+# approved master's framing) outpainted by `pad` px per side. In stage
+# units (master fit to the 1600-wide safe area, scale 5/6) every bleed
+# plate covers 2000x1333 at left -200, top -216.7: any viewport from
+# 4:3 to ~2.2:1 is filled with no bars. See .muse/skills/art-integration.
+BLEED = {"pad": [240, 160], "feather": 48}
+BLEEDS = []  # env.title is now generated whole as a wide plate (see WIDE_PLATES)
+
+# Title background: user-supplied extended plate (2400x1600, 3:2 = the 2000x1333
+# bleed box). Its truck is 1.23x the storyboard's, so truck-anchored pieces (the
+# chef in the window) use the measured frame in game/src/App.tsx (TITLE_TRUCK_FRAME).
+IMPORTED_PLATES = [
+    ("env.title", "generated_images/production/import/extended_edge.png",
+     "Title background plate supplied by the user: coral food truck with empty serving window, sky, hills, ground and confetti extended to every edge."),
+]
+
+
+# Title screen pieces (S1). Storyboards are targets, never cut sources: each
+# piece is generated alone on a flat key colour from its approved character
+# sheet, with a storyboard crop as POSE reference only, then cut with the
+# SAM-soft cutter. `place` is its box in the title master (master px), so the
+# game puts it where the storyboard has it. Purple subjects use a green key.
+TITLE_REFS = "generated_images/production/refs/title"
+POSE_NOTE = ("Pose and framing reference only (taken from the approved title storyboard): copy this pose, "
+             "expression and proportions exactly, but ignore its background and anything behind the subject.")
+TITLE = [
+    dict(id="monster.og.wave", category="monster", key="green", sam="purple monster",
+         refs=[f"{APPROVED}/og_002.png", f"{TITLE_REFS}/monster.og.wave.png"],
+         ref_notes=["Character identity reference (approved character sheet): match this character exactly.", POSE_NOTE],
+         subject="OG, tall purple one-eyed monster, one huge single eye, wide happy open-mouth smile with pink tongue, "
+                 "smooth purple skin with a lighter lavender oval belly patch, long arms with small hands, long legs with big flat feet. "
+                 "Pose: standing tall facing camera, waving hello with its left arm raised high beside its head, other arm relaxed at its side. "
+                 "Full body, nothing cropped, no drop shadow, no ground.",
+         place=[99, 522, 552, 1121]),
+    dict(id="monster.gobbler.wave", category="monster", key="magenta", sam="orange monster",
+         refs=[f"{APPROVED}/gobbler_002.png", f"{TITLE_REFS}/monster.gobbler.wave.png"],
+         ref_notes=["Character identity reference (approved character sheet): match this character exactly.", POSE_NOTE],
+         subject="Gobbler, round orange monster whose body is one big belly with a cream belly patch, one large eye above two small eyes, "
+                 "wide smile with two small teeth, tiny tuft of hair, short stubby arms and legs with big round feet. "
+                 "Pose: standing facing camera, waving hello with its right arm raised high, other arm relaxed. "
+                 "Full body, nothing cropped, no drop shadow, no ground.",
+         place=[1389, 626, 1838, 1147]),
+    dict(id="chef.windowWave", category="chef", key="magenta", sam="chef",
+         refs=[f"{APPROVED}/head-chef-dad.png", f"{TITLE_REFS}/chef.windowWave.png"],
+         ref_notes=["Character identity reference (approved Head Chef): match this character exactly.", POSE_NOTE],
+         subject="The Head Chef: friendly older man with warm brown skin, short grey hair, tall white chef hat, white double-breasted chef jacket. "
+                 "Upper body from the waist up, facing camera, big warm smile, waving hello with his left hand raised beside his head. "
+                 "No counter, no window, no drop shadow.",
+         place=[746, 474, 1074, 743]),
+    dict(id="ui.goButton", category="prop", key="magenta", sam="green circle button",
+         refs=[f"{TITLE_REFS}/ui.goButton.png"],
+         ref_notes=["Exact design reference: reproduce this button exactly, alone."],
+         subject="A big round play button: a perfect circle filled with bright green, a thick dark outline, and a large rounded white play "
+                 "triangle in the centre pointing right. Flat, no text, no drop shadow.",
+         place=[783, 901, 1145, 1250]),
+]
+TITLE_QA = ["clean outline all the way round, even thickness", "nothing cropped",
+            "matches the identity/design reference", "no drop shadow or background remnants"]
+TITLE_MASTER_SIZE = (1920, 1280)  # title-intro-master.png; the logo is native text in the game
+
+# Kitchen screens (ordering, Go! wipe, cooking). Targets: order-at-window-1/2/3
+# and kitchen-master-stars_000. The plate is generated whole and wide (the
+# bleed box): Muse Image cannot extend an existing picture's edges. Buttons
+# and the Go! band are generated alone on a key colour and SAM-soft cut; the
+# storyboard crops in refs/kitchen are design references only. "GO!" and the
+# play triangle on the band are native text/CSS in the game.
+KITCHEN_REFS = "generated_images/production/refs/kitchen"
+DESIGN_NOTE = "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
+KITCHEN_PLATE = dict(
+    id="env.kitchen", category="env", mode="generate", size="1536x1024",
+    refs=[f"{APPROVED}/order-at-window-1-centred-ordering.png"],
+    ref_notes=["Style, palette and scenery reference (approved storyboard): copy its colours, line weight, coral window posts, "
+               "teal sky with darker teal rounded hills, and cream counter exactly. Do NOT copy its framing, the monster or any "
+               "button, badge or star: the new picture is a wider, empty view of the same kitchen."],
+    subject="Empty background plate of the inside of a food-truck kitchen, seen straight on. In the centre, a wide open serving "
+            "window: through it plain teal sky with soft darker-teal rounded hills along its bottom. Coral-red vertical posts with dark "
+            "outlines frame the left and right of the window, and a thin dark frame runs along its top. Around the window, plain flat teal "
+            "truck wall fills the margins on the left, right and top of the picture. A cream counter ledge runs across the full width of "
+            "the picture along the bottom of the window, drawn in gentle perspective with a dark outline on its back and front edges. "
+            "Below the counter, a plain flat cream counter front fills the bottom of the picture to the edges. Layout: the window opening "
+            "spans from 12% to 88% of the picture width; its top frame is at 13% of the picture height; the counter's back edge is at 54% "
+            "and its front edge at 60% of the picture height. Completely empty: no characters, no food, no shelves, no utensils, no "
+            "buttons, no stars, no icons, no objects.",
+    export={"w": 2400, "h": 1600, "alpha": False, "max_side": 2400},
+    display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
+    qa=["no text or letters", "no characters, food or objects", "empty serving window centred with coral posts both sides",
+        "plain wall and counter reach every edge"],
+)
+KITCHEN = [
+    dict(id="prop.undo", category="prop", key="magenta", sam="blue circle button",
+         refs=[f"{KITCHEN_REFS}/prop.undo.png"], ref_notes=[DESIGN_NOTE],
+         subject="A round button: a perfect circle filled with bright medium blue, a thick dark outline, and inside it a chunky "
+                 "U-shaped undo arrow in a deeper blue with a dark outline, its arrowhead pointing left. Flat, no text, no drop shadow."),
+    dict(id="prop.bell", category="prop", key="magenta", sam="yellow circle button",
+         refs=[f"{KITCHEN_REFS}/prop.bell.png"], ref_notes=[DESIGN_NOTE],
+         subject="A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden "
+                 "service bell with a small knob on top and a dark outline. Flat, no text, no drop shadow."),
+    dict(id="prop.trash", category="prop", key="green", sam="red circle button",
+         refs=[f"{KITCHEN_REFS}/prop.trash.png"], ref_notes=[DESIGN_NOTE],
+         subject="A round button: a perfect circle filled with bright tomato red, a thick dark outline, and inside it a red trash can "
+                 "with a lid and three vertical lines, drawn with a dark outline. Flat, no text, no drop shadow."),
+    dict(id="ui.goBand", category="prop", key="magenta", sam="yellow banner", size="1536x1024",
+         refs=[f"{KITCHEN_REFS}/ui.goBand.png"],
+         ref_notes=["Colour and texture reference only (approved Go! wipe storyboard): copy the yellow band's colours and its "
+                    "orange and pale-yellow speed streaks. Ignore the kitchen, the monster, the buttons, the letters and the triangle."],
+         subject="A long straight horizontal band of bright sunny yellow running across the whole width of the picture, about a "
+                 "quarter of the picture height tall, with long orange and pale-yellow speed streaks along its length and streaky, "
+                 "slightly ragged ends at the far left and far right. No outline, no letters, no triangle, nothing on it, no drop shadow."),
+]
+KITCHEN_QA = ["clean edge all the way round", "nothing cropped", "matches the design reference",
+              "no drop shadow or background remnants", "no text or letters"]
+
+# Tutorial (three steps before Level 1). Targets: tutorial-01/02/03. Each piece is
+# generated alone on a key colour with a storyboard crop in refs/tutorial as a
+# DESIGN or POSE reference only, then SAM-soft cut. Tiles, progress dots and the
+# golden arrow are native CSS/SVG in the game; positions live in TUTORIAL_LAYOUT
+# (App.tsx). Tutorial pieces have their own ids so gameplay art is untouched.
+TUT_REFS = "generated_images/production/refs/tutorial"
+TUT_DESIGN = "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+TUTORIAL_PLATE = dict(
+    id="env.tutorial", category="env", mode="generate", size="1536x1024",
+    refs=[f"{APPROVED}/tutorial-01.png"],
+    ref_notes=["Style and colour reference (approved storyboard): copy only its warm cream paper background and the soft teal glow "
+               "in the top-right corner. Ignore every object, icon, circle, button and character: the new picture is empty."],
+    subject="Empty background: warm cream paper colour with a very subtle soft grain, filling the whole picture. In the top-right corner, "
+            "a soft cloudy teal-turquoise glow fades gently into the cream, covering about the right third of the top half; the rest is plain "
+            "cream. Completely empty: no objects, no shapes, no outlines, no icons, no characters, no text.",
+    export={"w": 2400, "h": 1600, "alpha": False, "max_side": 2400},
+    display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
+    qa=["no text or letters", "no objects, icons or characters", "cream paper with a soft teal glow top-right", "no seams or frames"],
+)
+TUTORIAL = [
+    dict(id="tut.lettuce", category="tutorial", key="magenta", sam="green leaf",
+         refs=[f"{TUT_REFS}/tut.lettuce.png"], ref_notes=[TUT_DESIGN],
+         subject="A single big ruffled green lettuce leaf, tilted diagonally with its stem at the bottom left, bright green with a pale "
+                 "green central vein and branching veins, thick dark outline. Flat, no drop shadow, no ground."),
+    dict(id="tut.tomato", category="tutorial", key="magenta", sam="red tomato",
+         refs=[f"{TUT_REFS}/tut.tomato.png"], ref_notes=[TUT_DESIGN],
+         subject="A single whole round red tomato with a green leafy star-shaped top, a small white shine on its left side, thick dark "
+                 "outline. Flat, no drop shadow, no ground."),
+    dict(id="tut.patty", category="tutorial", key="magenta", sam="burger patty on a bun",
+         refs=[f"{TUT_REFS}/tut.patty.png"], ref_notes=[TUT_DESIGN],
+         subject="A thick bumpy brown cooked burger patty sitting on a golden-tan bottom bun with small speckles, seen from slightly "
+                 "above, thick dark outlines. Flat, no drop shadow, no ground."),
+    dict(id="tut.glove", category="tutorial", key="magenta", sam="white glove hand",
+         refs=[f"{TUT_REFS}/tut.glove.png"], ref_notes=[TUT_DESIGN],
+         subject="A white cartoon glove hand seen from the back, pointing its index finger diagonally down and to the right, other "
+                 "fingers curled, three short dark crease lines on the back of the hand, thick dark outline. Flat, no drop shadow."),
+    dict(id="tut.burger", category="tutorial", key="magenta", sam="burger",
+         refs=[f"{TUT_REFS}/tut.burger.png"], ref_notes=[TUT_DESIGN],
+         subject="A tall stacked cheeseburger seen from the side, from top to bottom: domed golden sesame top bun, ruffled green "
+                 "lettuce, a thick yellow pineapple slice, a red tomato slice with a thin green edge, a brown patty, a yellow cheese slice "
+                 "with draped corners, a second brown patty, golden speckled bottom bun. Thick dark outlines, flat colours. No drop shadow, no plate."),
+    dict(id="tut.bell", category="tutorial", key="magenta", sam="yellow circle",
+         refs=[f"{TUT_REFS}/tut.bell.png"], ref_notes=[TUT_DESIGN],
+         subject="A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden "
+                 "service bell with a small loop handle on top and a round clapper below, a light shine on its left, dark outline. "
+                 "Flat, no text, no drop shadow."),
+    dict(id="monster.gobbler.point", category="monster", key="magenta", sam="orange monster",
+         refs=[f"{APPROVED}/gobbler_002.png", f"{TUT_REFS}/monster.gobbler.point.png"],
+         ref_notes=["Character identity reference (approved character sheet): match this character exactly.",
+                    "Pose and framing reference only (taken from the approved tutorial storyboard): copy this pose, expression and "
+                    "proportions exactly, but ignore its background, the red tile and anything behind the subject."],
+         subject="Gobbler, round orange monster whose body is one big belly with a cream belly patch, one large eye above two small eyes, "
+                 "wide smile with two small teeth, tiny tuft of hair, short stubby arms and legs with big round feet. "
+                 "Pose: standing facing camera, its right arm stretched out to the left side of the picture, pointing with one finger, "
+                 "other arm relaxed at its side. Full body, nothing cropped, no drop shadow, no ground."),
+]
+TUTORIAL_QA = ["clean outline all the way round, even thickness", "nothing cropped", "matches the design reference",
+               "no drop shadow or background remnants", "no text or letters"]
+
 PROPS = [
-    ("prop.bell", "a golden service bell with a button on top", 150),
-    ("prop.trash", "a small grey trash bin with a lid", 104),
-    ("prop.undo", "a chunky curved undo arrow, mustard yellow with dark outline", 104),
     ("prop.pause", "two chunky vertical pause bars in a rounded badge", 140),
     ("prop.play", "a chunky green play triangle in a rounded badge", 220),
     ("prop.speakerOn", "a speaker with sound waves coming out", 120),
@@ -133,6 +299,51 @@ def main():
             size="1536x1024", export={"w": 3200, "h": 1800, "alpha": False},
             display="1600x900", sam=None,
             qa=["no text or letters", "no characters", "composition matches the master", "top-right call corner is plain scenery only"],
+        ))
+    for eid, plate, subject in BLEEDS:
+        assets.append(asset(
+            id=eid, category="env", mode="bleed", subject=subject, refs=[plate], bleed=BLEED,
+            size="1536x1024", export={"w": 2400, "h": 1600, "alpha": False},
+            display="2000x1333 bleed, safe 1600x900 centre", sam=None,
+            qa=["no text or letters", "no characters", "edges extend the scene naturally with no visible seam or frame",
+                "nothing mirrored or duplicated", "top-right call corner is plain scenery only"],
+        ))
+    for spec in TITLE:
+        spec = dict(spec)
+        x0, y0, x1, y1 = spec.pop("place")
+        mw, mh = TITLE_MASTER_SIZE
+        spec["place_frac"] = [round(x0 / mw, 5), round(y0 / mh, 5), round(x1 / mw, 5), round(y1 / mh, 5)]
+        assets.append(asset(
+            id=spec.pop("id"), category=spec.pop("category"), mode="generate", cutter="sam-soft",
+            size=spec.pop("size", "1024x1024"), export={"alpha": True, "trim": True, "max_side": 1100},
+            display="title, placed by master box", qa=TITLE_QA,
+            **spec,
+        ))
+    for eid, src, subject in IMPORTED_PLATES:
+        assets.append(asset(
+            id=eid, category="env", mode="derive", subject=subject, refs=[src],
+            size="import", export={"w": 2400, "h": 1600, "alpha": False, "max_side": 2400},
+            display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
+            qa=["no text or letters", "no characters and an empty serving window",
+                "scenery continues to every edge with no seams or frames"],
+        ))
+    assets.append(asset(**TUTORIAL_PLATE))
+    for spec in TUTORIAL:
+        spec = dict(spec)
+        assets.append(asset(
+            id=spec.pop("id"), category=spec.pop("category"), mode="generate", cutter="sam-soft",
+            size=spec.pop("size", "1024x1024"), export={"alpha": True, "trim": True, "max_side": 1100},
+            display="tutorial, placed by TUTORIAL_LAYOUT in App.tsx", qa=TUTORIAL_QA,
+            **spec,
+        ))
+    assets.append(asset(**KITCHEN_PLATE))
+    for spec in KITCHEN:
+        spec = dict(spec)
+        assets.append(asset(
+            id=spec.pop("id"), category=spec.pop("category"), mode="generate", cutter="sam-soft",
+            size=spec.pop("size", "1024x1024"), export={"alpha": True, "trim": True, "max_side": 1100 if spec["sam"] != "yellow banner" else 2400},
+            display="kitchen, placed by KITCHEN_LAYOUT in App.tsx", qa=KITCHEN_QA,
+            **spec,
         ))
     for mid, master, desc in MONSTERS:
         for pose, pose_line in POSES.items():
@@ -171,7 +382,7 @@ def main():
         subject="The same Head Chef dad character as the reference, head and shoulders only, big friendly encouraging smile, centred for a circular button crop, white chef hat.",
         refs=[chef_ref], size="1024x1024",
         export={"w": 512, "h": 512, "alpha": True, "fill": 0.8},
-        display="104 circle", sam="chef head",
+        display="104 circle", sam="chef", cutter="sam-soft",
         qa=["same Head Chef identity as the reference", "head centred for circle crop", "friendly expression", "no text"],
     ))
     assets.append(asset(
