@@ -8,8 +8,8 @@ export const DIM_IDS: DimId[] = ['encode', 'time', 'memory', 'search', 'complexi
 export type Dimensions = Record<DimId, number>;
 export type DimRuns = Record<DimId, number>;
 
-/** Correct banked per level. Total 29 across L1–L6 sizes the ~25-minute run. */
-export const BANKED_BY_LEVEL: Record<number, number> = { 1: 3, 2: 4, 3: 4, 4: 5, 5: 6, 6: 7 };
+/** Correct banked per level. Total 31 across L1–L6 sizes the run (burger-only v1: ~21 min typical). */
+export const BANKED_BY_LEVEL: Record<number, number> = { 1: 3, 2: 4, 3: 4, 4: 6, 5: 7, 6: 7 };
 export const bankedTarget = (level: number): number => BANKED_BY_LEVEL[Math.min(6, Math.max(1, level))] ?? 3;
 export const MAX_BANKED = Math.max(...Object.values(BANKED_BY_LEVEL));
 
