@@ -84,6 +84,9 @@ export function useGame(): { state: GameState; dispatch: (e: GameEvent) => void;
 }
 
 export const isTestMode = (): boolean => new URLSearchParams(window.location.search).get('test') === '1';
+/** Test-mode fast-forward (`?speed=`, default 20). The tick loop applies it
+ *  only to the monster's ordering call-out and the Go! wipe; cooking and
+ *  result feedback stay real time. */
 export const testSpeed = (): number => {
   const p = new URLSearchParams(window.location.search);
   return p.get('test') === '1' ? Math.max(1, Number(p.get('speed') ?? 20)) : 1;

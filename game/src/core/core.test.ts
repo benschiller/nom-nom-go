@@ -151,6 +151,17 @@ describe('game flow', () => {
     expect(step(s, { type: 'tourNext' })).toBe(s);
   });
 
+  it('ticks are no-ops on untimed screens, so idle screens do not re-render', () => {
+    const title = initialState({ seed: 1, savedLevel: 1 });
+    expect(step(title, { type: 'tick', ms: 16 })).toBe(title);
+    const tour = step(title, { type: 'go', tour: true });
+    expect(step(tour, { type: 'tick', ms: 16 })).toBe(tour);
+    for (const phase of ['levelResult', 'closed', 'poweredOff'] as const) {
+      const at = { ...title, phase };
+      expect(step(at, { type: 'tick', ms: 16 }), phase).toBe(at);
+    }
+  });
+
   it('ignores pause outside live play, so the title and tour can never be stranded', () => {
     let s = initialState({ seed: 1, savedLevel: 1 });
     expect(step(s, { type: 'pause' })).toBe(s);

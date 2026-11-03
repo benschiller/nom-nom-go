@@ -678,7 +678,9 @@ export function step(prev: GameState, event: GameEvent): GameState {
         case 'bossEnding':
           return s.phaseMs >= 3000 ? { ...s, phase: 'closed', phaseMs: 0 } : s;
         default:
-          return s;
+          // Title, tour, level result, closed, powered off: nothing is timed,
+          // so the tick is a no-op and the same state means no re-render.
+          return prev;
       }
     }
   }
