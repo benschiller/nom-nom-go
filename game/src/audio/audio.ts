@@ -53,7 +53,8 @@ export type Sfx =
   | 'confetti'
   | 'static'
   | 'snow'
-  | 'sputter';
+  | 'sputter'
+  | 'tinkle';
 export function playSfx(name: Sfx): void {
   if (!ctx || !soundOn) return;
   switch (name) {
@@ -101,6 +102,10 @@ export function playSfx(name: Sfx): void {
     case 'snow':
       tone(4000, 200, 'sawtooth', 0.02);
       tone(2500, 200, 'sawtooth', 0.015, 0.05);
+      break;
+    case 'tinkle':
+      // A small, bright bell shimmer (tutorial bell button).
+      [2093, 2637, 3136, 2637, 3136].forEach((f, i) => tone(f, 280, 'sine', 0.035, i * 0.07));
       break;
     case 'sputter':
       tone(140, 80, 'square', 0.05);

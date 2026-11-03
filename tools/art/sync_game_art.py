@@ -10,7 +10,9 @@ game/public/art/<id>.webp and regenerates both manifests:
 - game/public/art/manifest.json  (runtime/test contract, v2)
 - game/src/ui/artManifest.json   (imported by the Art component)
 
-Run: python3 tools/art/sync_game_art.py
+Run: python3 tools/art/sync_game_art.py [--allow-missing]
+--allow-missing writes the manifests even while some finals are not made
+yet (those ids are left out, so the game shows their fallbacks).
 Revisions still go through art.py revise; re-run this after one.
 """
 import json
@@ -79,7 +81,8 @@ def main() -> int:
         assets.append(rec)
     if missing:
         print(f"MISSING FINALS ({len(missing)}): {', '.join(missing)}", file=sys.stderr)
-        return 1
+        if "--allow-missing" not in sys.argv:
+            return 1
     doc = {
         "v": 2,
         "source": "tools/art/manifest-v2.json",

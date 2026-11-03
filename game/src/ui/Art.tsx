@@ -41,8 +41,8 @@ export const Art = memo(function Art({
 }: {
   id: string;
   size?: number;
-  height?: number;
-  width?: number;
+  height?: number | string;
+  width?: number | string;
   alt?: string;
   style?: CSSProperties;
   className?: string;

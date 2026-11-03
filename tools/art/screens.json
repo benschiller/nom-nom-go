@@ -24,6 +24,50 @@
       ]
     },
     {
+      "id": "T1",
+      "name": "Tutorial 1: the order",
+      "phases": ["title"],
+      "master": "generated_images/approved/tutorial-01.png",
+      "capture": "tour1",
+      "assets": ["env.tutorial", "tut.lettuce", "tut.tomato", "monster.gobbler.point", "ui.goButton"],
+      "checklist": [
+        "three progress dots at the top centre: the first yellow, two empty with dark outlines",
+        "two beige rounded tiles with thick dark outlines: green lettuce leaf left, red tomato right",
+        "orange Gobbler on the right pointing at the tomato tile",
+        "big round green play button with a white triangle below the tiles",
+        "cream background with a soft teal glow top-right; no text, no other buttons"
+      ]
+    },
+    {
+      "id": "T2",
+      "name": "Tutorial 2: drag to build",
+      "phases": ["title"],
+      "master": "generated_images/approved/tutorial-02.png",
+      "capture": "tour2",
+      "assets": ["env.tutorial", "tut.lettuce", "tut.tomato", "tut.patty", "tut.glove", "ui.goButton"],
+      "checklist": [
+        "three progress dots: two yellow, one empty",
+        "three beige tiles in a row: lettuce, tomato, patty on a bun",
+        "white glove pointing down at the lettuce",
+        "golden arrow with a dark outline pointing right under the tiles",
+        "green play button below; no text, no other buttons"
+      ]
+    },
+    {
+      "id": "T3",
+      "name": "Tutorial 3: ring the bell",
+      "phases": ["title"],
+      "master": "generated_images/approved/tutorial-03.png",
+      "capture": "tour3",
+      "assets": ["env.tutorial", "tut.burger", "tut.bell", "ui.goButton"],
+      "checklist": [
+        "three yellow progress dots",
+        "tall stacked burger on the left",
+        "round yellow bell button on the right",
+        "green play button below; no text, no other buttons"
+      ]
+    },
+    {
       "id": "S2",
       "name": "Level intro",
       "phases": ["levelIntro"],

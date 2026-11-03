@@ -96,6 +96,12 @@ Re-cut an existing pristine raw without regenerating:
 
 ## CLI (`python3 tools/art/art.py ...`)
 
+Run it with the pyenv interpreter (`~/.pyenv/shims/python3`): inside the
+repo `python3` can resolve to `.venv-sam`, which has no `openai`. The
+ledger lock is per process, so generate several ids in parallel from one
+process (threads over `art.process`), never several `art.py` processes at
+once.
+
 - `status`, `sheet`: ledger coverage and contact sheets.
 - `run --batch <cat> [--only <id>]`: generate, cut, normalise and QA new
   assets. Up to 3 attempts; failures are quarantined.
@@ -122,6 +128,9 @@ from WebP rounding.
 ## Consistency rules
 
 - The frozen style block is prepended to every prompt.
+- Storyboard crops used as references live in
+  `generated_images/production/refs/<screen>/` (`title`, `kitchen`,
+  `tutorial`) and are design or pose references only.
 - Characters: attach the approved character sheet every time, and pose
   from the master, never from the previous pose.
   - A storyboard crop may be attached as a **pose reference only**, with

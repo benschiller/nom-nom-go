@@ -27,6 +27,21 @@ const RECIPES: Record<string, (page: Page) => Promise<void>> = {
     await page.goto('/?test=1&seed=99');
     await expect(page.getByTestId('go-button')).toBeVisible();
   },
+  tour1: async (page) => {
+    await page.goto('/?test=1&seed=99&tour=1');
+    await page.getByTestId('go-button').click();
+    await expect(page.getByTestId('tour-order')).toHaveAttribute('data-shown', '2');
+  },
+  tour2: async (page) => {
+    await RECIPES.tour1(page);
+    await page.getByTestId('tour-next').click();
+    await expect(page.getByTestId('tour')).toHaveAttribute('data-step', '1');
+  },
+  tour3: async (page) => {
+    await RECIPES.tour2(page);
+    await page.getByTestId('tour-next').click();
+    await expect(page.getByTestId('tour')).toHaveAttribute('data-step', '2');
+  },
   levelIntro: async (page) => {
     await RECIPES.title(page);
     await page.getByTestId('go-button').click();

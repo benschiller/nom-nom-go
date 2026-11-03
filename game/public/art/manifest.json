@@ -1620,6 +1620,78 @@
       "h": 1024,
       "display": "PWA icon source",
       "version": 1
+    },
+    {
+      "id": "env.tutorial",
+      "category": "env",
+      "file": "/art/env.tutorial.webp",
+      "w": 2400,
+      "h": 1600,
+      "display": "2000x1333 bleed box, safe 1600x900 centre",
+      "version": 1
+    },
+    {
+      "id": "tut.lettuce",
+      "category": "tutorial",
+      "file": "/art/tut.lettuce.webp",
+      "w": 1100,
+      "h": 1008,
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "version": 2
+    },
+    {
+      "id": "tut.tomato",
+      "category": "tutorial",
+      "file": "/art/tut.tomato.webp",
+      "w": 1100,
+      "h": 1075,
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "version": 2
+    },
+    {
+      "id": "tut.patty",
+      "category": "tutorial",
+      "file": "/art/tut.patty.webp",
+      "w": 1100,
+      "h": 962,
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "version": 1
+    },
+    {
+      "id": "tut.glove",
+      "category": "tutorial",
+      "file": "/art/tut.glove.webp",
+      "w": 1100,
+      "h": 1079,
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "version": 2
+    },
+    {
+      "id": "tut.burger",
+      "category": "tutorial",
+      "file": "/art/tut.burger.webp",
+      "w": 1048,
+      "h": 1100,
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "version": 1
+    },
+    {
+      "id": "tut.bell",
+      "category": "tutorial",
+      "file": "/art/tut.bell.webp",
+      "w": 1100,
+      "h": 1091,
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "version": 2
+    },
+    {
+      "id": "monster.gobbler.point",
+      "category": "monster",
+      "file": "/art/monster.gobbler.point.webp",
+      "w": 1022,
+      "h": 1100,
+      "display": "tutorial, placed by TUTORIAL_LAYOUT in App.tsx",
+      "version": 1
     }
   ]
 }

@@ -54,10 +54,34 @@ in the same piece of work. The Claude Code pointer only redirects here.
   nothing to cut out. The title logo is Fredoka Bold, self-hosted and
   subset (`game/public/fonts/`), in the storyboard's word colours with a
   dark outline, each letter bobbing in a wave.
+- **Simple shapes are native too**: tiles, progress dots and arrows are
+  CSS/SVG (crisp, nothing to cut, easy to animate). An arrow that grows is
+  one outlined SVG path whose shaft lengthens, so the head never distorts.
+- **Screen-specific art ids.** When a screen needs its own look of an
+  existing piece (the tutorial's lettuce, bell, glove), give it its own id
+  (`tut.*`) so the gameplay screens' art is untouched.
 - **Motion:** characters `sway` and the Go image `pulse`; animate inner
   images, never the button's hit box. Everything stops under
   `prefers-reduced-motion`. A piece clipped with `clip` (the chef) stays
   static, because movement would show its cut edge.
+
+## Tutorial (T1–T3)
+
+- Three steps before Level 1, in the `Tour` component with
+  `TUTORIAL_LAYOUT`. The Go button (same spot every step) is the only
+  control: no skip, no back.
+- The storyboards are ~4:3, so they are fitted to the stage height and
+  centred; the bleed plate `env.tutorial` fills the sides.
+- T1: tiles start empty; lettuce then tomato pop in, each with the order
+  voice (gibberish, then Dad's `ing.<item>` clip). T2: the arrow stretches
+  while the glove drags a lettuce to the patty, on a loop. T3: the burger
+  pops in and the bell shimmies (`.ring`), tinkling on each shimmy:
+  `playSfx('tinkle')` fires on the CSS animation's start and iteration
+  events, so sound and motion stay locked.
+- Under reduced motion each step shows its finished frame
+  (`useReducedMotion`).
+- `?tour=1` forces the tour, even in test mode; capture recipes are
+  `tour1`–`tour3`.
 
 ## Definition of done (per screen)
 
@@ -94,7 +118,10 @@ in the same piece of work. The Claude Code pointer only redirects here.
   storyboard the user approves.
 - Art never blocks gameplay: every image keeps an emoji or CSS fallback.
 - Never hand-place files in `game/public/art/`. `sync_game_art.py` is the
-  only way art enters the game.
+  only way art enters the game. While another screen's finals are still
+  pending, run it with `--allow-missing`. Then diff both game manifests by
+  id: only your screen's ids may change. Restore anything else, such as
+  another screen's re-encoded plate.
 
 ## Abandoned (do not revive)
 

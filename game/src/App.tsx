@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { easeInOut, motion, useReducedMotion, useTime, useTransform } from 'motion/react';
 import { MONSTERS } from './content/content';
 import { bankedTarget } from './core/difficulty';
 import { currentOrder } from './core/game';
 import { defaultSave } from './core/save';
 import {
   playGibberish,
+  playClipById,
   playKioskItem,
   playSfx,
   setSoundOn,
@@ -183,201 +184,307 @@ export default function App(): React.JSX.Element {
   return <GameShell />;
 }
 
-/** Distinct pre-Level-1 intro: watch, listen, HELP, build, bell. */
-const TOUR_STEPS = 5;
+/**
+ * TUTORIAL LAYOUT (pre-Level-1 tour, 3 steps) — edit these numbers to move or
+ * resize pieces. Storyboards: approved/tutorial-01/02/03.png, fitted to the
+ * stage height and centred. Stage units as TITLE_LAYOUT. Tiles, progress dots
+ * and the golden arrow are native CSS/SVG; everything else is production art.
+ */
+const TUTORIAL_LAYOUT = {
+  pips: { top: 40, size: 78, gap: 22 }, // centred
+  goButton: { left: 688, top: 652, width: 224, height: 224 }, // same spot on every step
+  tile: { border: 10, radius: 34, inset: 0.07 }, // inset = icon padding as a fraction of the tile
+  step1: {
+    lettuce: { left: 292, top: 254, width: 334, height: 318 },
+    tomato: { left: 658, top: 254, width: 322, height: 318 },
+    gobbler: { left: 915, top: 321, width: 427, height: 472 }, // pointing at the tomato
+  },
+  step2: {
+    lettuce: { left: 347, top: 290, width: 243, height: 239 },
+    tomato: { left: 675, top: 290, width: 239, height: 239 },
+    patty: { left: 998, top: 290, width: 243, height: 239 },
+    glove: { left: 326, top: 205, width: 143, height: 141 }, // fingertip on the lettuce
+    carry: { left: 385, top: 300, width: 150, height: 150 }, // the lettuce the glove drags
+    arrow: { left: 352, top: 552, height: 88, shortWidth: 250, fullWidth: 800 }, // grows to under the patty
+  },
+  step3: {
+    burger: { left: 341, top: 194, width: 415, height: 468 },
+    bell: { left: 952, top: 316, width: 283, height: 274 },
+  },
+} as const;
 
-function TourDemo({ step }: { step: number }): React.JSX.Element {
-  const iconRow = (ids: string[], size = 120) => (
-    <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-      {ids.map((id, i) => (
-        <span key={`${id}-${i}`} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <ItemIcon id={id} size={size} />
-          {i < ids.length - 1 && <span style={{ fontSize: 36, color: '#8a5a33' }}>➜</span>}
-        </span>
-      ))}
-    </div>
-  );
-  const panel = (bg: string, children: React.ReactNode) => (
+const TOUR_STEPS = 3;
+/** First play shows the tour; `?tour=1` forces it (also in test mode, for e2e and screen QA). */
+const wantsTour = (seen: readonly string[]): boolean =>
+  new URLSearchParams(window.location.search).get('tour') === '1' || (!isTestMode() && !seen.includes('tour'));
+/** Step 2's drag loop (seconds) and its keyframe times: rest, drag, hold, fade. */
+const DRAG_LOOP = 2.6;
+const DRAG_TIMES = [0, 0.15, 0.65, 0.85, 1];
+
+/** A beige rounded tile (native CSS) holding one tutorial icon. */
+function TourTile({ box, children }: { box: Box; children?: React.ReactNode }): React.JSX.Element {
+  const t = TUTORIAL_LAYOUT.tile;
+  const pad = Math.round(box.width * t.inset);
+  return (
     <div
       style={{
-        background: bg,
-        borderRadius: 28,
-        border: '5px solid rgba(90,50,20,.25)',
-        padding: '28px 36px',
+        position: 'absolute',
+        ...box,
+        boxSizing: 'border-box',
+        background: '#ecc797',
+        border: `${t.border}px solid #1c1410`,
+        borderRadius: t.radius,
+        padding: pad,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 26,
-        minWidth: 760,
-        minHeight: 240,
       }}
     >
       {children}
     </div>
   );
-  switch (step) {
-    case 0:
-      // Watch: the monster orders at the kitchen window, sill row grows.
-      return panel(
-        '#7fd4c9',
-        <div data-testid="tour-watch" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Art id="monster.gobbler.tap" height={150} fallback={<span style={{ fontSize: 130 }}>👾</span>} />
-          {iconRow(['cheese', 'lettuce'], 110)}
-        </div>,
-      );
-    case 1:
-      // Listen: the Head Chef repeats the order in Dad's voice.
-      return panel(
-        '#ffe9b8',
-        <div data-testid="tour-listen" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Art id="chef.hatch" height={150} fallback={<span style={{ fontSize: 110 }}>👨‍🍳</span>} />
-          <Art id="prop.speakerOn" size={72} fallback={<span style={{ fontSize: 72 }}>🔊</span>} />
-          {iconRow(['cheese', 'lettuce'], 110)}
-        </div>,
-      );
-    case 2:
-      // HELP: tap the Head Chef; the bar highlights in order.
-      return panel(
-        '#fff8ec',
-        <div data-testid="tour-help">
-          <Art id="chef.helpFace" size={150} fallback={<span style={{ fontSize: 84 }}>👨‍🍳</span>} />
-          <span style={{ fontSize: 44 }}>➜</span>
-          <div style={{ display: 'flex', gap: 14 }}>
-            <ItemIcon id="cheese" size={120} glow />
-            <ItemIcon id="lettuce" size={120} />
-            <ItemIcon id="pickles" size={120} />
-          </div>
-          <Art id="prop.speakerOn" size={54} fallback={<span style={{ fontSize: 54 }}>🔊</span>} />
-        </div>,
-      );
-    case 3:
-      // Build: tap the ingredient bar in order.
-      return panel(
-        '#d9f2d0',
-        <div data-testid="tour-build">
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-            <div style={{ display: 'flex', gap: 14 }}>
-              <ItemIcon id="cheese" size={120} glow />
-              <ItemIcon id="lettuce" size={120} />
-              <ItemIcon id="pickles" size={120} />
-            </div>
-            <span className="bob">
-              <Art id="ui.glove" size={64} fallback={<span style={{ fontSize: 64 }}>👆</span>} />
-            </span>
-          </div>
-          <span style={{ fontSize: 44 }}>➜</span>
-          <div style={{ display: 'flex', flexDirection: 'column-reverse', alignItems: 'center' }}>
-            <Art id="dish.bunBottom" width={92} height={52} fallback={<span style={{ fontSize: 52 }}>🍞</span>} />
-            <ItemIcon id="cheese" size={92} variant="dish" />
-          </div>
-        </div>,
-      );
-    default:
-      // Bell: serve; the monster says Nom Nom and a star lights.
-      return panel(
-        '#bfe8ff',
-        <div data-testid="tour-bell" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Art id="prop.bell" size={110} fallback={<span style={{ fontSize: 110 }}>🔔</span>} />
-          <Art id="monster.gobbler.dance" height={130} fallback={<span style={{ fontSize: 90 }}>👾</span>} />
-          <Art id="ui.star.lit" size={54} fallback={<span style={{ fontSize: 54 }}>⭐</span>} />
-        </div>,
-      );
-  }
 }
 
-function Tour({
-  step,
-  onNext,
-  onBack,
-  onSkip,
-}: {
-  step: number;
-  onNext: () => void;
-  onBack: () => void;
-  onSkip: () => void;
-}): React.JSX.Element {
+/** An icon that pops into its tile. */
+function PopIn({ id, emoji, still }: { id: string; emoji: string; still: boolean }): React.JSX.Element {
+  return (
+    <motion.div
+      initial={still ? false : { scale: 0, rotate: -12 }}
+      animate={{ scale: 1, rotate: 0 }}
+      transition={{ type: 'spring', stiffness: 420, damping: 16 }}
+      style={{ width: '100%', height: '100%' }}
+    >
+      <Art id={id} width="100%" height="100%" fallback={<Emoji size={140}>{emoji}</Emoji>} />
+    </motion.div>
+  );
+}
+
+/** Native golden arrow: one outlined path whose shaft stretches, so the head never distorts. */
+function arrowPath(len: number, h: number): string {
+  const head = h * 0.85;
+  const s0 = h * 0.3;
+  const s1 = h * 0.7;
+  const pad = 6;
+  const neck = len - head;
+  return `M${pad},${s0} L${neck},${s0} L${neck},${pad} L${len - pad},${h / 2} L${neck},${h - pad} L${neck},${s1} L${pad},${s1} Z`;
+}
+
+/** Step 2 on repeat: the glove picks up the lettuce and drags it to the patty
+ *  while the golden arrow stretches the same way. One clock drives both, so
+ *  they never drift apart. Reduced motion: the glove on the lettuce, arrow full. */
+function TourDragLoop({ still }: { still: boolean }): React.JSX.Element {
+  const l = TUTORIAL_LAYOUT.step2;
+  const a = l.arrow;
+  const dx = l.patty.left - l.lettuce.left;
+  const ease = [easeInOut, easeInOut, easeInOut, easeInOut];
+  const time = useTime();
+  const phase = useTransform(time, (t) => (still ? DRAG_TIMES[1] : ((t / 1000) % DRAG_LOOP) / DRAG_LOOP));
+  const x = useTransform(phase, DRAG_TIMES, [0, 0, dx, dx, dx], { ease });
+  const lift = useTransform(phase, DRAG_TIMES, [1, 1.12, 1.12, 1, 1]);
+  const fade = useTransform(phase, DRAG_TIMES, still ? [1, 1, 1, 1, 1] : [0, 1, 1, 1, 0]);
+  const arrowFade = useTransform(phase, DRAG_TIMES, still ? [1, 1, 1, 1, 1] : [1, 1, 1, 1, 0]);
+  const len = useTransform(
+    phase,
+    DRAG_TIMES,
+    still ? Array(5).fill(a.fullWidth) : [a.shortWidth, a.shortWidth, a.fullWidth, a.fullWidth, a.fullWidth],
+    { ease },
+  );
+  const d = useTransform(len, (v) => arrowPath(v, a.height));
+  return (
+    <>
+      <svg
+        data-testid="tour-arrow"
+        aria-hidden
+        width={a.fullWidth}
+        height={a.height}
+        style={{ position: 'absolute', left: a.left, top: a.top, overflow: 'visible', pointerEvents: 'none' }}
+      >
+        <motion.path
+          d={d}
+          style={{ opacity: arrowFade }}
+          fill="#f6c445"
+          stroke="#1c1410"
+          strokeWidth={9}
+          strokeLinejoin="round"
+        />
+      </svg>
+      <motion.div
+        data-testid="tour-drag"
+        aria-hidden
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'none', x, opacity: fade }}
+      >
+        <motion.div style={{ position: 'absolute', ...l.carry, scale: lift }}>
+          <Art id="tut.lettuce" width={l.carry.width} height={l.carry.height} fallback={<Emoji size={120}>🥬</Emoji>} />
+        </motion.div>
+        <Art
+          id="tut.glove"
+          width={l.glove.width}
+          height={l.glove.height}
+          style={{ position: 'absolute', ...l.glove }}
+          fallback={<span style={{ position: 'absolute', ...l.glove, fontSize: 110 }}>👆</span>}
+        />
+      </motion.div>
+    </>
+  );
+}
+
+/** Step 1: the order appears item by item, each said aloud like a real order. */
+function TourOrder({ still, soundOn }: { still: boolean; soundOn: boolean }): React.JSX.Element {
+  const l = TUTORIAL_LAYOUT.step1;
+  const [shown, setShown] = useState(still ? 2 : 0);
+  useEffect(() => {
+    const items = ['lettuce', 'tomato'];
+    const pitch = MONSTERS.find((m) => m.id === 'gobbler')?.pitch ?? 1;
+    let chain = Promise.resolve();
+    const timers = items.map((item, i) =>
+      window.setTimeout(
+        () => {
+          setShown(i + 1);
+          playSfx('pop');
+          if (isTestMode() || !soundOn) return;
+          chain = chain.then(async () => {
+            playGibberish(pitch);
+            await new Promise((r) => setTimeout(r, 160));
+            await playClipById(`ing.${item}`);
+          });
+        },
+        isTestMode() ? 50 + i * 50 : 700 + i * 1300,
+      ),
+    );
+    return () => timers.forEach(clearTimeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <div data-testid="tour-order" data-shown={shown}>
+      <TourTile box={l.lettuce}>{shown >= 1 && <PopIn id="tut.lettuce" emoji="🥬" still={still} />}</TourTile>
+      <TourTile box={l.tomato}>{shown >= 2 && <PopIn id="tut.tomato" emoji="🍅" still={still} />}</TourTile>
+      <TitleArt id="monster.gobbler.point" box={l.gobbler} className="sway" />
+    </div>
+  );
+}
+
+function TourStep({ step, soundOn }: { step: number; soundOn: boolean }): React.JSX.Element {
+  const still = useReducedMotion() ?? false;
+  if (step === 0) return <TourOrder still={still} soundOn={soundOn} />;
+  if (step === 1) {
+    const l = TUTORIAL_LAYOUT.step2;
+    return (
+      <div data-testid="tour-build">
+        <TourTile box={l.lettuce}>
+          <Art id="tut.lettuce" width="100%" height="100%" fallback={<Emoji size={120}>🥬</Emoji>} />
+        </TourTile>
+        <TourTile box={l.tomato}>
+          <Art id="tut.tomato" width="100%" height="100%" fallback={<Emoji size={120}>🍅</Emoji>} />
+        </TourTile>
+        <TourTile box={l.patty}>
+          <Art id="tut.patty" width="100%" height="100%" fallback={<Emoji size={120}>🍔</Emoji>} />
+        </TourTile>
+        <TourDragLoop still={still} />
+      </div>
+    );
+  }
+  return <TourBell still={still} />;
+}
+
+/** Step 3: the finished burger and the bell button that shimmies and tinkles. */
+function TourBell({ still }: { still: boolean }): React.JSX.Element {
+  const l = TUTORIAL_LAYOUT.step3;
+  useEffect(() => {
+    // Reduced motion: no shimmy (so no animation events), one tinkle on arrival.
+    if (still) playSfx('tinkle');
+  }, [still]);
+  return (
+    <div data-testid="tour-bell">
+      <motion.div
+        initial={still ? false : { scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 18 }}
+        style={{ position: 'absolute', ...l.burger }}
+      >
+        <Art id="tut.burger" width={l.burger.width} height={l.burger.height} fallback={<Emoji size={300}>🍔</Emoji>} />
+      </motion.div>
+      {/* Each shimmy of the bell tinkles; the sound rides the CSS animation's own events. */}
+      <div
+        className="ring"
+        style={{ position: 'absolute', ...l.bell }}
+        onAnimationStart={() => playSfx('tinkle')}
+        onAnimationIteration={() => playSfx('tinkle')}
+      >
+        <Art
+          id="tut.bell"
+          width={l.bell.width}
+          height={l.bell.height}
+          fallback={<span style={{ fontSize: 200 }}>🛎️</span>}
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Pre-Level-1 tour: 1 the order appears, 2 drag to build, 3 ring the bell.
+ *  The Go button is the only control. */
+function Tour({ step, soundOn, onNext }: { step: number; soundOn: boolean; onNext: () => void }): React.JSX.Element {
   const last = step === TOUR_STEPS - 1;
+  const p = TUTORIAL_LAYOUT.pips;
   return (
     <div
       data-testid="tour"
-      data-tutorial="true"
       data-step={step}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        background: '#fdf3e3',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 22,
-        zIndex: 50,
-      }}
+      data-tutorial="true"
+      style={{ position: 'absolute', inset: 0, zIndex: 50, background: '#f7e8cc' }}
     >
-      <button
-        data-testid="tour-skip"
-        aria-label="Skip tour"
+      <Backdrop id="env.tutorial" />
+      <div
+        data-testid="tour-pips"
+        aria-hidden
         style={{
           position: 'absolute',
-          left: 24,
-          top: 24,
-          width: 110,
-          height: 110,
-          borderRadius: '50%',
-          fontSize: 44,
-          background: '#fff',
-          border: '4px solid rgba(90,50,20,.3)',
+          top: p.top,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          justifyContent: 'center',
+          gap: p.gap,
         }}
-        onClick={onSkip}
       >
-        ✕
-      </button>
-      <div data-testid="tour-pips" style={{ display: 'flex', gap: 12 }} aria-hidden>
         {Array.from({ length: TOUR_STEPS }, (_, i) => (
-          <Art
+          <span
             key={i}
-            id={i <= step ? 'ui.pip.lit' : 'ui.pip.unlit'}
-            size={30}
-            fallback={
-              <span
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: '50%',
-                  background: i <= step ? '#d35400' : 'rgba(90,50,20,.2)',
-                  display: 'block',
-                }}
-              />
-            }
+            data-lit={i <= step}
+            style={{
+              width: p.size,
+              height: p.size,
+              boxSizing: 'border-box',
+              borderRadius: '50%',
+              border: '8px solid #1c1410',
+              background: i <= step ? '#f6c445' : 'transparent',
+            }}
           />
         ))}
       </div>
-      <Art id="chef.point" height={110} fallback={<span style={{ fontSize: 110, lineHeight: 1 }}>👨‍🍳👉</span>} />
-      <TourDemo step={step} />
-      <div style={{ display: 'flex', gap: 18, alignItems: 'center', minHeight: 150 }}>
-        {step > 0 ? (
-          <button
-            data-testid="tour-back"
-            aria-label="Back"
-            style={{ ...BTN, width: 150, height: 140, fontSize: 60, background: '#fff' }}
-            onClick={onBack}
-          >
-            ◀
-          </button>
-        ) : (
-          <span style={{ width: 150 }} />
-        )}
-        <motion.button
-          data-testid="tour-next"
-          aria-label={last ? 'Start playing' : 'Next'}
-          whileTap={{ scale: 0.94 }}
-          style={{ ...BTN, width: 240, height: 150, fontSize: 68, background: '#6bcb77' }}
-          onClick={onNext}
-        >
-          {last ? '✓' : '▶'}
-        </motion.button>
-        <span style={{ width: 150 }} />
-      </div>
+      <TourStep key={step} step={step} soundOn={soundOn} />
+      <motion.button
+        data-testid="tour-next"
+        aria-label={last ? 'Start playing' : 'Next'}
+        whileTap={{ scale: 0.92 }}
+        style={{
+          position: 'absolute',
+          ...TUTORIAL_LAYOUT.goButton,
+          padding: 0,
+          border: 'none',
+          background: 'transparent',
+          borderRadius: '50%',
+        }}
+        onClick={onNext}
+      >
+        <Art
+          id="ui.goButton"
+          className="pulse"
+          width={TUTORIAL_LAYOUT.goButton.width}
+          height={TUTORIAL_LAYOUT.goButton.height}
+          fallback={<span style={{ fontSize: 160 }}>▶</span>}
+        />
+      </motion.button>
     </div>
   );
 }
@@ -700,7 +807,7 @@ function GameShell(): React.JSX.Element {
               }}
               onClick={() => {
                 unlockAudio();
-                if (!isTestMode() && !store.getSave().tutorialsSeen.includes('tour')) setTourStep(0);
+                if (wantsTour(store.getSave().tutorialsSeen)) setTourStep(0);
                 else startGame();
               }}
             >
@@ -1025,8 +1132,7 @@ function GameShell(): React.JSX.Element {
         {tourStep !== null && (
           <Tour
             step={tourStep}
-            onBack={() => setTourStep((s) => (s !== null && s > 0 ? s - 1 : s))}
-            onSkip={finishTour}
+            soundOn={store.getSave().soundOn}
             onNext={() => (tourStep >= TOUR_STEPS - 1 ? finishTour() : setTourStep(tourStep + 1))}
           />
         )}

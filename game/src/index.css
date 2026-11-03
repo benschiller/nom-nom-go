@@ -30,4 +30,8 @@ button { font-family: inherit; cursor: pointer; }
 /* Title logo: each letter bobs a little, staggered, so a wave runs through it. */
 @keyframes wave-letter { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-9px) rotate(-2deg); } }
 .wave-letter { display: inline-block; animation: wave-letter 1.6s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .sway, .pulse, .bob, .wave-letter { animation: none; } }
+/* Tutorial bell: a gentle shake, then a rest. The shake opens each cycle so the
+   tinkle can fire on animationstart/animationiteration. */
+@keyframes ring { 0%,35%,100% { transform: rotate(0); } 7% { transform: rotate(7deg); } 14% { transform: rotate(-6deg); } 21% { transform: rotate(4deg); } 28% { transform: rotate(-2deg); } }
+.ring { animation: ring 2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .sway, .pulse, .bob, .wave-letter, .ring { animation: none; } }

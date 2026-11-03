@@ -204,6 +204,65 @@ KITCHEN = [
 KITCHEN_QA = ["clean edge all the way round", "nothing cropped", "matches the design reference",
               "no drop shadow or background remnants", "no text or letters"]
 
+# Tutorial (three steps before Level 1). Targets: tutorial-01/02/03. Each piece is
+# generated alone on a key colour with a storyboard crop in refs/tutorial as a
+# DESIGN or POSE reference only, then SAM-soft cut. Tiles, progress dots and the
+# golden arrow are native CSS/SVG in the game; positions live in TUTORIAL_LAYOUT
+# (App.tsx). Tutorial pieces have their own ids so gameplay art is untouched.
+TUT_REFS = "generated_images/production/refs/tutorial"
+TUT_DESIGN = "Exact design reference (crop from the approved tutorial storyboard): reproduce this drawing exactly, alone, ignoring the beige tile, the background and anything around it."
+TUTORIAL_PLATE = dict(
+    id="env.tutorial", category="env", mode="generate", size="1536x1024",
+    refs=[f"{APPROVED}/tutorial-01.png"],
+    ref_notes=["Style and colour reference (approved storyboard): copy only its warm cream paper background and the soft teal glow "
+               "in the top-right corner. Ignore every object, icon, circle, button and character: the new picture is empty."],
+    subject="Empty background: warm cream paper colour with a very subtle soft grain, filling the whole picture. In the top-right corner, "
+            "a soft cloudy teal-turquoise glow fades gently into the cream, covering about the right third of the top half; the rest is plain "
+            "cream. Completely empty: no objects, no shapes, no outlines, no icons, no characters, no text.",
+    export={"w": 2400, "h": 1600, "alpha": False, "max_side": 2400},
+    display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
+    qa=["no text or letters", "no objects, icons or characters", "cream paper with a soft teal glow top-right", "no seams or frames"],
+)
+TUTORIAL = [
+    dict(id="tut.lettuce", category="tutorial", key="magenta", sam="green leaf",
+         refs=[f"{TUT_REFS}/tut.lettuce.png"], ref_notes=[TUT_DESIGN],
+         subject="A single big ruffled green lettuce leaf, tilted diagonally with its stem at the bottom left, bright green with a pale "
+                 "green central vein and branching veins, thick dark outline. Flat, no drop shadow, no ground."),
+    dict(id="tut.tomato", category="tutorial", key="magenta", sam="red tomato",
+         refs=[f"{TUT_REFS}/tut.tomato.png"], ref_notes=[TUT_DESIGN],
+         subject="A single whole round red tomato with a green leafy star-shaped top, a small white shine on its left side, thick dark "
+                 "outline. Flat, no drop shadow, no ground."),
+    dict(id="tut.patty", category="tutorial", key="magenta", sam="burger patty on a bun",
+         refs=[f"{TUT_REFS}/tut.patty.png"], ref_notes=[TUT_DESIGN],
+         subject="A thick bumpy brown cooked burger patty sitting on a golden-tan bottom bun with small speckles, seen from slightly "
+                 "above, thick dark outlines. Flat, no drop shadow, no ground."),
+    dict(id="tut.glove", category="tutorial", key="magenta", sam="white glove hand",
+         refs=[f"{TUT_REFS}/tut.glove.png"], ref_notes=[TUT_DESIGN],
+         subject="A white cartoon glove hand seen from the back, pointing its index finger diagonally down and to the right, other "
+                 "fingers curled, three short dark crease lines on the back of the hand, thick dark outline. Flat, no drop shadow."),
+    dict(id="tut.burger", category="tutorial", key="magenta", sam="burger",
+         refs=[f"{TUT_REFS}/tut.burger.png"], ref_notes=[TUT_DESIGN],
+         subject="A tall stacked cheeseburger seen from the side, from top to bottom: domed golden sesame top bun, ruffled green "
+                 "lettuce, a thick yellow pineapple slice, a red tomato slice with a thin green edge, a brown patty, a yellow cheese slice "
+                 "with draped corners, a second brown patty, golden speckled bottom bun. Thick dark outlines, flat colours. No drop shadow, no plate."),
+    dict(id="tut.bell", category="tutorial", key="magenta", sam="yellow circle",
+         refs=[f"{TUT_REFS}/tut.bell.png"], ref_notes=[TUT_DESIGN],
+         subject="A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden "
+                 "service bell with a small loop handle on top and a round clapper below, a light shine on its left, dark outline. "
+                 "Flat, no text, no drop shadow."),
+    dict(id="monster.gobbler.point", category="monster", key="magenta", sam="orange monster",
+         refs=[f"{APPROVED}/gobbler_002.png", f"{TUT_REFS}/monster.gobbler.point.png"],
+         ref_notes=["Character identity reference (approved character sheet): match this character exactly.",
+                    "Pose and framing reference only (taken from the approved tutorial storyboard): copy this pose, expression and "
+                    "proportions exactly, but ignore its background, the red tile and anything behind the subject."],
+         subject="Gobbler, round orange monster whose body is one big belly with a cream belly patch, one large eye above two small eyes, "
+                 "wide smile with two small teeth, tiny tuft of hair, short stubby arms and legs with big round feet. "
+                 "Pose: standing facing camera, its right arm stretched out to the left side of the picture, pointing with one finger, "
+                 "other arm relaxed at its side. Full body, nothing cropped, no drop shadow, no ground."),
+]
+TUTORIAL_QA = ["clean outline all the way round, even thickness", "nothing cropped", "matches the design reference",
+               "no drop shadow or background remnants", "no text or letters"]
+
 PROPS = [
     ("prop.pause", "two chunky vertical pause bars in a rounded badge", 140),
     ("prop.play", "a chunky green play triangle in a rounded badge", 220),
@@ -267,6 +326,15 @@ def main():
             display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
             qa=["no text or letters", "no characters and an empty serving window",
                 "scenery continues to every edge with no seams or frames"],
+        ))
+    assets.append(asset(**TUTORIAL_PLATE))
+    for spec in TUTORIAL:
+        spec = dict(spec)
+        assets.append(asset(
+            id=spec.pop("id"), category=spec.pop("category"), mode="generate", cutter="sam-soft",
+            size=spec.pop("size", "1024x1024"), export={"alpha": True, "trim": True, "max_side": 1100},
+            display="tutorial, placed by TUTORIAL_LAYOUT in App.tsx", qa=TUTORIAL_QA,
+            **spec,
         ))
     assets.append(asset(**KITCHEN_PLATE))
     for spec in KITCHEN:
