@@ -143,7 +143,7 @@ export function saveFromState(state: GameState, prev: SaveData): SaveData {
   // Bank correct rounds toward the frontier level. Warm-up rounds and the
   // level-result moment itself do not move the bank.
   const levelProgress =
-    state.phase === 'title'
+    state.phase === 'title' || state.phase === 'tour'
       ? prev.levelProgress
       : state.phase === 'levelResult' || state.phase === 'bossEnding' || state.phase === 'closed'
         ? 0

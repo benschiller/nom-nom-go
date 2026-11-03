@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { ITEMS, MONSTERS, itemsFor } from '../content/content';
 import { classifyMismatch } from './compare';
-import { deserialize, initialState, serialize, step, type GameState } from './game';
+import { deserialize, initialState, serialize, step, TOUR_STEPS, type GameState } from './game';
 import { toMirror } from './mirror';
 import { generateOrder, generateTryOrders } from './orders';
 import { orderingIntervalMs, patienceMs, perItemSeconds } from './pace';
@@ -109,12 +109,49 @@ describe('game flow', () => {
     expect(s.level).toBe(2);
   });
 
-  it('marks the onboarding tour seen once and re-arms it on power cycle', () => {
+  it('runs the onboarding tour as a phase, then starts Level 1 and marks it seen', () => {
     let s = initialState({ seed: 1, savedLevel: 1 });
-    s = step(s, { type: 'tourDone' });
+    s = step(s, { type: 'go', tour: true });
+    expect(s.phase).toBe('tour');
+    expect(s.tourStep).toBe(0);
+    for (let i = 1; i < TOUR_STEPS; i++) {
+      s = step(s, { type: 'tourNext' });
+      expect(s.phase).toBe('tour');
+      expect(s.tourStep).toBe(i);
+    }
+    expect(s.tutorialsSeen).not.toContain('tour');
+    s = step(s, { type: 'tourNext' });
+    expect(s.phase).toBe('ordering');
+    expect(s.level).toBe(1);
+    expect(s.tutorialsSeen).toEqual(['tour']);
+    expect(step(s, { type: 'tourNext' })).toBe(s);
+  });
+
+  it('ignores pause outside live play, so the title and tour can never be stranded', () => {
+    let s = initialState({ seed: 1, savedLevel: 1 });
+    expect(step(s, { type: 'pause' })).toBe(s);
+    s = step(s, { type: 'go', tour: true });
+    expect(step(s, { type: 'pause' })).toBe(s);
+    // Backgrounding mid-tour then finishing it still reaches the first order.
+    s = step(s, { type: 'pause' });
+    for (let i = 0; i < TOUR_STEPS; i++) s = step(s, { type: 'tourNext' });
+    expect(s.phase).toBe('ordering');
+    expect(s.paused).toBe(false);
+    // Live play still pauses and freezes ticks.
+    const paused = step(s, { type: 'pause' });
+    expect(paused.paused).toBe(true);
+    expect(step(paused, { type: 'tick', ms: 5000 }).phaseMs).toBe(paused.phaseMs);
+    for (const phase of ['levelResult', 'bossEnding', 'closed', 'poweredOff'] as const) {
+      const at = { ...s, phase };
+      expect(step(at, { type: 'pause' }), phase).toBe(at);
+    }
+  });
+
+  it('re-arms the onboarding tour on power cycle', () => {
+    let s = initialState({ seed: 1, savedLevel: 1 });
+    s = step(s, { type: 'go', tour: true });
+    for (let i = 0; i < TOUR_STEPS; i++) s = step(s, { type: 'tourNext' });
     expect(s.tutorialsSeen).toContain('tour');
-    const again = step(s, { type: 'tourDone' });
-    expect(again).toBe(s);
     const off = step({ ...s, phase: 'closed', bossBeaten: true }, { type: 'powerOff' });
     const on = step(off, { type: 'powerOn' });
     expect(on.tutorialsSeen).not.toContain('tour');

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { easeInOut, motion, useReducedMotion, useTime, useTransform } from 'motion/react';
 import { MONSTERS } from './content/content';
 import { bankedTarget } from './core/difficulty';
-import { currentOrder } from './core/game';
+import { currentOrder, TOUR_STEPS } from './core/game';
 import { defaultSave } from './core/save';
 import {
   playGibberish,
@@ -213,7 +213,6 @@ const TUTORIAL_LAYOUT = {
   },
 } as const;
 
-const TOUR_STEPS = 3;
 /** First play shows the tour; `?tour=1` forces it (also in test mode, for e2e and screen QA). */
 const wantsTour = (seen: readonly string[]): boolean =>
   new URLSearchParams(window.location.search).get('tour') === '1' || (!isTestMode() && !seen.includes('tour'));
@@ -592,7 +591,6 @@ function GameShell(): React.JSX.Element {
   const { state, dispatch, store } = useGame();
   const scale = useStageScale();
   const portrait = usePortrait();
-  const [tourStep, setTourStep] = useState<number | null>(null);
   const [parentOpen, setParentOpen] = useState(false);
   const [dadOnline, setDadOnline] = useState(false);
   const [cheer, setCheer] = useState<string | null>(null);
@@ -616,17 +614,20 @@ function GameShell(): React.JSX.Element {
     window.location.reload();
   };
 
-  const startGame = (): void => {
+  /** Title and tour screens: no gameplay HUD (Dad badge, power hold). */
+  const onTitle = state.phase === 'title' || state.phase === 'tour';
+
+  const leaveTitle = (): void => {
     unlockAudio();
-    startBackgroundLoop(() => (state.streak ? 260 : 380));
-    dispatch({ type: 'go' });
+    const tour = wantsTour(store.getSave().tutorialsSeen);
+    if (!tour) startBackgroundLoop(() => (state.streak ? 260 : 380));
+    dispatch({ type: 'go', tour });
   };
 
-  const finishTour = (): void => {
+  const nextTourStep = (): void => {
     unlockAudio();
-    dispatch({ type: 'tourDone' });
-    setTourStep(null);
-    startGame();
+    if (state.tourStep >= TOUR_STEPS - 1) startBackgroundLoop(() => (state.streak ? 260 : 380));
+    dispatch({ type: 'tourNext' });
   };
 
   // Tick loop. Test mode scales tick steps so E2E can play in real time.
@@ -805,11 +806,7 @@ function GameShell(): React.JSX.Element {
                 background: 'transparent',
                 borderRadius: '50%',
               }}
-              onClick={() => {
-                unlockAudio();
-                if (wantsTour(store.getSave().tutorialsSeen)) setTourStep(0);
-                else startGame();
-              }}
+              onClick={leaveTitle}
             >
               {/* Pulse the image, not the button: a steady hit box for small fingers
                   (and for Playwright's stability check). */}
@@ -997,7 +994,7 @@ function GameShell(): React.JSX.Element {
           </div>
         )}
 
-        {state.paused && state.phase !== 'title' && (
+        {state.paused && (
           <div
             style={{
               position: 'absolute',
@@ -1061,7 +1058,7 @@ function GameShell(): React.JSX.Element {
             </span>
           </div>
         )}
-        {state.phase !== 'title' && (
+        {!onTitle && (
           <div
             data-testid="dad-badge"
             style={{
@@ -1111,7 +1108,7 @@ function GameShell(): React.JSX.Element {
             />
           </div>
         )}
-        {state.phase !== 'title' && state.phase !== 'closed' && state.phase !== 'poweredOff' && (
+        {!onTitle && state.phase !== 'closed' && state.phase !== 'poweredOff' && (
           <HoldButton
             testId="power-reset"
             label="Power — press and hold to reset completely"
@@ -1129,12 +1126,8 @@ function GameShell(): React.JSX.Element {
           />
         )}
 
-        {tourStep !== null && (
-          <Tour
-            step={tourStep}
-            soundOn={store.getSave().soundOn}
-            onNext={() => (tourStep >= TOUR_STEPS - 1 ? finishTour() : setTourStep(tourStep + 1))}
-          />
+        {state.phase === 'tour' && (
+          <Tour step={state.tourStep} soundOn={store.getSave().soundOn} onNext={nextTourStep} />
         )}
 
         <Confetti active={state.phase === 'serveResult' && state.result?.kind === 'correct'} />
