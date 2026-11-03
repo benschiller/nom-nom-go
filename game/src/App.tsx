@@ -503,6 +503,9 @@ function HoldButton({
   style: React.CSSProperties;
 }): React.JSX.Element {
   const [progress, setProgress] = useState(0);
+  // The ring shows from the moment of the press, not from the first frame:
+  // instant feedback for the finger, and always drawn before completion.
+  const [holding, setHolding] = useState(false);
   const timer = useRef<number | null>(null);
   const raf = useRef<number | null>(null);
   const cancel = (): void => {
@@ -515,9 +518,11 @@ function HoldButton({
       raf.current = null;
     }
     setProgress(0);
+    setHolding(false);
   };
   const start = (): void => {
     cancel();
+    setHolding(true);
     const duration = isTestMode() ? 300 : 3000;
     const started = performance.now();
     timer.current = window.setTimeout(() => {
@@ -525,6 +530,7 @@ function HoldButton({
       raf.current = null;
       timer.current = null;
       setProgress(0);
+      setHolding(false);
       onComplete();
     }, duration);
     const tick = (now: number): void => {
@@ -553,7 +559,7 @@ function HoldButton({
       onPointerCancel={cancel}
       onContextMenu={(e) => e.preventDefault()}
     >
-      {progress > 0 && (
+      {holding && (
         <svg
           data-testid={`${testId}-ring`}
           width="148"
@@ -630,19 +636,24 @@ function GameShell(): React.JSX.Element {
     dispatch({ type: 'tourNext' });
   };
 
-  // Tick loop. Test mode scales tick steps so E2E can play in real time.
+  // Tick loop. Test mode fast-forwards only the wait for the monster (the
+  // ordering call-out and the Go! wipe). The player's turn and the result
+  // feedback always tick in real time: patience is the same for a test as
+  // for a child, and results stay on screen long enough to be checked.
   useEffect(() => {
     let raf = 0;
     let last = performance.now();
     const loop = (now: number): void => {
       const dt = Math.min(100, now - last);
       last = now;
-      dispatch({ type: 'tick', ms: Math.round(dt * testSpeed()) });
+      const phase = store.getState().phase;
+      const speed = phase === 'ordering' || phase === 'goWipe' ? testSpeed() : 1;
+      dispatch({ type: 'tick', ms: Math.round(dt * speed) });
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
-  }, [dispatch]);
+  }, [dispatch, store]);
 
   // Auto-pause + AudioContext recovery on visibility.
   useEffect(() => {

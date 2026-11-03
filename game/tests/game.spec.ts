@@ -150,8 +150,23 @@ test('Level 2 uses one merged inventory and Head Chef help replays the order', a
   await expect(page.getByTestId('ticket-monitor')).toHaveCount(0);
   await expect(page.getByTestId('ticket-hidden')).toHaveCount(0);
   const pipsBefore = await page.getByTestId('help-pips').locator('span').count();
+  const ticket = (await page.getByTestId('ticket').getAttribute('data-expected'))?.trim().split(/\s+/) ?? [];
+  // The replay highlight is brief in test mode, so record every highlight
+  // as it happens instead of polling for one that may already be gone.
+  await page.evaluate(() => {
+    const seen: string[] = [];
+    (window as unknown as { __helpSeen: string[] }).__helpSeen = seen;
+    new MutationObserver((records) => {
+      for (const r of records) {
+        const el = r.target as HTMLElement;
+        if (el.dataset.helpActive === 'true' && el.dataset.trayItem) seen.push(el.dataset.trayItem);
+      }
+    }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-help-active'] });
+  });
   await page.getByTestId('chef-help').click();
-  await expect(page.locator('[data-help-active="true"]').first()).toBeVisible({ timeout: 10_000 });
+  await expect
+    .poll(() => page.evaluate(() => (window as unknown as { __helpSeen: string[] }).__helpSeen), { timeout: 10_000 })
+    .toEqual(ticket);
   await expect
     .poll(async () => page.getByTestId('help-pips').locator('span').count(), { timeout: 10_000 })
     .toBe(pipsBefore);
@@ -196,11 +211,22 @@ test('power button replaces the parent gate in play and hold-resets completely',
   const box = await power.boundingBox();
   if (!box) throw new Error('no power box');
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  // The test-mode hold lasts 300ms and then the page resets and reloads, so
+  // record the ring in-page as it appears (sessionStorage survives the reload)
+  // instead of polling for it afterwards.
+  await page.evaluate(() => {
+    new MutationObserver(() => {
+      if (document.querySelector('[data-testid="power-reset-ring"]')) sessionStorage.setItem('ringSeen', '1');
+    }).observe(document.body, { subtree: true, childList: true });
+  });
+  // Hold until the reset reloads the page, then let go: a fixed sleep would
+  // race the hold timer when the page is busy.
+  const reloaded = page.waitForEvent('load', { timeout: 15_000 });
   await page.mouse.down();
-  await expect(page.getByTestId('power-reset-ring')).toBeVisible();
-  await page.waitForTimeout(450);
+  await reloaded;
   await page.mouse.up();
   await expect(page.getByTestId('go-button')).toBeVisible({ timeout: 15_000 });
+  expect(await page.evaluate(() => sessionStorage.getItem('ringSeen'))).toBe('1');
   const save = await page.evaluate(() => JSON.parse(localStorage.getItem('nom-nom-go-save-v1') ?? '{}'));
   expect(save.level).toBe(1);
   expect(save.paceStep).toBe(0);
@@ -254,9 +280,10 @@ test('mirror: Dad sees the same order and a cheer reaches the child', async ({ b
   const kid = await context.newPage();
   const dad = await context.newPage();
   await kid.goto('/#dad');
+  // The pairing link renders after mount: wait for it, do not read once.
+  await expect(kid.locator('body')).toContainText(/#pair=[0-9a-f-]{36}/i);
   const href = await kid.evaluate(() => {
-    const text = document.body.innerText;
-    const match = text.match(/#pair=([0-9a-f-]{36})/i);
+    const match = document.body.innerText.match(/#pair=([0-9a-f-]{36})/i);
     return match ? match[1] : null;
   });
   expect(href).toBeTruthy();
