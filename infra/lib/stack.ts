@@ -14,12 +14,12 @@ const ON_PUBLISH = `
 const PLAY_TYPES = ['snapshot', 'event', 'beat'];
 const DAD_TYPES = ['hello', 'glove', 'cheer', 'beat'];
 export function onPublish(ctx) {
-  const channel = ctx.info.channel;
+  const channel = ctx.info.channel.path;
   const allowed = channel.endsWith('/play') ? PLAY_TYPES : DAD_TYPES;
   return ctx.events.filter((event) => {
     const payload = event.payload || {};
     if (payload.v !== 1) return false;
-    if (!allowed.includes(payload.type)) return false;
+    if (allowed.indexOf(payload.type) === -1) return false;
     if (JSON.stringify(payload).length > 4096) return false;
     return true;
   });
@@ -77,24 +77,12 @@ export class NomNomGoStack extends Stack {
       },
     });
 
-    const publishDataSource = new appsync.CfnDataSource(this, 'KitchenPublishDataSource', {
-      apiId: eventApi.apiId,
-      name: 'KitchenPublish',
-      type: 'NONE',
-    });
-
-    const kitchenNamespace = new appsync.CfnChannelNamespace(this, 'KitchenNamespace', {
+    // A standalone event handler needs code only, without a data source integration.
+    new appsync.CfnChannelNamespace(this, 'KitchenNamespace', {
       apiId: eventApi.apiId,
       name: 'kitchen',
       codeHandlers: ON_PUBLISH,
-      handlerConfigs: {
-        onPublish: {
-          behavior: 'CODE',
-          integration: { dataSourceName: publishDataSource.name },
-        },
-      },
     });
-    kitchenNamespace.node.addDependency(publishDataSource);
 
     const apiKey = eventApi.apiKeys['NomNomGoKey'] ?? Object.values(eventApi.apiKeys)[0];
 
