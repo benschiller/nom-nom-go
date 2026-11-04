@@ -1055,7 +1055,14 @@ function GameShell(): React.JSX.Element {
               data-testid="resume-button"
               aria-label="Resume"
               whileTap={{ scale: 0.92 }}
-              style={{ width: 240, height: 240, padding: 0, border: 'none', background: 'transparent', borderRadius: '50%' }}
+              style={{
+                width: 240,
+                height: 240,
+                padding: 0,
+                border: 'none',
+                background: 'transparent',
+                borderRadius: '50%',
+              }}
               onClick={() => {
                 unlockAudio();
                 dispatch({ type: 'resume' });
@@ -1098,7 +1105,10 @@ function GameShell(): React.JSX.Element {
           <Tour step={state.tourStep} soundOn={store.getSave().soundOn} onNext={nextTourStep} />
         )}
 
-        <Confetti active={(state.phase === 'serveResult' && state.result?.kind === 'correct') || state.phase === 'levelResult'} />
+        <Confetti
+          active={(state.phase === 'serveResult' && state.result?.kind === 'correct') || state.phase === 'levelResult'}
+          variant={state.phase === 'levelResult' ? 'level' : 'round'}
+        />
       </div>
 
       {portrait && (
@@ -1124,4 +1134,3 @@ function GameShell(): React.JSX.Element {
     </div>
   );
 }
-
