@@ -833,10 +833,10 @@
       "id": "item.avocado.dish",
       "category": "ingredient",
       "file": "/art/item.avocado.dish.webp",
-      "w": 256,
-      "h": 256,
+      "w": 900,
+      "h": 540,
       "display": "92 in dish stack",
-      "version": 1
+      "version": 6
     },
     {
       "id": "item.ketchup.tray",
@@ -905,10 +905,10 @@
       "id": "item.pickles.dish",
       "category": "ingredient",
       "file": "/art/item.pickles.dish.webp",
-      "w": 256,
-      "h": 256,
+      "w": 900,
+      "h": 458,
       "display": "92 in dish stack",
-      "version": 1
+      "version": 3
     },
     {
       "id": "item.onionRings.tray",
@@ -923,10 +923,10 @@
       "id": "item.onionRings.dish",
       "category": "ingredient",
       "file": "/art/item.onionRings.dish.webp",
-      "w": 256,
-      "h": 256,
+      "w": 900,
+      "h": 517,
       "display": "92 in dish stack",
-      "version": 1
+      "version": 5
     },
     {
       "id": "item.crispyOnions.tray",
