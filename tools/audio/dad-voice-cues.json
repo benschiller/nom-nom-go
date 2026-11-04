@@ -1,0 +1,246 @@
+{
+  "source": "working/audio/dad-voice.m4a",
+  "sha256": "bb7d7253c17cc816884ff14d8ac24f1bb29a30367d42f44cddc619f686a818af",
+  "clips": [
+    {
+      "id": "phrase.order_up",
+      "text": "Order up!",
+      "start": 1.535,
+      "end": 2.371
+    },
+    {
+      "id": "phrase.and",
+      "text": "and",
+      "start": 3.584,
+      "end": 4.279
+    },
+    {
+      "id": "amount.double",
+      "text": "double",
+      "start": 5.486,
+      "end": 6.037
+    },
+    {
+      "id": "ing.patty",
+      "text": "patty",
+      "start": 9.491,
+      "end": 10.092
+    },
+    {
+      "id": "ing.tomato",
+      "text": "tomato slice",
+      "start": 11.351,
+      "end": 12.532
+    },
+    {
+      "id": "ing.pineapple",
+      "text": "pineapple slice",
+      "start": 13.418,
+      "end": 14.613
+    },
+    {
+      "id": "ing.lettuce",
+      "text": "lettuce",
+      "start": 15.363,
+      "end": 16.176
+    },
+    {
+      "id": "ing.avocado",
+      "text": "avocado",
+      "start": 17.166,
+      "end": 18.046
+    },
+    {
+      "id": "ing.ketchup",
+      "text": "ketchup",
+      "start": 19.344,
+      "end": 19.943
+    },
+    {
+      "id": "ing.salsa",
+      "text": "salsa",
+      "start": 21.142,
+      "end": 21.911
+    },
+    {
+      "id": "ing.cheese",
+      "text": "cheese",
+      "start": 23.157,
+      "end": 24.068
+    },
+    {
+      "id": "ing.pickles",
+      "text": "pickles",
+      "start": 25.328,
+      "end": 26.094
+    },
+    {
+      "id": "ing.onionRings",
+      "text": "onion rings",
+      "start": 27.367,
+      "end": 28.41
+    },
+    {
+      "id": "ing.crispyOnions",
+      "text": "crispy onions",
+      "start": 29.387,
+      "end": 30.582
+    },
+    {
+      "id": "ing.crust.thin",
+      "text": "thin crust",
+      "start": 31.718,
+      "end": 32.571
+    },
+    {
+      "id": "ing.crust.thick",
+      "text": "thick crust",
+      "start": 33.902,
+      "end": 34.913
+    },
+    {
+      "id": "ing.sauce.redSmooth",
+      "text": "smooth red sauce",
+      "start": 36.098,
+      "end": 37.663
+    },
+    {
+      "id": "ing.sauce.redChunky",
+      "text": "chunky red sauce",
+      "start": 38.66,
+      "end": 40.266
+    },
+    {
+      "id": "ing.sauce.white",
+      "text": "white sauce",
+      "start": 41.321,
+      "end": 42.463
+    },
+    {
+      "id": "ing.pepperoni",
+      "text": "beef pepperoni",
+      "start": 43.639,
+      "end": 44.922
+    },
+    {
+      "id": "ing.greenPepper",
+      "text": "green pepper",
+      "start": 46.448,
+      "end": 47.41
+    },
+    {
+      "id": "ing.basil",
+      "text": "basil",
+      "start": 49.013,
+      "end": 49.705
+    },
+    {
+      "id": "ing.mushroom",
+      "text": "mushroom",
+      "start": 51.17,
+      "end": 51.986
+    },
+    {
+      "id": "ing.olives",
+      "text": "olives",
+      "start": 53.522,
+      "end": 54.491
+    },
+    {
+      "id": "ing.turkey",
+      "text": "turkey slice",
+      "start": 55.838,
+      "end": 56.991
+    },
+    {
+      "id": "ing.corn",
+      "text": "corn",
+      "start": 58.195,
+      "end": 58.884
+    },
+    {
+      "id": "ing.cup",
+      "text": "cup",
+      "start": 60.542,
+      "end": 61.109
+    },
+    {
+      "id": "ing.cone",
+      "text": "cone",
+      "start": 62.716,
+      "end": 63.509
+    },
+    {
+      "id": "ing.scoop.vanilla",
+      "text": "vanilla scoop",
+      "start": 64.787,
+      "end": 65.848
+    },
+    {
+      "id": "ing.scoop.chocolate",
+      "text": "chocolate scoop",
+      "start": 67.225,
+      "end": 68.4
+    },
+    {
+      "id": "ing.scoop.strawberry",
+      "text": "strawberry scoop",
+      "start": 69.602,
+      "end": 70.943
+    },
+    {
+      "id": "ing.cherry",
+      "text": "cherry",
+      "start": 72.49,
+      "end": 73.22
+    },
+    {
+      "id": "ing.grape",
+      "text": "grape",
+      "start": 74.435,
+      "end": 75.159
+    },
+    {
+      "id": "ing.whippedCream",
+      "text": "whipped cream",
+      "start": 76.33,
+      "end": 77.512
+    },
+    {
+      "id": "ing.marshmallow",
+      "text": "marshmallow",
+      "start": 78.642,
+      "end": 79.655
+    },
+    {
+      "id": "ing.chocChips",
+      "text": "chocolate chips",
+      "start": 80.585,
+      "end": 81.82
+    },
+    {
+      "id": "ing.sprinkles",
+      "text": "sprinkles",
+      "start": 82.738,
+      "end": 83.909
+    },
+    {
+      "id": "ing.banana",
+      "text": "banana slice",
+      "start": 85.078,
+      "end": 86.376
+    },
+    {
+      "id": "ing.caramel",
+      "text": "caramel",
+      "start": 87.489,
+      "end": 88.379
+    },
+    {
+      "id": "ing.pizzaTomato",
+      "text": "tomato slice",
+      "start": 89.496,
+      "end": 90.818
+    }
+  ]
+}

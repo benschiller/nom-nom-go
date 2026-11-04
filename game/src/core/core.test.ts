@@ -257,18 +257,48 @@ describe('game flow', () => {
     expect(s.hintsUsed).toBe(0);
   });
 
-  it('records an ordering that finishes while paused and resumes into cooking', () => {
-    let s = initialState({ seed: 99, savedLevel: 1 });
-    s = step(s, { type: 'go' });
-    s = step(s, { type: 'tick', ms: 2000 });
+  it('waits for a long recorded order before the Go! wipe and starting patience', () => {
+    let s = step(initialState({ seed: 99, savedLevel: 1 }), { type: 'go' });
+    s = step(s, { type: 'orderingStarted' });
+    s = step(s, { type: 'tick', ms: 10000 });
+    expect(s.phase).toBe('ordering');
+    expect(s.orderingShown).toBe(s.orders[s.orderIndex].ticket.length);
+    expect(s.patienceTotalMs).toBe(0);
+    s = step(s, { type: 'orderingFinished' });
+    s = step(s, { type: 'tick', ms: 1 });
+    expect(s.phase).toBe('goWipe');
+    s = step(s, { type: 'tick', ms: GO_WIPE_MS - 1 });
+    expect(s.phase).toBe('goWipe');
+    expect(s.patienceTotalMs).toBe(0);
+    s = step(s, { type: 'tick', ms: 1 });
+    expect(s.phase).toBe('cooking');
+    expect(s.patienceLeftMs).toBe(s.patienceTotalMs);
+  });
+
+  it('retains the readable reveal duration even when the recorded order finishes early', () => {
+    let s = step(initialState({ seed: 99, savedLevel: 1 }), { type: 'go' });
+    s = step(s, { type: 'orderingStarted' });
+    s = step(s, { type: 'orderingFinished' });
+    s = step(s, { type: 'tick', ms: 100 });
+    expect(s.phase).toBe('ordering');
+    expect(s.patienceTotalMs).toBe(0);
     s = step(s, { type: 'tick', ms: 10000 });
     expect(s.phase).toBe('goWipe');
+  });
+
+  it('records voice completion while paused without skipping the Go! wipe', () => {
+    let s = step(initialState({ seed: 99, savedLevel: 1 }), { type: 'go' });
+    s = step(s, { type: 'orderingStarted' });
+    s = step(s, { type: 'tick', ms: 10000 });
     s = step(s, { type: 'pause' });
     s = step(s, { type: 'orderingFinished' });
-    expect(s.phase).toBe('cooking');
+    expect(s.orderingDone).toBe(true);
+    expect(s.phase).toBe('ordering');
     expect(s.paused).toBe(true);
     s = step(s, { type: 'resume' });
-    expect(s.paused).toBe(false);
+    s = step(s, { type: 'tick', ms: 1 });
+    expect(s.phase).toBe('goWipe');
+    s = step(s, { type: 'tick', ms: GO_WIPE_MS });
     expect(s.phase).toBe('cooking');
   });
 

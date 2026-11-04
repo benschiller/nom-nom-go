@@ -92,7 +92,7 @@ export interface GameState {
   orderingShown: number;
   /** Deprecated alias of orderingShown, kept in sync for older tooling. */
   kioskShown: number;
-  /** True once the window-ordering voice chain has finished. */
+  /** True when no window-ordering voice chain is pending. */
   orderingDone: boolean;
   /** Deprecated aliases of orderingDone, kept in sync. */
   printDone: boolean;
@@ -132,6 +132,7 @@ export type GameEvent =
   /** Advance the onboarding tour; the last step starts Level 1. */
   | { type: 'tourNext' }
   | { type: 'tick'; ms: number }
+  | { type: 'orderingStarted' }
   | { type: 'orderingFinished' }
   /** Deprecated alias of orderingFinished. */
   | { type: 'calloutFinished' }
@@ -192,9 +193,9 @@ export function initialState(opts: StartOptions = {}): GameState {
     phaseMs: 0,
     orderingShown: 0,
     kioskShown: 0,
-    orderingDone: false,
-    printDone: false,
-    calloutDone: false,
+    orderingDone: true,
+    printDone: true,
+    calloutDone: true,
     patienceTotalMs: 0,
     patienceLeftMs: 0,
     cookingMs: 0,
@@ -261,9 +262,9 @@ function startBatch(s: GameState, level: number, preserveProgress: boolean): Gam
     orderingShown: 0,
     kioskShown: 0,
     built: [...first.prebuilt],
-    orderingDone: false,
-    printDone: false,
-    calloutDone: false,
+    orderingDone: true,
+    printDone: true,
+    calloutDone: true,
     result: null,
     tutorial: tutorialFor(s, level, first),
   };
@@ -408,9 +409,9 @@ function advanceAfterResult(s: GameState): GameState {
         orderingShown: 0,
         kioskShown: 0,
         built: [...order.prebuilt],
-        orderingDone: false,
-        printDone: false,
-        calloutDone: false,
+        orderingDone: true,
+        printDone: true,
+        calloutDone: true,
       };
     }
   }
@@ -470,9 +471,9 @@ function advanceAfterResult(s: GameState): GameState {
       orderingShown: 0,
       kioskShown: 0,
       built: [...next.prebuilt],
-      orderingDone: false,
-      printDone: false,
-      calloutDone: false,
+      orderingDone: true,
+      printDone: true,
+      calloutDone: true,
       tutorial: tutorialFor(s, s.level, next),
     };
   }
@@ -565,14 +566,11 @@ export function step(prev: GameState, event: GameEvent): GameState {
     case 'tutorialDone': {
       return withTutorialDismissed(prev);
     }
+    case 'orderingStarted':
+      return prev.phase === 'ordering' ? { ...prev, orderingDone: false, calloutDone: false, printDone: false } : prev;
     case 'orderingFinished':
-    case 'calloutFinished': {
-      const s = { ...prev, orderingDone: true, calloutDone: true, printDone: true };
-      // The Go! wipe normally starts cooking on its tick; if the voice
-      // chain finishes during the wipe, cooking starts straight away.
-      if (s.phase === 'goWipe') return beginCooking(s);
-      return s;
-    }
+    case 'calloutFinished':
+      return { ...prev, orderingDone: true, calloutDone: true, printDone: true };
     case 'peek': {
       // HELP: Head Chef replay. Consumes one help from the memory budget.
       if (prev.phase !== 'cooking') return prev;
@@ -643,7 +641,7 @@ export function step(prev: GameState, event: GameEvent): GameState {
             Math.floor(s.phaseMs / Math.max(1, orderingSpeed(s))) + (s.phaseMs > 0 ? 1 : 0),
           );
           const totalMs = order.ticket.length * orderingSpeed(s) + 700;
-          if (s.phaseMs >= totalMs)
+          if (s.phaseMs >= totalMs && s.orderingDone)
             return {
               ...s,
               phase: 'goWipe',
