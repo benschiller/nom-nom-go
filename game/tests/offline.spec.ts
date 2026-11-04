@@ -6,8 +6,8 @@ declare global {
   }
 }
 
-// Run against the production preview server: OFFLINE=1 npx playwright test tests/offline.spec.ts
-test.skip(process.env.OFFLINE !== '1', 'offline test runs against vite preview only');
+// Run against the production preview or the merged AWS upload packages.
+test.skip(process.env.OFFLINE !== '1', 'offline test requires a production build');
 
 test('works offline after the service worker installs', async ({ page, context }) => {
   await page.goto('/?test=1&seed=99&speed=20');
@@ -18,6 +18,15 @@ test('works offline after the service worker installs', async ({ page, context }
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByTestId('go-button')).toBeVisible();
+  await expect
+    .poll(() =>
+      page
+        .locator('img[data-art]')
+        .evaluateAll(
+          (images) => images.length > 0 && images.every((image) => (image as HTMLImageElement).naturalWidth > 0),
+        ),
+    )
+    .toBe(true);
   // Recorded Dad cues must be available from the service worker as well as
   // the game shell; otherwise an installed game silently falls back to TTS.
   const recordings = await page.evaluate(async () => {

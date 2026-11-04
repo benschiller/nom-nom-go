@@ -95,6 +95,12 @@ npm run build     # production build and bundle budget check
 
 For a fresh Playwright setup, install browsers with `cd game && npx playwright install` before running the browser tests.
 
+Before deploying to AWS, run `npm run test:deploy` to build and verify the upload
+packages and AppSync configuration, then `npm --prefix game run test:e2e:deploy`
+to check gameplay, artwork, and offline audio using the files that will be uploaded.
+The deployment preserves every build file: hashed bundles use immutable caching,
+while artwork, audio, icons, fonts, and other root files use revalidation.
+
 ## Explore the implementation
 
 - [Game rules](game/src/core/game.ts), [adaptive difficulty](game/src/core/difficulty.ts), and [pacing simulator](game/src/core/simulator.ts).

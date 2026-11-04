@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
+    "test": "node --require ts-node/register --test tests/*.test.cjs",
     "build": "tsc --noEmit",
     "synth": "cdk synth --profile valerian253",
     "deploy": "cdk deploy --profile valerian253 --require-approval never",
