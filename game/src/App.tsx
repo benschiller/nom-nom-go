@@ -46,17 +46,6 @@ function usePortrait(): boolean {
   return p;
 }
 
-const BTN: React.CSSProperties = {
-  border: '4px solid rgba(90,50,20,.4)',
-  borderRadius: 28,
-  background: '#ffd93d',
-  minWidth: 140,
-  minHeight: 140,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-};
-
 /**
  * TITLE SCREEN LAYOUT — edit these numbers to move or resize pieces.
  * Units: the game's 1600x900 stage (0,0 = top-left of the 16:9 safe area).
@@ -70,6 +59,16 @@ const TITLE_LAYOUT = {
   goButton: { left: 675.1, top: 642.8, width: 256.4, height: 247.2 },
   logo: { left: 175.8, top: 9.2, width: 1160.0, height: 168.3 },
   parentButton: { left: 24, bottom: 24, size: 116 },
+} as const;
+
+/**
+ * NIGHT SCENE LAYOUT (boss ending) — the chef layers behind a window-holed
+ * front plate (env.night.frame), so the counter occludes him with no CSS
+ * clipping. Window in the plate: x 550-936, y 310-582; hat near the frame,
+ * chest at the counter line, wave hand flipped to the window's right side.
+ */
+const NIGHT_LAYOUT = {
+  chef: { left: 423, top: 253, width: 640, height: 640 },
 } as const;
 
 type Box = { left: number; top: number; width: number; height: number };
@@ -664,10 +663,119 @@ function HoldButton({
   );
 }
 
+/**
+ * Power badge on the powered-off screen: the Head Chef badge's exact
+ * interaction (Kitchen ChefBadge) with a power glyph — plain circle,
+ * ring appears after the tap threshold and completes the hold, which
+ * fires a complete reset.
+ */
+function PowerBadge({ onReset }: { onReset: () => void }): React.JSX.Element {
+  const SIZE = 167;
+  const test = isTestMode();
+  const tapMs = test ? 120 : 450;
+  const holdMs = test ? 700 : 3000;
+  const [progress, setProgress] = useState(0);
+  const [holding, setHolding] = useState(false);
+  const started = useRef<number | null>(null);
+  const timers = useRef<number[]>([]);
+  const raf = useRef<number | null>(null);
+  const clear = (): void => {
+    timers.current.forEach((t) => clearTimeout(t));
+    timers.current = [];
+    if (raf.current) cancelAnimationFrame(raf.current);
+    raf.current = null;
+    setHolding(false);
+    setProgress(0);
+  };
+  useEffect(() => clear, []);
+  const down = (): void => {
+    clear();
+    started.current = performance.now();
+    timers.current.push(
+      window.setTimeout(() => {
+        setHolding(true);
+        const tick = (now: number): void => {
+          setProgress(Math.min(1, (now - (started.current ?? now) - tapMs) / (holdMs - tapMs)));
+          raf.current = requestAnimationFrame(tick);
+        };
+        raf.current = requestAnimationFrame(tick);
+      }, tapMs),
+      window.setTimeout(() => {
+        started.current = null;
+        clear();
+        onReset();
+      }, holdMs),
+    );
+  };
+  const cancel = (): void => {
+    started.current = null;
+    clear();
+  };
+  const r = SIZE / 2 + 10;
+  return (
+    <button
+      data-testid="power-on"
+      aria-label="Power on. Press and hold to reset the game."
+      onPointerDown={down}
+      onPointerUp={cancel}
+      onPointerLeave={cancel}
+      onPointerCancel={cancel}
+      onContextMenu={(e) => e.preventDefault()}
+      style={{
+        position: 'relative',
+        width: SIZE,
+        height: SIZE,
+        padding: 0,
+        borderRadius: '50%',
+        background: '#dc7e31',
+        border: '12px solid #1a0f17',
+        overflow: 'visible',
+        touchAction: 'none',
+      }}
+    >
+      <svg viewBox="0 0 100 100" aria-hidden style={{ width: '62%', height: '62%', display: 'block', margin: 'auto' }}>
+        <path d="M35 32 A24 24 0 1 0 65 32" fill="none" stroke="#1a0f17" strokeWidth="10" strokeLinecap="round" />
+        <line x1="50" y1="16" x2="50" y2="46" stroke="#1a0f17" strokeWidth="10" strokeLinecap="round" />
+      </svg>
+      {holding && (
+        <svg
+          data-testid="power-on-ring"
+          width={r * 2}
+          height={r * 2}
+          viewBox={`0 0 ${r * 2} ${r * 2}`}
+          aria-hidden
+          style={{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%,-50%) rotate(-90deg)',
+            pointerEvents: 'none',
+            overflow: 'visible',
+          }}
+        >
+          <circle cx={r} cy={r} r={r - 6} fill="none" stroke="rgba(26,15,23,.25)" strokeWidth={10} />
+          <circle
+            cx={r}
+            cy={r}
+            r={r - 6}
+            fill="none"
+            stroke="#fd6950"
+            strokeWidth={10}
+            strokeLinecap="round"
+            strokeDasharray={2 * Math.PI * (r - 6)}
+            strokeDashoffset={2 * Math.PI * (r - 6) * (1 - progress)}
+          />
+        </svg>
+      )}
+    </button>
+  );
+}
+
 function GameShell(): React.JSX.Element {
   const { state, dispatch, store } = useGame();
   const scale = useStageScale();
   const portrait = usePortrait();
+  const nightStill = useReducedMotion() ?? false;
   const [parentOpen, setParentOpen] = useState(false);
   const [cheer, setCheer] = useState<string | null>(null);
   const [glove, setGlove] = useState<{ x: number; y: number } | null>(null);
@@ -952,16 +1060,17 @@ function GameShell(): React.JSX.Element {
           />
         )}
 
-        {state.phase === 'bossEnding' && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'rgba(20,20,60,.55)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+        {/* Night scene: one continuous storyboard scene across bossEnding
+            (goodbye) and closed (shutter), built like the title screen:
+            plate, chef layered behind the window-holed front plate, then
+            the shutter plate crossfades over the whole scene. */}
+        {(state.phase === 'bossEnding' || state.phase === 'closed') && (
+          <motion.div
+            data-testid="night-scene"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: nightStill ? 0 : 0.6 }}
+            style={{ position: 'absolute', inset: 0 }}
           >
             <Art
               id="env.night.goodbye"
@@ -969,40 +1078,44 @@ function GameShell(): React.JSX.Element {
               height={900}
               style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
             />
-            <div className="bob" style={{ position: 'relative' }}>
-              <Art id="chef.goodbye" height={200} fallback={<span style={{ fontSize: 170 }}>👨‍🍳👋</span>} />
-            </div>
-          </div>
-        )}
-
-        {state.phase === 'closed' && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: '#232946',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 26,
-            }}
-          >
-            <Art
-              id="env.night.closed"
-              width={1600}
-              height={900}
-              style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
-            />
-            <button
-              data-testid="power-off"
-              aria-label="Power off"
-              style={{ ...BTN, width: 170, height: 170, borderRadius: '50%', fontSize: 76, position: 'relative' }}
-              onClick={() => dispatch({ type: 'powerOff' })}
-            >
-              <Art id="ui.powerOff" size={76} fallback={<span>⏻</span>} />
-            </button>
-          </div>
+            {state.phase === 'bossEnding' && (
+              <>
+                <Art
+                  id="chef.goodbye"
+                  width={NIGHT_LAYOUT.chef.width}
+                  height={NIGHT_LAYOUT.chef.height}
+                  fallback={<span style={{ fontSize: 300 }}>👨‍🍳👋</span>}
+                  style={{
+                    position: 'absolute',
+                    left: NIGHT_LAYOUT.chef.left,
+                    top: NIGHT_LAYOUT.chef.top,
+                    transform: 'scaleX(-1)',
+                  }}
+                />
+                <Art
+                  id="env.night.frame"
+                  width={1600}
+                  height={900}
+                  style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+                />
+              </>
+            )}
+            {state.phase === 'closed' && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: nightStill ? 0 : 0.8 }}
+                style={{ position: 'absolute', inset: 0 }}
+              >
+                <Art
+                  id="env.night.closed"
+                  width={1600}
+                  height={900}
+                  style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
+                />
+              </motion.div>
+            )}
+          </motion.div>
         )}
 
         {state.phase === 'poweredOff' && (
@@ -1016,26 +1129,7 @@ function GameShell(): React.JSX.Element {
               justifyContent: 'center',
             }}
           >
-            <button
-              data-testid="power-on"
-              aria-label="Power on"
-              className="hint-glow"
-              style={{
-                width: 190,
-                height: 190,
-                borderRadius: '50%',
-                fontSize: 88,
-                background: '#1d2b53',
-                color: '#ffd93d',
-                border: '4px solid #ffd93d',
-              }}
-              onClick={() => {
-                unlockAudio();
-                dispatch({ type: 'powerOn' });
-              }}
-            >
-              <Art id="ui.powerOn" size={88} fallback={<span>⏻</span>} />
-            </button>
+            <PowerBadge onReset={resetCompletely} />
           </div>
         )}
 

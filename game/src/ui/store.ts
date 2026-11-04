@@ -30,6 +30,18 @@ export function createStore(seed?: number): Store {
   if (testMode && params.get('boss') === '1') {
     save = { ...save, bossBeaten: true, level: 6 };
   }
+  // Dev-only preview (?preview=ending): start at the final boss round —
+  // Level 6 with 6 of 7 rounds banked — so one correct serve plays the
+  // whole closing sequence for real.
+  const previewEnding = testMode && params.get('preview') === 'ending';
+  if (previewEnding) {
+    save = {
+      ...save,
+      level: 6,
+      bossBeaten: false,
+      tutorialsSeen: [...new Set([...save.tutorialsSeen, 'boss'])],
+    };
+  }
   let state = initialState({
     seed: seed ?? testSeed ?? launchSeed(),
     savedLevel: save.level,
@@ -44,7 +56,8 @@ export function createStore(seed?: number): Store {
     gagSeen: save.gagSeen,
     power: save.power,
     telemetry: save.telemetry,
-    levelProgress: save.levelProgress,
+    levelProgress: previewEnding ? 6 : save.levelProgress,
+    skipWarmup: previewEnding,
   });
   const listeners = new Set<() => void>();
   return {

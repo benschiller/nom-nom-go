@@ -392,6 +392,14 @@ def main():
             qa=["no text or letters", "no characters and an empty serving window",
                 "scenery continues to every edge with no seams or frames"],
         ))
+    assets.append(asset(
+        id="env.night.frame", category="env", mode="derive",
+        subject="Night truck front plate with the serving window transparent (derived from env.night.goodbye by tools/art/make_night_frame.py); the goodbye chef layers behind it.",
+        refs=["generated_images/production/final/env.night.goodbye.webp"],
+        size="1600x900", export={"w": 1600, "h": 900, "alpha": True, "max_side": 1600},
+        display="1600x900", sam=None,
+        qa=["window fully transparent with clean rounded corners", "truck, string lights and counter unchanged outside the window"],
+    ))
     assets.append(asset(**TUTORIAL_PLATE))
     for spec in TUTORIAL:
         spec = dict(spec)

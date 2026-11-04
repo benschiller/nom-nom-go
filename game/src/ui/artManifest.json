@@ -92,6 +92,15 @@
       "version": 5
     },
     {
+      "id": "env.night.frame",
+      "category": "env",
+      "file": "/art/env.night.frame.webp",
+      "w": 1600,
+      "h": 900,
+      "display": "1600x900",
+      "version": 1
+    },
+    {
       "id": "env.tutorial",
       "category": "env",
       "file": "/art/env.tutorial.webp",

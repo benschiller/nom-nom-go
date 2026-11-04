@@ -1,9 +1,9 @@
 import { memo, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
-import { bankedTarget } from '../core/difficulty';
+import { bankedTarget, orderingMsForDims } from '../core/difficulty';
 import { currentOrder, GO_WIPE_MS, type GameEvent, type GameState } from '../core/game';
 import { playKioskItem, playSfx } from '../audio/audio';
-import { isTestMode } from './store';
+import { isTestMode, testSpeed } from './store';
 import { Art, artAspect, monsterPoseFor, preloadArt } from './Art';
 import { ItemIcon } from './ItemIcon';
 
@@ -767,19 +767,21 @@ export function Kitchen({
     if (!cooking || state.helpPlaying) return;
     dispatch({ type: 'peek' });
     const run = ++helpRun.current;
+    // Same readable floor as the ordering reveal: each item glows for at
+    // least orderingMsForDims, whatever the audio state (static, muted or
+    // a short clip). Test mode compresses by the game-clock factor.
+    const paceMs = Math.max(1, Math.round(orderingMsForDims(state.dimensions) / testSpeed()));
     try {
       for (let i = 0; i < order.ticket.length; i++) {
         if (helpRun.current !== run) return;
         setHelpStep(i);
-        if (isTestMode()) {
-          await new Promise((r) => setTimeout(r, 30));
-        } else if (order.broken === 'speaker') {
-          playSfx('static');
-          await new Promise((r) => setTimeout(r, 650));
-        } else {
+        const started = Date.now();
+        if (order.broken === 'speaker') playSfx('static');
+        else if (!isTestMode()) {
           await Promise.race([playKioskItem(order.ticket, i), new Promise((r) => setTimeout(r, 1400))]);
-          await new Promise((r) => setTimeout(r, 120));
         }
+        const wait = paceMs - (Date.now() - started);
+        if (wait > 0) await new Promise((r) => setTimeout(r, wait));
       }
     } finally {
       if (helpRun.current === run) {

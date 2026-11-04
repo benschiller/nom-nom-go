@@ -156,7 +156,8 @@ describe('game flow', () => {
     expect(step(title, { type: 'tick', ms: 16 })).toBe(title);
     const tour = step(title, { type: 'go', tour: true });
     expect(step(tour, { type: 'tick', ms: 16 })).toBe(tour);
-    for (const phase of ['levelResult', 'closed', 'poweredOff'] as const) {
+    // closed is timed now (shutter beat -> hold screen), so it is not here.
+    for (const phase of ['levelResult', 'poweredOff'] as const) {
       const at = { ...title, phase };
       expect(step(at, { type: 'tick', ms: 16 }), phase).toBe(at);
     }
@@ -180,6 +181,22 @@ describe('game flow', () => {
       const at = { ...s, phase };
       expect(step(at, { type: 'pause' }), phase).toBe(at);
     }
+  });
+
+  it('skipWarmup starts Go at the frontier level with banked progress intact', () => {
+    let s = initialState({ seed: 1, savedLevel: 6, levelProgress: 6, skipWarmup: true });
+    s = step(s, { type: 'go' });
+    expect(s.level).toBe(6);
+    expect(s.warmup).toBe(false);
+    expect(s.starsTry).toBe(6);
+  });
+
+  it('closed plays the shutter beat, then auto-advances to the hold screen', () => {
+    const at = { ...initialState({ seed: 1 }), phase: 'closed' as const, bossBeaten: true };
+    expect(step(at, { type: 'tick', ms: 1999 }).phase).toBe('closed');
+    expect(step(at, { type: 'tick', ms: 2000 }).phase).toBe('poweredOff');
+    // The explicit power-off action still lands on the same screen.
+    expect(step(at, { type: 'powerOff' }).phase).toBe('poweredOff');
   });
 
   it('re-arms the onboarding tour on power cycle', () => {

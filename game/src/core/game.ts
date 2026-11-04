@@ -74,6 +74,8 @@ export interface GameState {
   level: number;
   savedLevel: number;
   warmup: boolean;
+  /** Dev/test start option: go straight to the frontier level, no warmup. */
+  skipWarmup: boolean;
   /** Legacy alias of dimensions.time. */
   paceStep: number;
   mastery: MasteryProfile;
@@ -160,6 +162,7 @@ export interface StartOptions {
   power?: 'on' | 'off';
   telemetry?: TelemetryEntry[];
   levelProgress?: number;
+  skipWarmup?: boolean;
 }
 
 export function initialState(opts: StartOptions = {}): GameState {
@@ -176,6 +179,7 @@ export function initialState(opts: StartOptions = {}): GameState {
     level: savedLevel,
     savedLevel,
     warmup: false,
+    skipWarmup: opts.skipWarmup ?? false,
     paceStep: dimensions.time,
     mastery: opts.mastery ?? defaultMastery(),
     dimensions,
@@ -519,7 +523,7 @@ function withTutorialDismissed(s: GameState): GameState {
  *  window: there is no separate level-intro screen. Returning players warm
  *  up one level below their frontier. */
 function startFromTitle(s: GameState): GameState {
-  const warmup = s.savedLevel > 1;
+  const warmup = s.savedLevel > 1 && !s.skipWarmup;
   return startTry({ ...s, warmup }, warmup ? s.savedLevel - 1 : s.savedLevel);
 }
 
@@ -674,8 +678,11 @@ export function step(prev: GameState, event: GameEvent): GameState {
         }
         case 'bossEnding':
           return s.phaseMs >= 3000 ? { ...s, phase: 'closed', phaseMs: 0 } : s;
+        case 'closed':
+          // The shutter beat plays, then the hold-to-power screen takes over.
+          return s.phaseMs >= 2000 ? { ...s, phase: 'poweredOff', phaseMs: 0 } : s;
         default:
-          // Title, tour, level result, closed, powered off: nothing is timed,
+          // Title, tour, level result, powered off: nothing is timed,
           // so the tick is a no-op and the same state means no re-render.
           return prev;
       }

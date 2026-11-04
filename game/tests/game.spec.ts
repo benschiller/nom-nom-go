@@ -321,6 +321,10 @@ test('mirror: Dad sees the same order and a cheer reaches the child', async ({ b
 
 test('power cycle: closed kitchen resets to a fresh title on next power on', async ({ page }) => {
   await page.addInitScript(() => {
+    // Seed once only: the full reset reloads the page, and re-seeding on
+    // that reload would boot straight back into the closed kitchen.
+    if (sessionStorage.getItem('seeded-once')) return;
+    sessionStorage.setItem('seeded-once', '1');
     localStorage.setItem(
       'nom-nom-go-save-v1',
       JSON.stringify({
@@ -342,12 +346,34 @@ test('power cycle: closed kitchen resets to a fresh title on next power on', asy
     );
   });
   await page.goto('/?test=1&seed=5');
-  await expect(page.getByTestId('power-off')).toBeVisible();
-  await page.getByTestId('power-off').click();
-  await expect(page.getByTestId('power-on')).toBeVisible();
-  await page.getByTestId('power-on').click();
-  await expect(page.getByTestId('go-button')).toBeVisible();
+  // Boots into the shutter scene, which hands over to the hold screen.
+  await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'poweredOff', { timeout: 15_000 });
+  const power = page.getByTestId('power-on');
+  const box = await power.boundingBox();
+  if (!box) throw new Error('power-on button has no box');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await expect(page.getByTestId('go-button')).toBeVisible({ timeout: 10_000 });
+  await page.mouse.up();
   const save = await page.evaluate(() => JSON.parse(localStorage.getItem('nom-nom-go-save-v1') ?? '{}'));
   expect(save.kitchenId).toBe('paired-kitchen');
   expect(save.bossBeaten).toBe(false);
+  expect(save.level).toBe(1);
+});
+
+test('dev preview: final boss round plays the whole closing sequence', async ({ page }) => {
+  await page.goto('/?test=1&seed=99&speed=20&preview=ending');
+  await page.getByTestId('go-button').click();
+  await playCorrectOrder(page);
+  await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'bossEnding', { timeout: 30_000 });
+  await expect(page.getByTestId('night-scene')).toBeVisible();
+  await expect(page.getByTestId('night-scene').locator('img[data-art="chef.goodbye"]')).toBeVisible();
+  await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'poweredOff', { timeout: 15_000 });
+  const power = page.getByTestId('power-on');
+  const box = await power.boundingBox();
+  if (!box) throw new Error('power-on button has no box');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await expect(page.getByTestId('go-button')).toBeVisible({ timeout: 10_000 });
+  await page.mouse.up();
 });

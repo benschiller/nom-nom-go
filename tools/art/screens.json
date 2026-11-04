@@ -194,13 +194,21 @@
         "closed"
       ],
       "master": "generated_images/approved/end-game-night-master.png",
-      "capture": null,
+      "capture": "bossEnding",
       "assets": [
         "env.night.goodbye",
+        "env.night.frame",
         "env.night.closed",
         "chef.goodbye"
       ],
-      "checklist": []
+      "checklist": [
+        "night sky with crescent moon and stars above a night food truck",
+        "orange truck with yellow striped awnings and warm string lights on",
+        "Head Chef (white uniform and tall chef hat) visible INSIDE the lit serving window, waving goodbye",
+        "chef fills the window at storyboard scale: head and shoulders, lower body hidden behind the counter (no floating or cut-off sprite)",
+        "an empty platter rests on the serving counter",
+        "no visible text (no words anywhere) and no buttons or controls during the goodbye"
+      ]
     },
     {
       "id": "S9",

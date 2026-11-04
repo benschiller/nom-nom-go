@@ -69,6 +69,15 @@ const RECIPES: Record<string, (page: Page) => Promise<void>> = {
     await page.getByTestId('go-button').click();
     await atPhase(page, 'cooking');
   },
+  bossEnding: async (page) => {
+    await page.goto('/?test=1&seed=99&speed=20&preview=ending');
+    await page.getByTestId('go-button').click();
+    await atPhase(page, 'cooking');
+    const expected = (await page.getByTestId('ticket').getAttribute('data-expected'))?.trim().split(/\s+/) ?? [];
+    for (const item of expected) await page.locator(`[data-tray-item="${item}"]`).first().click();
+    await page.getByTestId('bell').click();
+    await atPhase(page, 'bossEnding');
+  },
 };
 
 async function metrics(page: Page): Promise<unknown> {

@@ -126,7 +126,7 @@ export function patienceForOrder(
 }
 
 export const orderingMsForDims = (dims: Dimensions): number =>
-  Math.min(1050, Math.max(480, Math.round(1050 * Math.pow(0.93, dims.encode))));
+  Math.max(1050, Math.round(1500 * Math.pow(0.93, dims.encode)));
 
 /** Deprecated alias of orderingMsForDims. */
 export const kioskMsForDims = orderingMsForDims;
