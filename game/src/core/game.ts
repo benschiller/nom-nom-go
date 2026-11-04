@@ -9,7 +9,6 @@ import {
   emptyRuns,
   orderingMsForDims,
   patienceForOrder,
-  peekBudgetFor,
   trayTargetFor,
   type DimRuns,
   type Dimensions,
@@ -40,7 +39,7 @@ const PAUSABLE: ReadonlySet<Phase> = new Set(['ordering', 'goWipe', 'cooking', '
 export const isPausable = (phase: Phase): boolean => PAUSABLE.has(phase);
 
 /** How long the Go! wipe sweeps before cooking (and patience) starts. */
-export const GO_WIPE_MS = 700;
+export const GO_WIPE_MS = 1100;
 
 export interface ServeResult {
   kind: 'correct' | 'wrong' | 'timeout';
@@ -81,7 +80,6 @@ export interface GameState {
   dimensions: Dimensions;
   dimRuns: DimRuns;
   peeksUsed: number;
-  peekBudget: number;
   /** True while the Head Chef HELP replay is speaking. Patience is paused. */
   helpPlaying: boolean;
   orders: Order[];
@@ -183,7 +181,6 @@ export function initialState(opts: StartOptions = {}): GameState {
     dimensions,
     dimRuns: emptyRuns(),
     peeksUsed: 0,
-    peekBudget: peekBudgetFor(savedLevel, dimensions, false),
     helpPlaying: false,
     orders: [],
     orderIndex: 0,
@@ -246,7 +243,6 @@ function startBatch(s: GameState, level: number, preserveProgress: boolean): Gam
     paceStep: dimensions.time,
     dimensions,
     peeksUsed: 0,
-    peekBudget: peekBudgetFor(level, dimensions, failed >= 2),
     orders,
     rngState,
     orderIndex: 0,
@@ -300,7 +296,6 @@ function beginCooking(s: GameState): GameState {
     idleMs: 0,
     hintsUsed: 0,
     peeksUsed: 0,
-    peekBudget: peekBudgetFor(s.level, s.dimensions, s.assist),
     firstTapMs: null,
   };
 }
@@ -577,8 +572,9 @@ export function step(prev: GameState, event: GameEvent): GameState {
     case 'peek': {
       // HELP: Head Chef replay. Consumes one help from the memory budget.
       if (prev.phase !== 'cooking') return prev;
+      // Unlimited: the Head Chef always helps. peeksUsed still counts helps
+      // for the mastery model (help on an order is recall support).
       if (prev.helpPlaying) return prev;
-      if (prev.peeksUsed >= prev.peekBudget) return prev;
       return { ...prev, peeksUsed: prev.peeksUsed + 1, helpPlaying: true };
     }
     case 'helpEnd': {
@@ -586,26 +582,27 @@ export function step(prev: GameState, event: GameEvent): GameState {
       return { ...prev, helpPlaying: false, idleMs: 0 };
     }
     case 'addItem': {
-      if (prev.phase !== 'cooking') return prev;
+      // The help replay stops the game: no building until it ends.
+      if (prev.phase !== 'cooking' || prev.helpPlaying) return prev;
       // The pointing hand is a coach mark, not a gate: the first real tap
       // dismisses it and marks it seen. No dismiss button covers the tray.
       const base = withTutorialDismissed(prev);
       return { ...base, built: [...base.built, event.item], idleMs: 0, firstTapMs: base.firstTapMs ?? base.cookingMs };
     }
     case 'undo': {
-      if (prev.phase !== 'cooking') return prev;
+      if (prev.phase !== 'cooking' || prev.helpPlaying) return prev;
       const order = orderOf(prev);
       const floor = order ? order.prebuilt.length : 0;
       if (prev.built.length <= floor) return prev;
       return { ...prev, built: prev.built.slice(0, -1), idleMs: 0 };
     }
     case 'trash': {
-      if (prev.phase !== 'cooking') return prev;
+      if (prev.phase !== 'cooking' || prev.helpPlaying) return prev;
       const order = orderOf(prev);
       return { ...prev, built: order ? [...order.prebuilt] : [], idleMs: 0 };
     }
     case 'serve': {
-      if (prev.phase !== 'cooking') return prev;
+      if (prev.phase !== 'cooking' || prev.helpPlaying) return prev;
       const order = orderOf(prev);
       if (!order) return prev;
       const mistake = classifyMismatch(prev.built, order.expected);

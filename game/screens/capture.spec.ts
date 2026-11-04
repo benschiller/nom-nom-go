@@ -42,10 +42,17 @@ const RECIPES: Record<string, (page: Page) => Promise<void>> = {
     await page.getByTestId('tour-next').click();
     await expect(page.getByTestId('tour')).toHaveAttribute('data-step', '2');
   },
-  levelIntro: async (page) => {
+  levelResult: async (page) => {
     await RECIPES.title(page);
     await page.getByTestId('go-button').click();
-    await atPhase(page, 'levelIntro');
+    for (let i = 0; i < 3; i++) {
+      await atPhase(page, 'cooking');
+      const expected = (await page.getByTestId('ticket').getAttribute('data-expected'))?.trim().split(/\s+/) ?? [];
+      for (const item of expected) await page.locator(`[data-tray-item="${item}"]`).first().click();
+      await page.getByTestId('bell').click();
+      await atPhase(page, i < 2 ? 'serveResult' : 'levelResult');
+    }
+    await page.waitForTimeout(1800); // stars finish popping in
   },
   ordering: async (page) => {
     await RECIPES.title(page);

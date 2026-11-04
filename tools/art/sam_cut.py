@@ -52,7 +52,7 @@ def main() -> int:
         method="POST",
     )
     text_parts: list[str] = []
-    with urllib.request.urlopen(req, timeout=300) as resp:
+    with urllib.request.urlopen(req, timeout=120) as resp:
         for raw in resp:
             line = raw.decode("utf-8", "replace").strip()
             if not line.startswith("data:"):

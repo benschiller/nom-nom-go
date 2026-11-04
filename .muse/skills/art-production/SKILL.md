@@ -13,6 +13,13 @@ screen to match its storyboard, belongs to `.muse/skills/art-integration/`.
 in the same piece of work. It is the single source of truth; the Claude
 Code pointer in `.claude/skills/` only redirects here.
 
+## Scope (v1 hackathon launch)
+
+v1 is **burger only**. Burger ingredients, the six monsters' kitchen window
+poses and the kitchen buttons are in the current style and process. Pizza and
+sundae items keep their legacy manifest entries (future development, not
+dealt in play) and are not regenerated for v1.
+
 ## Sources of truth
 
 - Approved storyboards and character sheets: `generated_images/approved/`.
@@ -58,14 +65,21 @@ Code pointer in `.claude/skills/` only redirects here.
    returns SAM's soft coverage. The public decoder thresholds coverage at
    129, which lands mid-outline and gave the chewed edges, so the soft
    bytes are read via `_decode_lossless_raster`.
-   - Noun choice: a bare noun ("cheese") returned zero matches on our
-     items, while a short descriptive phrase worked ("a square orange
-     cheese slice with draped corners"). Characters work with "purple
-     monster", "orange monster" or "chef".
+   - Noun choice: keep the manifest's `sam` noun **short**, separate from
+     the prompt description. Long descriptions ("half an avocado cut
+     lengthwise: pale green flesh, ...") return zero matches. Proven
+     phrases: "half avocado", "red tomato", "bowl of salsa", "purple
+     monster", "orange monster", "chef", "yellow circle", "red circle",
+     "circle" (blue undo button; "blue circle" failed), "food" (the patty
+     layer, where "burger patty", "meat" and "hamburger" all failed).
+   - Only shapes SAM touches are kept, and a touched shape is kept whole, so a
+     noun that matches part of a sticker (the arrow on a button) keeps the
+     whole connected subject.
    - Lettering matched "letters" but missed "Go!". Logos are native text
      instead (see art-integration).
-   - The cutter falls back to "object" and then "cartoon" if the entry's
-     noun matches nothing.
+   - The cutter falls back to "food", "circle", "sticker", "object" and then
+     "cartoon" if the entry's noun matches nothing. Test a noun directly
+     with `sam_cut.py <raw> "<noun>" <out> --coverage` before a batch.
 3. **The flat key colour decides the EDGE.**
    - Background = key-coloured pixels connected to the border, plus
      enclosed key-coloured holes SAM doesn't claim.
@@ -77,6 +91,11 @@ Code pointer in `.claude/skills/` only redirects here.
 4. **Export** lossless WebP (`quality=100, method=6`). Pillow's resize
    premultiplies alpha.
    - `trim` exports crop to the subject plus 8 px.
+   - `frame` exports keep the whole generation canvas. Use it for every
+     pose of one character (the kitchen window poses), so all poses share
+     scale and anchor and swapping poses never jumps. A framed pose must not
+     touch the top or side edges above the part the counter hides; check
+     with the edge test in QA below.
    - `max_side` caps what `sync_game_art.py` ships to the game.
 
 Re-cut an existing pristine raw without regenerating:
@@ -85,6 +104,9 @@ Re-cut an existing pristine raw without regenerating:
 ## QA (every asset, before it reaches the game)
 
 1. The automated checks (size, alpha coverage, magenta residue) must pass.
+   For `frame` poses, also check that no opaque pixels touch the top row or
+   the side columns above the hidden bottom band (the counter hides the
+   bottom ~12% of a window pose). A touching tuft would show a flat cut.
 2. **Look at the final at full size** over a dark and a light
    checkerboard. Check:
    - the outline is even and unbroken all the way round;
@@ -107,6 +129,11 @@ once.
   assets. Up to 3 attempts; failures are quarantined.
 - `rebuild --id <id> [--note "<steer>"]`: re-make from the changed
   manifest spec as `v+1`.
+- Many ids at once: `python3 tools/art/rebuild_many.py --workers 6 <id> ...`
+  runs `rebuild` for each from ONE process (threads). In zsh, expand a
+  variable list with `${=IDS}` or it arrives as one argument. Output is
+  buffered: read results from the ledger (`status`, `cut`, `rejected`), not
+  the log.
 - `revise --id <id> --note "<change>" [--ref <png>]`: edit from the
   current final as `v+1`.
 - `recut --id <id> --source <raw>`: re-cut a pristine raw as `v+1`.
@@ -124,6 +151,42 @@ Put the file in `generated_images/production/import/`, then add it as a
 (e.g. `env.title`: 2400x1600, `max_side: 2400`). Then run `rebuild --id <id>`.
 Check the final against the import, which should be pixel-identical apart
 from WebP rounding.
+
+## Content filter
+
+Muse Image rejects some prompts with `content_policy_violation`. The
+grumpy pose was rejected as "grumpy but never scary or mean: ... arms
+crossed"; "a bit cross and impatient: frowning eyebrows, a small pout, arms
+folded" passed. Avoid words like scary, mean, angry in subject lines (the
+negative block already says "Not scary").
+
+## Kitchen assets (burger v1)
+
+- **No kitchen background image.** The kitchen is layers in the game; the
+  wall, sky, hills, window frame, counter and panel are native SVG (see
+  art-integration). `env.kitchen` was removed from the manifest.
+- **Monster window poses** (`monster.<id>.<pose>`, poses tap, happy,
+  fidgety, grumpy, gobble, confused): head and upper body over the counter,
+  cut flat by the bottom edge, `frame` export, approved character sheet as
+  identity reference (OG also gets storyboard crops as pose references).
+  Purple OG uses the green key.
+- **Burger tray icons** (`item.<id>.tray`): storyboard tile crops in
+  `refs/kitchen/item.<id>.tray.png` as exact design references; items
+  without a crop (avocado, salsa, crispy onions) use the whole ingredient
+  row crop as a style reference. Look-alike pairs differ by silhouette:
+  whole tomato / whole pineapple, leaf / halved avocado, squeeze bottle /
+  bowl.
+- **Burger dish layers** (`item.<id>.dish`, `dish.bunBottom`,
+  `dish.bunTop`): one side-view layer each, a thin wide strip, with the
+  storyboard's bun-and-patty crop as style reference. The game scales every
+  layer to one width and stacks them with overlap.
+- **Buttons** (`prop.undo`, `prop.bell`, `prop.trash`): the whole round
+  button (circle and icon), from storyboard crops in `refs/kitchen`.
+- The Go! wipe, stars, tiles, glow rings, speech bubble and broken-speaker
+  sign are native in the game. `ui.goBand`, `env.goWipe` and
+  `env.levelTruck` were removed from the manifest; the level transition
+  reuses the approved title art (`env.title`, `chef.windowWave`,
+  `ui.goButton`).
 
 ## Consistency rules
 
@@ -150,6 +213,13 @@ from WebP rounding.
   are painted over scenery, so there is no clean edge to recover.
 - **Stitched bleed plates** (`mode: bleed`), outpainting a border onto a
   plate. They left visible seams and folded ground lines.
+- **A baked kitchen background plate** (`env.kitchen`): the kitchen is
+  layers; a plate cannot put the counter in front of the monster.
+- **Full-body monster poses for the kitchen** (idle, walk, dance, leave and
+  the rest, chroma-cut): replaced by the window poses. Dancing and leaving
+  are motion on `happy` in the game.
+- **Long SAM nouns** (the prompt description as the `sam` field): they match
+  nothing.
 
 The `cut` and `bleed` code paths still exist in `art.py` but must not be
 used.

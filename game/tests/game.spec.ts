@@ -143,13 +143,12 @@ test('a wrong serve retries the same order and a corrected retry advances', asyn
   await expect(page.getByTestId('wrong-feedback')).toHaveCount(0);
 });
 
-test('Level 2 uses one merged inventory and Head Chef help replays the order', async ({ page }) => {
+test('Level 2 uses one merged inventory and Head Chef help replays the order, unlimited', async ({ page }) => {
   await page.goto(TEST_URL);
   await page.getByTestId('go-button').click();
   await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'cooking', { timeout: 30_000 });
   await expect(page.getByTestId('ticket-monitor')).toHaveCount(0);
   await expect(page.getByTestId('ticket-hidden')).toHaveCount(0);
-  const pipsBefore = await page.getByTestId('help-pips').locator('span').count();
   const ticket = (await page.getByTestId('ticket').getAttribute('data-expected'))?.trim().split(/\s+/) ?? [];
   // The replay highlight is brief in test mode, so record every highlight
   // as it happens instead of polling for one that may already be gone.
@@ -163,14 +162,15 @@ test('Level 2 uses one merged inventory and Head Chef help replays the order', a
       }
     }).observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-help-active'] });
   });
-  await page.getByTestId('chef-help').click();
-  await expect
-    .poll(() => page.evaluate(() => (window as unknown as { __helpSeen: string[] }).__helpSeen), { timeout: 10_000 })
-    .toEqual(ticket);
-  await expect
-    .poll(async () => page.getByTestId('help-pips').locator('span').count(), { timeout: 10_000 })
-    .toBe(pipsBefore);
-  await expect(page.getByTestId('chef-help')).toBeEnabled();
+  // Help is unlimited: the Head Chef re-calls the whole order every time.
+  for (let round = 1; round <= 3; round++) {
+    await page.getByTestId('chef-help').click();
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { __helpSeen: string[] }).__helpSeen), { timeout: 10_000 })
+      .toEqual(Array.from({ length: round }, () => ticket).flat());
+    await expect(page.getByTestId('chef-help')).not.toHaveAttribute('data-helping', 'true');
+  }
+  await expect(page.getByTestId('help-pips')).toHaveCount(0);
   for (let i = 0; i < 3; i++) await playCorrectOrder(page);
   await page.getByTestId('continue-button').click();
   await expect(page.getByTestId('stage')).toHaveAttribute('data-level', '2');
@@ -178,7 +178,7 @@ test('Level 2 uses one merged inventory and Head Chef help replays the order', a
   await expect(page.getByTestId('base-shelf')).toHaveCount(0);
 });
 
-test('power button replaces the parent gate in play and hold-resets completely', async ({ page }) => {
+test('holding the Head Chef badge in play resets completely', async ({ page }) => {
   await page.goto(TEST_URL);
   await page.evaluate(() => {
     localStorage.setItem(
@@ -206,7 +206,7 @@ test('power button replaces the parent gate in play and hold-resets completely',
   await page.getByTestId('go-button').click();
   await expect(page.getByTestId('stage')).toHaveAttribute('data-phase', 'cooking', { timeout: 30_000 });
   await expect(page.getByTestId('parent-gate')).toHaveCount(0);
-  const power = page.getByTestId('power-reset');
+  const power = page.getByTestId('chef-help');
   await expect(power).toBeVisible();
   const box = await power.boundingBox();
   if (!box) throw new Error('no power box');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { adjustDimensions, bankedTarget, clampDimensions, defaultDimensions, peekBudgetFor } from './difficulty';
+import { adjustDimensions, bankedTarget, clampDimensions, defaultDimensions } from './difficulty';
 import { initialState, step, type GameState } from './game';
 import {
   defaultMastery,
@@ -137,20 +137,19 @@ describe('decoupled dimensions', () => {
     expect(clamped.complexity).toBe(1);
   });
 
-  it('peek budget shrinks with memory difficulty and grows in assist', () => {
-    const easy = defaultDimensions(1);
-    const hard = { ...defaultDimensions(6), memory: 5 };
-    expect(peekBudgetFor(1, easy, false)).toBe(3);
-    expect(peekBudgetFor(6, hard, false)).toBe(1);
-    expect(peekBudgetFor(6, hard, true)).toBe(2);
-  });
-
-  it('enforces the peek budget in the reducer', () => {
-    let s: GameState = { ...initialState({ seed: 5, savedLevel: 1 }), phase: 'cooking', peeksUsed: 0, peekBudget: 1 };
-    s = step(s, { type: 'peek' });
-    expect(s.peeksUsed).toBe(1);
-    const blocked = step(s, { type: 'peek' });
-    expect(blocked.peeksUsed).toBe(1);
+  it('Head Chef help is unlimited and stops the game while it plays', () => {
+    let s: GameState = { ...initialState({ seed: 5, savedLevel: 6 }), phase: 'cooking', peeksUsed: 0 };
+    for (let i = 1; i <= 5; i++) {
+      s = step(s, { type: 'peek' });
+      expect(s.peeksUsed).toBe(i);
+      expect(s.helpPlaying).toBe(true);
+      // No building, undo, clearing or serving until the replay ends.
+      for (const e of [{ type: 'addItem', item: 'cheese' }, { type: 'undo' }, { type: 'trash' }, { type: 'serve' }] as const) {
+        expect(step(s, e)).toBe(s);
+      }
+      s = step(s, { type: 'helpEnd' });
+    }
+    expect(step(s, { type: 'addItem', item: 'cheese' }).built).toContain('cheese');
   });
 
   it('help replay pauses patience until it ends', () => {
@@ -158,7 +157,6 @@ describe('decoupled dimensions', () => {
       ...initialState({ seed: 5, savedLevel: 1 }),
       phase: 'cooking',
       peeksUsed: 0,
-      peekBudget: 2,
       patienceTotalMs: 20000,
       patienceLeftMs: 20000,
     };

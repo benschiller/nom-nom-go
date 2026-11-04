@@ -137,13 +137,6 @@ export function hintDelayMs(dims: Dimensions, level: number, assist: boolean): n
   return Math.min(4200, Math.max(2200, 4200 - rel * 300));
 }
 
-export function peekBudgetFor(level: number, dims: Dimensions, assist: boolean): number {
-  const levelBase = level <= 2 ? 3 : level <= 4 ? 2 : 1;
-  const rel = dims.memory - envelopeFor(level).memory.min;
-  const base = Math.max(1, levelBase - Math.floor(rel / 2));
-  return Math.min(4, base + (assist ? 1 : 0));
-}
-
 export function trayTargetFor(level: number, dims: Dimensions, neededDistinct: number): number {
   const rel = dims.search - envelopeFor(level).search.min;
   return Math.min(10, Math.max(neededDistinct, level + 3 + (rel - 1)));

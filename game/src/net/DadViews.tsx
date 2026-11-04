@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { loadSave, persistSave } from '../core/save';
 import { parseMirror, type MirrorView } from '../core/mirror';
 import { ItemIcon } from '../ui/ItemIcon';
+import { Star } from '../ui/Kitchen';
 import { Art } from '../ui/Art';
 import { LocalTransport, type Envelope, type Transport } from './transport';
 
@@ -190,12 +191,7 @@ function WatchView({ id }: { id: string | null }): React.JSX.Element {
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
               {Array.from({ length: mirror.bankedTarget ?? 3 }, (_, i) => (
-                <Art
-                  key={i}
-                  id={i < mirror.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
-                  size={44}
-                  fallback={<span style={{ fontSize: 44, opacity: i < mirror.starsTry ? 1 : 0.25 }}>⭐</span>}
-                />
+                <Star key={i} lit={i < mirror.starsTry} size={44} />
               ))}
             </div>
           </>

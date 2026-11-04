@@ -144,9 +144,17 @@ export function masterBox(id: string, frame: MasterFrame = STORYBOARD_FRAME): St
   };
 }
 
-export type MonsterPose = 'idle' | 'tap' | 'happy' | 'fidgety' | 'grumpy' | 'gobble' | 'dance' | 'confused' | 'leave';
+/** Height / width of an art asset, from the synced manifest (for stacking layers). */
+export const artAspect = (id: string): number | undefined => {
+  const a = BY_ID.get(id);
+  return a ? a.h / a.w : undefined;
+};
 
-/** Curated state -> pose map. `walk` is deferred (no locomotion state). */
+/** The monster's window poses (art-production WINDOW_POSES). Dancing and
+ *  leaving reuse `happy` with motion in the kitchen. */
+export type MonsterPose = 'tap' | 'happy' | 'fidgety' | 'grumpy' | 'gobble' | 'confused';
+
+/** Curated state -> window pose map. */
 export function monsterPoseFor(input: {
   phase: string;
   patienceFraction: number;
@@ -154,17 +162,15 @@ export function monsterPoseFor(input: {
   phaseMs: number;
 }): MonsterPose {
   if (input.phase === 'ordering') return 'tap';
-  if (input.phase === 'goWipe') return 'happy';
   if (input.phase === 'serveResult') {
-    if (input.resultKind === 'correct') return input.phaseMs < 1250 ? 'gobble' : 'dance';
+    if (input.resultKind === 'correct') return input.phaseMs < 1250 ? 'gobble' : 'happy';
     if (input.resultKind === 'wrong') return 'confused';
-    if (input.resultKind === 'timeout') return 'leave';
-    return 'idle';
+    return 'happy';
   }
   if (input.phase === 'cooking') {
     if (input.patienceFraction > 0.66) return 'happy';
     if (input.patienceFraction > 0.33) return 'fidgety';
     return 'grumpy';
   }
-  return 'idle';
+  return 'happy';
 }

@@ -23,8 +23,11 @@ in the same piece of work. The Claude Code pointer only redirects here.
 - **Screen register**: `tools/art/screens.json` (master, capture recipe,
   checklist).
 - **Placement is game code**: each screen has a layout table of stage
-  numbers in `game/src/App.tsx`, e.g. `TITLE_LAYOUT`. It is not the art
-  manifest. Edit a number and save; the dev server updates instantly.
+  numbers, e.g. `TITLE_LAYOUT`, `TUTORIAL_LAYOUT` and `LEVEL_LAYOUT` in
+  `game/src/App.tsx`, and `KITCHEN_LAYOUT` in `game/src/ui/Kitchen.tsx`. It
+  is not the art manifest. Edit a number and save; the dev server updates
+  instantly.
+- **v1 scope is burger only** (pizza and sundae are future development).
 - **Living plan and gap log**: `working/art-integration-plan.md`.
 
 ## Layout model
@@ -64,6 +67,62 @@ in the same piece of work. The Claude Code pointer only redirects here.
   images, never the button's hit box. Everything stops under
   `prefers-reduced-motion`. A piece clipped with `clip` (the chef) stays
   static, because movement would show its cut edge.
+
+## Kitchen (ordering, Go! wipe, cooking, serve result)
+
+Storyboards: `order-at-window-1-centred-ordering.png` (monster arrives),
+`order-at-window-2-bar-collecting.png` (items pop into tiles as said),
+`order-at-window-3-go-wipe.png` (Go! wipe), `go-start-gameplay.png`
+(cooking). Code: `game/src/ui/Kitchen.tsx`, layout table `KITCHEN_LAYOUT`.
+
+- **No background image and no clipping: proper layers**, back to front:
+  1. sky and hills (SVG);
+  2. the monster;
+  3. the truck wall with the window as a hole, coral posts and the top line
+     (SVG);
+  4. the counter ledge and bottom panel (SVG);
+  5. the dish, tiles, controls and stars;
+  6. the Go! wipe.
+  The wall and counter sit in front of the monster, so it rises from below
+  the counter, slides behind the wall to leave, and its window pose's flat
+  bottom edge never shows. The native layers are flat colour, with no
+  filters (see Abandoned). Colours are sampled from the storyboards
+  (constants `C` and `INK`).
+- **Monster**: one window pose at a time (`monsterPoseFor` in `Art.tsx`:
+  tap while ordering, happy / fidgety / grumpy as patience falls, gobble then
+  a bouncing happy on a correct serve, confused on a wrong one, happy sliding
+  off behind the wall on a timeout). It is centred while ordering and moves
+  to the side for cooking.
+- **Bottom row**: while ordering, each called item pops into a beige tile
+  and the one being said glows (`data-sill-item`). From cooking on, the row
+  is the tray to build from (`data-tray-item`). Tiles and the glow ring are
+  CSS. A wrong serve rings the missing item's tile or the wrong dish layer
+  in red.
+- **Dish**: side-view layer sprites scaled to one width and stacked with
+  overlap on the counter (bottom bun, built layers, top bun on a correct
+  serve). Tapping the top layer undoes it.
+- **Controls**: the Head Chef badge sits bottom left; undo, bell and trash
+  are generated button sprites; the stars are native SVG.
+- **Head Chef badge**: a **tap** starts help, which stops the game. Patience
+  freezes and building is blocked while the Head Chef re-calls the order,
+  and each item's tile glows in sync with his voice. Help is unlimited.
+  **Press and hold** shows a ring that fills, and completing it resets the
+  game completely.
+- **Removed from the kitchen**: there is no pause button, no Dad-presence
+  badge and no separate power button. Leaving the app still auto-pauses;
+  resume is the approved green Go button.
+- **Go! wipe**: native. It's a CSS band with SVG streaks, "GO!" in Fredoka
+  and an SVG play triangle, sweeping across over `GO_WIPE_MS` (1.1 s).
+- **Fonts**: `game/public/fonts/fredoka-700-latin.woff2` (Fredoka Bold,
+  Latin) serves all native text.
+
+## Level transition (level complete)
+
+Storyboard `level-transition-master.png`. It reuses the approved title
+layers: `env.title`, `chef.windowWave` in its `TITLE_LAYOUT` box and
+`ui.goButton` (Next level, `continue-button`). The stars are native SVG
+where the logo sits on the title (`LEVEL_LAYOUT`), one per correct dish
+the level needed, and they pop in with confetti.
 
 ## Tutorial (T1–T3)
 
@@ -131,3 +190,9 @@ in the same piece of work. The Claude Code pointer only redirects here.
   ground lines.
 - **Placement boxes in the art manifest** (`place` / `placement` /
   `masterBox` for the title): layout lives in `App.tsx` tables.
+- **A baked kitchen background plate** and **clipping the monster** to the
+  window: the kitchen is layers instead (see Kitchen).
+- **The help budget and its dots**: help is unlimited.
+- **SVG `feTurbulence` grain filters on full-bleed layers**: on WebKit
+  (iPad, iPhone) they cut the frame rate so hard that a 2.5 s result screen
+  took 8+ s. Keep native scene layers filter-free.
