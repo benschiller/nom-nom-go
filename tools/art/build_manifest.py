@@ -22,7 +22,7 @@ STYLE = (
 CHROMA = "Single subject centred on a solid pure magenta #FF00FF background, subject occupies 80% of frame, generous padding on all sides, nothing else in frame."
 NEG = "Do not resemble Om Nom, Toca Boca characters or any existing franchise character. Not scary, not realistic, not photographic, not 3D-render, not pixel-art."
 
-POSES = {
+LEGACY_POSES = {
     "idle": "standing idle, facing camera, arms relaxed at sides, calm cheerful smile",
     "walk": "mid-stride walk toward camera, one foot forward, arms swinging happily",
     "tap": "one arm raised tapping forward at a kitchen window, mouth open mid-babble, leaning in eagerly",
@@ -35,6 +35,30 @@ POSES = {
     "leave": "body turned half-away, one arm waving goodbye, small friendly smile, one foot stepping away",
 }
 
+# Window poses (kitchen): upper body seen over the serving counter. The game
+# draws the counter as a layer in front, so the flat cut at the bottom edge is
+# always hidden. `frame` export keeps the whole canvas so every pose of a
+# monster shares scale and anchor. Pose -> game state: tap = ordering, happy =
+# waiting / Go! wipe / leaving, fidgety and grumpy = falling patience,
+# gobble = correct serve, confused = wrong serve.
+WINDOW_POSES = {
+    "tap": "ordering food: mouth wide open mid-babble showing a pink tongue, eyes bright and eager, leaning slightly toward the viewer, one hand raised beside the face as if calling out an order",
+    "happy": "waiting happily: big delighted closed-mouth smile, eyes bright and round, both hands clasped together in front of the chest",
+    "fidgety": "getting impatient but still cute: eyebrows raised, small wobbly mouth, eyes glancing to one side, fingertips tapping together in front of the chest",
+    "grumpy": "a bit cross and impatient: frowning eyebrows, a small pout, arms folded across the chest, two tiny white puffs of steam beside the head",
+    "gobble": "eating with delight: mouth stretched wide open mid-gobble, cheeks bulging, eyes squeezed shut with joy, both hands up near the mouth",
+    "confused": "puzzled: head tilted to one side, one eyebrow raised, small round o-shaped mouth, one hand scratching the top of the head",
+}
+WINDOW_FRAMING = ("Framing: head and upper body only, as seen from inside a food truck over its serving counter. The character is large "
+                  "and centred. Its topmost point (hair tuft, horns, monocle, sweatband or lightning bolt) is clearly below the top edge, "
+                  "with empty background above it covering at least the top 8% of the picture. Its body continues "
+                  "straight down and is cut off flat by the bottom edge of the picture: no legs and no feet are visible. Facing the viewer. "
+                  "No counter, no window, no drop shadow, no ground.")
+MONSTER_KEY = {"og": ("green", "purple monster"), "gobbler": ("magenta", "orange monster"), "doubleTrouble": ("magenta", "blue monster"),
+               "sneezer": ("magenta", "green monster"), "fussy": ("magenta", "yellow monster"), "speedy": ("magenta", "green monster")}
+OG_WINDOW_REFS = {"tap": "generated_images/production/refs/kitchen/monster.og.order.png",
+                  "happy": "generated_images/production/refs/kitchen/monster.og.wait.png"}
+
 MONSTERS = [
     ("gobbler", "gobbler_002.png", "Gobbler, one enormous round orange belly as most of the body, small head merged on top with no neck, short stubby arms and legs with big round feet, one large friendly eye above two smaller eyes, wide smiling mouth with two small rounded teeth, tiny tufty sprout of hair, lighter cream belly patch"),
     ("doubleTrouble", "double_trouble_002.png", "Double-Trouble, two separate heads side-by-side on one shared chunky sky-blue body with two necks, left head round with one big eye and cheeky grin, right head slightly taller with two smaller eyes and curious smile, two arms, two short legs with big feet, lighter pale-blue belly, one tiny horn per head in different shapes"),
@@ -43,6 +67,75 @@ MONSTERS = [
     ("speedy", "speedy_002.png", "Speedy, lean lime-green monster with long legs in oversized bright red sneakers, striped red-and-white sweatband across the forehead, long arms, wide eager grin, bright wide eyes, small lightning-bolt tuft of hair through the sweatband, lighter belly"),
     ("og", "og_002.png", "OG, tall purple one-eyed monster, one huge single eye centred in the face, wide friendly smile, smooth purple skin with a lighter lavender oval belly patch, long arms with three-finger hands, long legs with big flat feet, bold dark outline"),
 ]
+
+# Burger v1 ingredients. Tray icons are drawn in the beige tiles of the
+# storyboard's bottom panel; dish layers stack on the counter (side view,
+# same width, like the storyboard's bun and patty). Look-alike pairs differ by
+# silhouette: whole tomato / whole pineapple, leaf / halved avocado,
+# squeeze bottle / bowl. Pizza and sundae keep their legacy entries (future
+# development, not dealt in v1).
+TRAY_STYLE = ("Style reference (crop from the approved storyboard's ingredient row): copy its chunky shapes, thick dark outlines, "
+              "flat colours and soft grain exactly. Ignore the beige tiles and draw only the one ingredient described.")
+TRAY_DESIGN = "Exact design reference (crop from the approved storyboard): reproduce this ingredient drawing exactly, alone, ignoring the beige tile."
+BURGER_TRAY = {
+    "patty": "a round flat grilled burger patty seen at a slight angle from above, rich brown with three lighter diagonal grill stripes on top",
+    "cheese": "a chunky wedge of yellow cheese with round holes, seen at a slight angle",
+    "tomato": "a whole round red tomato with a green leafy star-shaped top and a small white shine",
+    "pineapple": "a small whole yellow pineapple with a criss-cross diamond pattern and a spiky green leaf crown",
+    "lettuce": "a single ruffled bright green lettuce leaf with a pale green central vein, tilted",
+    "pickles": "two whole bumpy green pickles lying side by side diagonally",
+    "onionRings": "a small stack of three golden fried onion rings",
+    "ketchup": "a red ketchup squeeze bottle with a pointed red nozzle cap",
+    "avocado": "half an avocado cut lengthwise: pale green flesh, a big round brown pit, dark green skin edge",
+    "salsa": "a small round blue bowl filled with chunky red salsa with green and white diced bits",
+    "crispyOnions": "a small heap of thin golden crispy fried onion strands",
+}
+BURGER_DISH = {
+    "patty": "a thick brown cooked burger patty with a bumpy edge",
+    "cheese": "a thin flat square slice of yellow cheese seen from the side, with its four corners drooping down, exactly like the cheese layer in the attached burger",
+    "tomato": "a thin red tomato slice",
+    "pineapple": "a thick yellow pineapple slice seen from the side, a flat yellow slab with fibrous stripes on its edge, exactly like the pineapple layer in the attached burger",
+    "lettuce": "a ruffled bright green lettuce leaf layer with wavy edges hanging over the sides",
+    "pickles": "a row of round green pickle slices",
+    "onionRings": "four golden fried onion rings lying flat in a row, side by side and slightly overlapping. Each ring lies flat (not standing up), seen from the side slightly from above, so it appears as a wide horizontal oval about three times wider than it is tall, with its hole a thin horizontal slit. Only the onion rings, nothing beneath them",
+    "ketchup": "a thin flat puddle of glossy red ketchup lying flat, seen almost edge-on from the side, slightly from above: a wide thin flattened oval of red sauce with two or three short drips hanging from its front edge. Only the ketchup, nothing beneath it",
+    "avocado": "four smooth avocado slices lying flat in a row, slightly overlapping. Each slice lies flat (not standing up), seen from the side slightly from above, so it appears as a long low smooth wedge about three times wider than it is tall: pale yellow-green flesh with a dark green skin edge along its front. Perfectly smooth outlines, no leaves, no lettuce, no pit, no whole avocado halves. Only the avocado slices, nothing beneath them",
+    "salsa": "a chunky red salsa layer with green and white diced bits",
+    "crispyOnions": "a tangle of thin golden crispy fried onion strands",
+    "bunBottom": "a golden-tan bottom burger bun with a flat base and small speckles",
+    "bunTop": "a domed golden top burger bun with white sesame seeds",
+}
+# SAM 3.1 needs a SHORT noun phrase for one object; long descriptions return no match.
+TRAY_SAM = {"patty": "burger patty", "cheese": "cheese wedge", "tomato": "red tomato", "pineapple": "pineapple",
+            "lettuce": "green leaf", "pickles": "pickles", "onionRings": "rings", "ketchup": "ketchup bottle",
+            "avocado": "half avocado", "salsa": "bowl of salsa", "crispyOnions": "fried onions"}
+DISH_SAM = {"patty": "food", "cheese": "cheese slice", "tomato": "tomato slice", "pineapple": "pineapple slice",
+            "lettuce": "lettuce leaf", "pickles": "green pickle slices", "onionRings": "rings", "ketchup": "ketchup",
+            "avocado": "green avocado slice", "salsa": "salsa", "crispyOnions": "fried onions",
+            "bunBottom": "bottom bun", "bunTop": "burger bun"}
+DISH_FRAMING = ("Draw only this one burger layer on its own, seen from the side at a slight angle from above, exactly as it would look "
+                "inside a stacked cartoon burger: a thin horizontal layer about five times wider than it is tall, spanning about 70% of "
+                "the picture width, centred, with plenty of empty background above, below and at both ends. Nothing above or below it, "
+                "no plate, no drop shadow.")
+# Layers the model drew wrong alone also get the approved tutorial burger, to
+# copy that one layer from.
+DISH_EXTRA_REF = {"pineapple": "generated_images/production/final/tut.burger.webp",
+                  "cheese": "generated_images/production/final/tut.burger.webp"}
+# Toppings that must lie flat take their style from the ingredient row (no
+# patty in it), so the model draws only the topping.
+DISH_FLAT = {"onionRings", "ketchup", "avocado"}
+DISH_FLAT_NOTE = ("Style reference (crop from the approved storyboard's ingredient row): copy its chunky shapes, thick dark "
+                  "outlines, flat colours and soft grain exactly. Draw only the one topping described, lying flat, nothing else.")
+DISH_EXTRA_NOTE = ("Layer reference (approved burger): draw ONLY the one layer named above, the way this burger draws its layers; "
+                   "draw nothing else from this burger.")
+# The four flat toppings lie naturally on the burger (drapes, drips, overlapping
+# slices), so they are not held to the thin 5:1 strip the other layers use.
+TOPPINGS = {"cheese", "onionRings", "ketchup", "avocado"}
+TOPPING_FRAMING = ("Draw only this one burger topping on its own, centred, with empty background all around it, "
+                   "no plate, no drop shadow.")
+TOPPING_QA = ["reads as the named burger topping lying flat", "clean outline all the way round", "nothing else drawn", "no plate", "no text"]
+DISH_STYLE = ("Style reference (crop from the approved storyboard): copy its chunky shapes, thick dark outlines, flat colours and "
+              "soft grain exactly. Ignore the counter and background.")
 
 # id, dish, plain description for prompts (mirrors content.ts ITEMS)
 ITEMS = [
@@ -86,10 +179,8 @@ ITEMS = [
 ]
 
 ENVS = [
-    ("env.levelTruck", "level-transition-master.png", "Remove the chef, all pips, stars and text from the sign so the mustard sign board is blank. Keep truck, posts, sky and pavement as a clean plate."),
     ("env.night.goodbye", "end-game-night-master.png", "Remove every character. Keep the night truck with warm light glowing from the open serving hatch and windows, moon and stars, as a clean empty plate."),
     ("env.night.closed", "end-game-night-master.png", "Remove every character, close the serving hatch shutter fully and dim the lights low for closing time. Keep the night truck, moon and stars as a clean empty plate."),
-    ("env.goWipe", "order-at-window-3-go-wipe.png", "Keep only the full-screen diagonal wipe graphic as a flat mustard-yellow wipe panel with a subtle sticker edge. Remove the monster, kitchen, all food and any text or letters."),
 ]
 
 # Screen-pass assets. Bleed plates: a 3:2 clean plate (1920x1280, the
@@ -153,53 +244,27 @@ TITLE_QA = ["clean outline all the way round, even thickness", "nothing cropped"
 TITLE_MASTER_SIZE = (1920, 1280)  # title-intro-master.png; the logo is native text in the game
 
 # Kitchen screens (ordering, Go! wipe, cooking). Targets: order-at-window-1/2/3
-# and kitchen-master-stars_000. The plate is generated whole and wide (the
-# bleed box): Muse Image cannot extend an existing picture's edges. Buttons
-# and the Go! band are generated alone on a key colour and SAM-soft cut; the
-# storyboard crops in refs/kitchen are design references only. "GO!" and the
-# play triangle on the band are native text/CSS in the game.
+# and go-start-gameplay. There is NO kitchen background image: the scene is
+# layers in the game (wall, hills, window frame, counter and bottom panel are
+# native SVG in App.tsx), with the monster drawn between the window and the
+# counter. Buttons are generated alone on a key colour and SAM-soft cut; the
+# storyboard crops in refs/kitchen are design references only. The Go! wipe is
+# native (CSS band, "GO!" text, SVG triangle).
 KITCHEN_REFS = "generated_images/production/refs/kitchen"
 DESIGN_NOTE = "Exact design reference (crop from the approved storyboard): reproduce this button exactly, alone, ignoring anything around it."
-KITCHEN_PLATE = dict(
-    id="env.kitchen", category="env", mode="generate", size="1536x1024",
-    refs=[f"{APPROVED}/order-at-window-1-centred-ordering.png"],
-    ref_notes=["Style, palette and scenery reference (approved storyboard): copy its colours, line weight, coral window posts, "
-               "teal sky with darker teal rounded hills, and cream counter exactly. Do NOT copy its framing, the monster or any "
-               "button, badge or star: the new picture is a wider, empty view of the same kitchen."],
-    subject="Empty background plate of the inside of a food-truck kitchen, seen straight on. In the centre, a wide open serving "
-            "window: through it plain teal sky with soft darker-teal rounded hills along its bottom. Coral-red vertical posts with dark "
-            "outlines frame the left and right of the window, and a thin dark frame runs along its top. Around the window, plain flat teal "
-            "truck wall fills the margins on the left, right and top of the picture. A cream counter ledge runs across the full width of "
-            "the picture along the bottom of the window, drawn in gentle perspective with a dark outline on its back and front edges. "
-            "Below the counter, a plain flat cream counter front fills the bottom of the picture to the edges. Layout: the window opening "
-            "spans from 12% to 88% of the picture width; its top frame is at 13% of the picture height; the counter's back edge is at 54% "
-            "and its front edge at 60% of the picture height. Completely empty: no characters, no food, no shelves, no utensils, no "
-            "buttons, no stars, no icons, no objects.",
-    export={"w": 2400, "h": 1600, "alpha": False, "max_side": 2400},
-    display="2000x1333 bleed box, safe 1600x900 centre", sam=None,
-    qa=["no text or letters", "no characters, food or objects", "empty serving window centred with coral posts both sides",
-        "plain wall and counter reach every edge"],
-)
 KITCHEN = [
-    dict(id="prop.undo", category="prop", key="magenta", sam="blue circle button",
+    dict(id="prop.undo", category="prop", key="magenta", sam="circle",
          refs=[f"{KITCHEN_REFS}/prop.undo.png"], ref_notes=[DESIGN_NOTE],
          subject="A round button: a perfect circle filled with bright medium blue, a thick dark outline, and inside it a chunky "
                  "U-shaped undo arrow in a deeper blue with a dark outline, its arrowhead pointing left. Flat, no text, no drop shadow."),
-    dict(id="prop.bell", category="prop", key="magenta", sam="yellow circle button",
+    dict(id="prop.bell", category="prop", key="magenta", sam="yellow circle",
          refs=[f"{KITCHEN_REFS}/prop.bell.png"], ref_notes=[DESIGN_NOTE],
          subject="A round button: a perfect circle filled with warm golden yellow, a thick dark outline, and inside it a big golden "
                  "service bell with a small knob on top and a dark outline. Flat, no text, no drop shadow."),
-    dict(id="prop.trash", category="prop", key="green", sam="red circle button",
+    dict(id="prop.trash", category="prop", key="green", sam="red circle",
          refs=[f"{KITCHEN_REFS}/prop.trash.png"], ref_notes=[DESIGN_NOTE],
          subject="A round button: a perfect circle filled with bright tomato red, a thick dark outline, and inside it a red trash can "
                  "with a lid and three vertical lines, drawn with a dark outline. Flat, no text, no drop shadow."),
-    dict(id="ui.goBand", category="prop", key="magenta", sam="yellow banner", size="1536x1024",
-         refs=[f"{KITCHEN_REFS}/ui.goBand.png"],
-         ref_notes=["Colour and texture reference only (approved Go! wipe storyboard): copy the yellow band's colours and its "
-                    "orange and pale-yellow speed streaks. Ignore the kitchen, the monster, the buttons, the letters and the triangle."],
-         subject="A long straight horizontal band of bright sunny yellow running across the whole width of the picture, about a "
-                 "quarter of the picture height tall, with long orange and pale-yellow speed streaks along its length and streaky, "
-                 "slightly ragged ends at the far left and far right. No outline, no letters, no triangle, nothing on it, no drop shadow."),
 ]
 KITCHEN_QA = ["clean edge all the way round", "nothing cropped", "matches the design reference",
               "no drop shadow or background remnants", "no text or letters"]
@@ -336,26 +401,33 @@ def main():
             display="tutorial, placed by TUTORIAL_LAYOUT in App.tsx", qa=TUTORIAL_QA,
             **spec,
         ))
-    assets.append(asset(**KITCHEN_PLATE))
     for spec in KITCHEN:
         spec = dict(spec)
         assets.append(asset(
             id=spec.pop("id"), category=spec.pop("category"), mode="generate", cutter="sam-soft",
-            size=spec.pop("size", "1024x1024"), export={"alpha": True, "trim": True, "max_side": 1100 if spec["sam"] != "yellow banner" else 2400},
+            size=spec.pop("size", "1024x1024"), export={"alpha": True, "trim": True, "max_side": 600},
             display="kitchen, placed by KITCHEN_LAYOUT in App.tsx", qa=KITCHEN_QA,
             **spec,
         ))
     for mid, master, desc in MONSTERS:
-        for pose, pose_line in POSES.items():
-            derive = pose == "idle"
+        key, noun = MONSTER_KEY[mid]
+        for pose, pose_line in WINDOW_POSES.items():
+            refs = [f"{APPROVED}/{master}"]
+            notes = ["Character identity reference (approved character sheet): match this character exactly, its colours, eyes, "
+                     "mouth, hair and markings."]
+            if mid == "og" and pose in OG_WINDOW_REFS:
+                refs.append(OG_WINDOW_REFS[pose])
+                notes.append("Pose and framing reference only (crop from the approved storyboard): copy how large the character is, "
+                             "its expression and how its body is cut off at the bottom; ignore the background.")
             assets.append(asset(
-                id=f"monster.{mid}.{pose}", category="monster",
-                mode="derive" if derive else "generate",
-                subject=f"{desc}. Pose: {pose_line}. Full body, facing camera with a slight 3/4 turn, standing on two feet.",
-                refs=[f"{APPROVED}/{master}"],
-                size="1024x1024", export={"w": 1024, "h": 1024, "alpha": True, "fill": 0.8},
-                display="h340 centre / h300 side", sam=f"{mid} monster character",
-                qa=["same character identity as the reference master", "correct pose and expression for the named pose", "full body with no cropped head or feet", "friendly and non-scary for a 7-year-old", "no text", "silhouette distinct from the other monsters"],
+                id=f"monster.{mid}.{pose}", category="monster", mode="generate", cutter="sam-soft", key=key, sam=noun,
+                subject=f"{desc}. Pose: {pose_line}. {WINDOW_FRAMING}",
+                refs=refs, ref_notes=notes, size="1024x1024",
+                export={"alpha": True, "frame": True, "max_side": 1280},
+                display="kitchen window, placed by KITCHEN_LAYOUT in App.tsx",
+                qa=["same character identity as the reference sheet", "correct expression for the named pose",
+                    "head and upper body only, cut off flat at the bottom edge", "friendly and non-scary for a 7-year-old",
+                    "clean outline all the way round", "no text"],
             ))
     chef_ref = f"{APPROVED}/head-chef-dad.png"
     chef_poses = {
@@ -394,6 +466,20 @@ def main():
         qa=["same Head Chef identity", "nothing important cropped", "no text"],
     ))
     for item_id, dish, desc in ITEMS:
+        if dish == "burger":
+            ref = f"{KITCHEN_REFS}/item.{item_id}.tray.png"
+            crop = (ROOT / ref).exists()
+            assets.append(asset(
+                id=f"item.{item_id}.tray", category="ingredient", mode="generate", cutter="sam-soft", key="magenta",
+                subject=f"A single chunky ingredient icon: {BURGER_TRAY[item_id]}. Bold and instantly readable at small size. "
+                        "No drop shadow, no ground, no tile.",
+                refs=[ref if crop else f"{KITCHEN_REFS}/tray.row.png"], ref_notes=[TRAY_DESIGN if crop else TRAY_STYLE],
+                size="1024x1024", export={"alpha": True, "trim": True, "max_side": 512},
+                display="kitchen tray tile, placed by KITCHEN_LAYOUT in App.tsx", sam=TRAY_SAM[item_id],
+                qa=["ingredient is instantly recognisable", "bold silhouette readable at 80px", "clean outline all the way round",
+                    "single ingredient only", "no text"],
+            ))
+            continue
         assets.append(asset(
             id=f"item.{item_id}.tray", category="ingredient", mode="generate",
             subject=f"A single bold ingredient icon for a {dish}: {desc}. Chunky, instantly readable at tiny size, slight 3/4 view.",
@@ -410,14 +496,18 @@ def main():
             display="92 in dish stack", sam=desc,
             qa=["reads as the same ingredient as its tray icon", "flat layer suitable for stacking in a dish", "no plate or bowl unless the ingredient is the cup or cone itself", "no text"],
         ))
-    for extra, desc in [("dish.bunBottom", "the bottom half of a burger bun, flat base with sesame top edge"), ("dish.bunTop", "the top half of a burger bun with sesame seeds, domed")]:
+    for layer, desc in BURGER_DISH.items():
+        aid = f"dish.{layer}" if layer.startswith("bun") else f"item.{layer}.dish"
         assets.append(asset(
-            id=extra, category="ingredient", mode="generate",
-            subject=f"A flat layer of {desc}, viewed flat from slightly above, wide and flat like a sticker layer, no plate.",
-            refs=[f"{APPROVED}/kitchen-master-stars_000.png"], size="1024x1024",
-            export={"w": 256, "h": 256, "alpha": True, "fill": 0.8},
-            display="92 in dish stack", sam=desc,
-            qa=["bun half is instantly recognisable", "flat layer suitable for stacking", "no text"],
+            id=aid, category="ingredient", mode="generate", cutter="sam-soft", key="magenta",
+            subject=f"One burger layer: {desc}. {TOPPING_FRAMING if layer in TOPPINGS else DISH_FRAMING}",
+            refs=([f"{KITCHEN_REFS}/tray.row.png"] if layer in DISH_FLAT else [f"{KITCHEN_REFS}/dish.stack.png"])
+                 + ([DISH_EXTRA_REF[layer]] if layer in DISH_EXTRA_REF else []),
+            ref_notes=([DISH_FLAT_NOTE] if layer in DISH_FLAT else [DISH_STYLE])
+                      + ([DISH_EXTRA_NOTE] if layer in DISH_EXTRA_REF else []),
+            size="1536x1024", export={"alpha": True, "trim": True, "max_side": 900},
+            display="dish stack on the counter, placed by KITCHEN_LAYOUT in App.tsx", sam=DISH_SAM[layer],
+            qa=TOPPING_QA if layer in TOPPINGS else ["reads as the named burger layer", "wide flat side view for stacking", "clean outline all the way round", "no plate", "no text"],
         ))
     for pid, desc, display in PROPS:
         assets.append(asset(

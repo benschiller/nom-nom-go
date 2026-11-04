@@ -15,8 +15,9 @@ import {
   ensureAudioOnVisible,
 } from './audio/audio';
 import { isTestMode, testSpeed, useGame } from './ui/store';
-import { Emoji, ItemIcon } from './ui/ItemIcon';
-import { Art, Backdrop, monsterPoseFor, preloadArt } from './ui/Art';
+import { Emoji } from './ui/ItemIcon';
+import { Art, Backdrop, preloadArt } from './ui/Art';
+import { Kitchen, Star } from './ui/Kitchen';
 import { ParentArea } from './ui/ParentArea';
 import { Confetti } from './ui/Confetti';
 import { DadRoute } from './net/DadViews';
@@ -108,6 +109,76 @@ function TitleArt({
       height={box.height}
       style={{ position: 'absolute', ...box, objectPosition: '50% 100%', pointerEvents: 'none' }}
     />
+  );
+}
+
+/**
+ * LEVEL TRANSITION LAYOUT (level complete) — storyboard:
+ * approved/level-transition-master.png. Same truck, chef and Go button as the
+ * title (TITLE_LAYOUT boxes, approved title art); the stars replace the logo
+ * and are native SVG. Stage units as TITLE_LAYOUT.
+ */
+const LEVEL_LAYOUT = {
+  stars: { centreX: 770, top: 18, maxSize: 132, maxWidth: 860, gap: 26 }, // above the truck roof (roof top ~188)
+} as const;
+
+function LevelTransition({ stars, onContinue }: { stars: number; onContinue: () => void }): React.JSX.Element {
+  const s = LEVEL_LAYOUT.stars;
+  const size = Math.min(s.maxSize, (s.maxWidth - s.gap * (stars - 1)) / stars);
+  const reduce = useReducedMotion();
+  useEffect(() => {
+    if (reduce) return undefined;
+    const timers = Array.from({ length: stars }, (_, i) => window.setTimeout(() => playSfx('pop'), 350 + i * 260));
+    return () => timers.forEach((t) => clearTimeout(t));
+  }, [stars, reduce]);
+  return (
+    <div data-testid="level-transition" style={{ position: 'absolute', inset: 0 }}>
+      <Backdrop id="env.title" />
+      <TitleArt id="chef.windowWave" box={TITLE_LAYOUT.chef} clip />
+      <div
+        data-testid="result-stars"
+        style={{
+          position: 'absolute',
+          left: s.centreX - (stars * size + (stars - 1) * s.gap) / 2,
+          top: s.top + (s.maxSize - size) / 2,
+          display: 'flex',
+          gap: s.gap,
+        }}
+      >
+        {Array.from({ length: stars }, (_, i) => (
+          <motion.div
+            key={i}
+            initial={reduce ? false : { scale: 0, rotate: -40 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.35 + i * 0.26 }}
+          >
+            <Star lit size={size} />
+          </motion.div>
+        ))}
+      </div>
+      <motion.button
+        data-testid="continue-button"
+        aria-label="Next level"
+        whileTap={{ scale: 0.92 }}
+        style={{
+          position: 'absolute',
+          ...TITLE_LAYOUT.goButton,
+          padding: 0,
+          border: 'none',
+          background: 'transparent',
+          borderRadius: '50%',
+        }}
+        onClick={onContinue}
+      >
+        <Art
+          id="ui.goButton"
+          className="pulse"
+          width={TITLE_LAYOUT.goButton.width}
+          height={TITLE_LAYOUT.goButton.height}
+          fallback={<span style={{ fontSize: 160 }}>▶</span>}
+        />
+      </motion.button>
+    </div>
   );
 }
 
@@ -598,12 +669,10 @@ function GameShell(): React.JSX.Element {
   const scale = useStageScale();
   const portrait = usePortrait();
   const [parentOpen, setParentOpen] = useState(false);
-  const [dadOnline, setDadOnline] = useState(false);
   const [cheer, setCheer] = useState<string | null>(null);
   const [glove, setGlove] = useState<{ x: number; y: number } | null>(null);
   const transportRef = useRef<Transport | null>(null);
   const seqRef = useRef(0);
-  const lastDadBeat = useRef(0);
   const voiceChain = useRef<Promise<void>>(Promise.resolve());
   const spoken = useRef<{ key: string; count: number }>({ key: '', count: 0 });
 
@@ -619,9 +688,6 @@ function GameShell(): React.JSX.Element {
     });
     window.location.reload();
   };
-
-  /** Title and tour screens: no gameplay HUD (Dad badge, power hold). */
-  const onTitle = state.phase === 'title' || state.phase === 'tour';
 
   const leaveTitle = (): void => {
     unlockAudio();
@@ -671,7 +737,7 @@ function GameShell(): React.JSX.Element {
 
   // Preload the next screens' plates so transitions do not flash placeholders.
   useEffect(() => {
-    preloadArt(['env.kitchen', 'env.night.closed', 'monster.og.tap']);
+    preloadArt(['prop.undo', 'prop.bell', 'prop.trash', 'chef.helpFace', 'dish.bunBottom', 'env.night.closed']);
   }, []);
 
   // Phase sound effects.
@@ -727,7 +793,6 @@ function GameShell(): React.JSX.Element {
         seqRef.current += 1;
         transport.publish({ type: 'snapshot', seq: seqRef.current, view: toMirror(store.getState()) });
       }
-      if (msg.type === 'beat' && msg.role === 'dad') lastDadBeat.current = Date.now();
       if (msg.type === 'glove' && typeof msg.x === 'number' && typeof msg.y === 'number') {
         setGlove({ x: Math.min(msg.x, 0.77), y: msg.y < 0.4 && msg.x > 0.8 ? 0.42 : msg.y });
       }
@@ -737,12 +802,10 @@ function GameShell(): React.JSX.Element {
         window.setTimeout(() => setCheer(null), 1600);
       }
     });
-    const presence = window.setInterval(() => setDadOnline(Date.now() - lastDadBeat.current < 15000), 2000);
     return () => {
       unsub();
       transport.close();
       clearInterval(beat);
-      clearInterval(presence);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store]);
@@ -876,46 +939,17 @@ function GameShell(): React.JSX.Element {
           state.phase === 'goWipe' ||
           state.phase === 'cooking' ||
           state.phase === 'serveResult') &&
-          order && <Kitchen state={state} dispatch={dispatch} testAttrs={testAttrs} />}
+          order && <Kitchen state={state} dispatch={dispatch} testAttrs={testAttrs} onPowerReset={resetCompletely} />}
 
         {state.phase === 'levelResult' && (
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 16,
+          <LevelTransition
+            stars={bankedTarget(state.level)}
+            onContinue={() => {
+              unlockAudio();
+              playSfx('ding');
+              dispatch({ type: 'continue' });
             }}
-          >
-            <Art
-              id="chef.cheer"
-              height={200}
-              fallback={<Emoji size={160}>{state.starsTry >= bankedTarget(state.level) ? '👨‍🍳🎉' : '👨‍🍳💪'}</Emoji>}
-            />
-            <div data-testid="result-stars" style={{ display: 'flex', gap: 12 }}>
-              {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
-                <Art
-                  key={i}
-                  id={i < state.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
-                  size={84}
-                  fallback={<span style={{ fontSize: 84, opacity: i < state.starsTry ? 1 : 0.25 }}>⭐</span>}
-                />
-              ))}
-            </div>
-            <button
-              data-testid="continue-button"
-              style={{ ...BTN, width: 220, height: 150, fontSize: 72 }}
-              onClick={() => {
-                playSfx('ding');
-                dispatch({ type: 'continue' });
-              }}
-            >
-              <Art id="prop.play" size={72} fallback={<span>➡️</span>} />
-            </button>
-          </div>
+          />
         )}
 
         {state.phase === 'bossEnding' && (
@@ -1017,80 +1051,21 @@ function GameShell(): React.JSX.Element {
               zIndex: 40,
             }}
           >
-            <button
+            <motion.button
               data-testid="resume-button"
-              style={{ ...BTN, width: 220, height: 180, fontSize: 84 }}
+              aria-label="Resume"
+              whileTap={{ scale: 0.92 }}
+              style={{ width: 240, height: 240, padding: 0, border: 'none', background: 'transparent', borderRadius: '50%' }}
               onClick={() => {
                 unlockAudio();
                 dispatch({ type: 'resume' });
               }}
             >
-              <Art id="prop.play" size={84} fallback={<span>▶️</span>} />
-            </button>
+              <Art id="ui.goButton" size={240} className="pulse" fallback={<span style={{ fontSize: 160 }}>▶</span>} />
+            </motion.button>
           </div>
         )}
 
-        {state.phase === 'cooking' && (
-          <button
-            data-testid="pause-button"
-            aria-label="Pause"
-            style={{
-              position: 'absolute',
-              left: 1436,
-              bottom: 178,
-              width: 140,
-              height: 140,
-              borderRadius: 24,
-              fontSize: 58,
-              zIndex: 30,
-            }}
-            onClick={() => dispatch({ type: 'pause' })}
-          >
-            <Art id="prop.pause" size={72} fallback={<span>⏸️</span>} />
-          </button>
-        )}
-
-        {state.tutorial && state.phase === 'cooking' && (
-          <div
-            style={{
-              position: 'absolute',
-              left: 420,
-              top: 560,
-              zIndex: 35,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              pointerEvents: 'none',
-            }}
-          >
-            <span className="bob" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Art id="chef.point" height={84} fallback={<span style={{ fontSize: 84 }}>👨‍🍳👉</span>} />
-              <Art id="ui.glove" size={64} fallback={<span style={{ fontSize: 64 }}>👆</span>} />
-            </span>
-          </div>
-        )}
-        {!onTitle && (
-          <div
-            data-testid="dad-badge"
-            style={{
-              position: 'absolute',
-              left: 1436,
-              bottom: 24,
-              width: 140,
-              height: 140,
-              borderRadius: '50%',
-              background: dadOnline ? '#ffd93d' : '#cfd8dc',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 64,
-              opacity: dadOnline ? 1 : 0.55,
-              pointerEvents: 'none',
-            }}
-          >
-            <Art id="ui.badgeDad" size={110} fallback={<span>👋</span>} />
-          </div>
-        )}
         {glove && state.phase === 'cooking' && (
           <div
             data-testid="dad-glove"
@@ -1104,7 +1079,7 @@ function GameShell(): React.JSX.Element {
               zIndex: 28,
             }}
           >
-            <Art id="ui.glove" size={92} fallback={<span>🧤</span>} />
+            <Art id="tut.glove" size={110} fallback={<span>🧤</span>} />
           </div>
         )}
         {cheer && (
@@ -1119,29 +1094,11 @@ function GameShell(): React.JSX.Element {
             />
           </div>
         )}
-        {!onTitle && state.phase !== 'closed' && state.phase !== 'poweredOff' && (
-          <HoldButton
-            testId="power-reset"
-            label="Power — press and hold to reset completely"
-            icon={<Art id="ui.powerOn" size={64} fallback={<span>⏻</span>} />}
-            onComplete={resetCompletely}
-            style={{
-              position: 'absolute',
-              left: 24,
-              bottom: 24,
-              background: '#232946',
-              color: '#ffd93d',
-              border: '4px solid #ffd93d',
-              zIndex: 45,
-            }}
-          />
-        )}
-
         {state.phase === 'tour' && (
           <Tour step={state.tourStep} soundOn={store.getSave().soundOn} onNext={nextTourStep} />
         )}
 
-        <Confetti active={state.phase === 'serveResult' && state.result?.kind === 'correct'} />
+        <Confetti active={(state.phase === 'serveResult' && state.result?.kind === 'correct') || state.phase === 'levelResult'} />
       </div>
 
       {portrait && (
@@ -1168,485 +1125,3 @@ function GameShell(): React.JSX.Element {
   );
 }
 
-function Kitchen({
-  state,
-  dispatch,
-  testAttrs,
-}: {
-  state: ReturnType<typeof useGame>['state'];
-  dispatch: ReturnType<typeof useGame>['dispatch'];
-  testAttrs: Record<string, string | undefined>;
-}): React.JSX.Element {
-  const order = currentOrder(state);
-  const [helpStep, setHelpStep] = useState(-1);
-  const helpRun = useRef(0);
-  useEffect(
-    () => () => {
-      helpRun.current += 1;
-    },
-    [],
-  );
-  if (!order) return <></>;
-  const monster = MONSTERS.find((m) => m.id === order.monster);
-  const fraction = state.patienceTotalMs > 0 ? state.patienceLeftMs / state.patienceTotalMs : 1;
-  const pose = monsterPoseFor({
-    phase: state.phase,
-    patienceFraction: fraction,
-    resultKind: state.result?.kind ?? null,
-    phaseMs: state.phaseMs,
-  });
-  const ordering = state.phase === 'ordering';
-  const wiping = state.phase === 'goWipe';
-  // The item the Head Chef is naming right now at the window.
-  const orderingId = ordering && state.orderingShown > 0 ? order.ticket[state.orderingShown - 1] : undefined;
-  // One merged inventory, generated per order at exactly level + 3 items.
-  const mergedItems = order.tray;
-  const highlight = state.result?.highlight;
-  // Wrong serve: a wrong built item highlights on the dish; a missing
-  // item highlights on the window sill row (ticket index into the sill).
-  const wrongSillIndex =
-    state.phase === 'serveResult' && highlight?.side === 'expected' ? highlight.index - order.prebuilt.length : -1;
-  // HELP: Head Chef replays the call-out. Each tray item grows in ticket
-  // order, in sync with its clip (static bursts when the speaker is broken).
-  // Budget and the patience pause live in the core (peek / helpPlaying).
-  const helpId = helpStep >= 0 ? order.ticket[helpStep] : undefined;
-  const canHelp = state.phase === 'cooking' && !state.helpPlaying && state.peeksUsed < state.peekBudget;
-  const onHelp = async (): Promise<void> => {
-    if (!canHelp) return;
-    dispatch({ type: 'peek' });
-    const run = ++helpRun.current;
-    try {
-      for (let i = 0; i < order.ticket.length; i++) {
-        if (helpRun.current !== run) return;
-        setHelpStep(i);
-        if (isTestMode()) {
-          await new Promise((r) => setTimeout(r, 30));
-        } else if (order.broken === 'speaker') {
-          playSfx('static');
-          await new Promise((r) => setTimeout(r, 650));
-        } else {
-          await Promise.race([playKioskItem(order.ticket, i), new Promise((r) => setTimeout(r, 1400))]);
-          await new Promise((r) => setTimeout(r, 120));
-        }
-      }
-    } finally {
-      if (helpRun.current === run) {
-        setHelpStep(-1);
-        dispatch({ type: 'helpEnd' });
-      }
-    }
-  };
-
-  return (
-    <div style={{ position: 'absolute', inset: 0, background: '#2a9d8f' }}>
-      <Art id="env.kitchen" width={1600} height={900} style={{ position: 'absolute', inset: 0, objectFit: 'cover' }} />
-      {/* One-screen kitchen master: the monster orders at this serving
-          window, then waits at its side while the child cooks. Test hook
-          only: the expected order for automated play. */}
-      <div data-testid="ticket" {...testAttrs} style={{ display: 'none' }} aria-hidden />
-      <div
-        data-testid="serving-window"
-        style={{
-          position: 'absolute',
-          left: 24,
-          top: 24,
-          width: 1232,
-          height: 496,
-          borderRadius: 12,
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          data-testid="window-monster"
-          data-position={ordering ? 'centre' : 'side'}
-          style={
-            ordering
-              ? {
-                  position: 'absolute',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  bottom: -20,
-                  fontSize: 340,
-                  lineHeight: 1,
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                }
-              : {
-                  position: 'absolute',
-                  right: 60,
-                  bottom: -30,
-                  fontSize: 300,
-                  lineHeight: 1,
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                }
-          }
-        >
-          <span className={state.phase === 'serveResult' && state.result?.kind === 'correct' ? 'bob' : undefined}>
-            <Art
-              id={`monster.${order.monster}.${pose}`}
-              height={ordering ? 360 : 320}
-              fallback={<span style={{ fontSize: ordering ? 340 : 300 }}>{monster?.emoji}</span>}
-            />
-          </span>
-          {order.broken === 'speaker' && (
-            <Art
-              id="prop.speakerStatic"
-              size={84}
-              style={{ position: 'absolute', left: 12, top: 12 }}
-              fallback={<span style={{ fontSize: 54 }}>🔇</span>}
-            />
-          )}
-        </div>
-        {state.phase === 'serveResult' && state.result?.kind === 'correct' && (
-          <div
-            data-testid="nom-nom"
-            className="bob"
-            style={{
-              position: 'absolute',
-              right: 300,
-              top: 36,
-              width: 300,
-              height: 130,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 52,
-              fontWeight: 900,
-              color: '#d35400',
-            }}
-          >
-            <Art id="ui.nomBubble" width={300} height={130} style={{ position: 'absolute', inset: 0 }} />
-            <span style={{ position: 'relative' }}>Nom Nom!</span>
-          </div>
-        )}
-      </div>
-      {wiping && (
-        <motion.div
-          data-testid="go-wipe"
-          aria-hidden
-          initial={{ x: '-105%' }}
-          animate={{ x: '105%' }}
-          transition={{ duration: 0.65, ease: 'easeInOut' }}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 190,
-            fontWeight: 900,
-            color: '#d35400',
-            zIndex: 20,
-            pointerEvents: 'none',
-            overflow: 'hidden',
-          }}
-        >
-          <Art
-            id="env.goWipe"
-            width={1600}
-            height={900}
-            style={{ position: 'absolute', inset: 0, objectFit: 'cover' }}
-          />
-          <span style={{ position: 'relative' }}>Go! ▶</span>
-        </motion.div>
-      )}
-      {/* Build area */}
-      <div
-        data-testid="build-area"
-        style={{
-          position: 'absolute',
-          left: 24,
-          top: 300,
-          width: 736,
-          height: 320,
-          background: 'rgba(255,248,236,.92)',
-          borderRadius: 28,
-          border: '5px solid rgba(90,50,20,.25)',
-          display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'center',
-          paddingBottom: 18,
-          opacity: ordering ? 0.25 : 1,
-        }}
-      >
-        {state.phase === 'serveResult' && state.result?.kind === 'wrong' && (
-          <div
-            data-testid="wrong-feedback"
-            style={{ position: 'absolute', right: 18, top: 12, fontSize: 72, pointerEvents: 'none' }}
-          >
-            <Art id="chef.point" height={72} fallback={<span>👨‍🍳👉</span>} />
-          </div>
-        )}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column-reverse',
-            alignItems: 'center',
-            gap: 2,
-            animation:
-              state.phase === 'serveResult' && state.result?.kind === 'wrong' ? 'shakeX 0.4s ease-in-out 2' : undefined,
-          }}
-        >
-          {order.dish === 'burger' && (
-            <Art id="dish.bunBottom" width={130} height={58} fallback={<span style={{ fontSize: 58 }}>🍞</span>} />
-          )}
-          {state.built.map((id, i) => (
-            <button
-              key={i}
-              data-built-item={id}
-              aria-label={`undo ${id}`}
-              disabled={state.phase !== 'cooking' || i < order.prebuilt.length}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                // Dish layers are flat stickers: overlap them so the stack
-                // reads as one dish instead of floating slices.
-                marginTop: i === 0 ? 0 : -34,
-                outline: highlight?.side === 'built' && highlight.index === i ? '8px solid #ff595e' : undefined,
-                borderRadius: 60,
-              }}
-              onClick={() => {
-                if (i === state.built.length - 1) {
-                  playSfx('pop');
-                  dispatch({ type: 'undo' });
-                }
-              }}
-            >
-              <ItemIcon id={id} size={92} variant="dish" />
-            </button>
-          ))}
-          {state.phase === 'serveResult' && state.result?.kind === 'correct' && order.dish === 'burger' && (
-            <Art id="dish.bunTop" width={130} height={58} fallback={<span style={{ fontSize: 58 }}>🍞</span>} />
-          )}
-        </div>
-      </div>
-      {/* Window sill picture row: sits on the sill above the build area
-          so it stays visible while the dish is built in front of it. */}
-      <div
-        data-testid="sill-row"
-        data-ordering-count={ordering ? state.orderingShown : order.ticket.length}
-        style={{
-          position: 'absolute',
-          left: 42,
-          top: 428,
-          display: 'flex',
-          gap: 8,
-          alignItems: 'center',
-          minHeight: 84,
-          background: 'rgba(255,233,184,.95)',
-          border: '4px solid rgba(90,50,20,.3)',
-          borderRadius: 16,
-          padding: '4px 10px',
-          zIndex: 5,
-        }}
-      >
-        {(ordering ? order.ticket.slice(0, state.orderingShown) : order.ticket).map((id, i) => (
-          <motion.span
-            key={`${id}-${i}`}
-            data-sill-item={id}
-            data-sill-index={i}
-            data-wrong={i === wrongSillIndex ? 'true' : undefined}
-            initial={{ scale: 0.4, opacity: 0 }}
-            animate={{ scale: i === wrongSillIndex ? 1.25 : 1, opacity: 1 }}
-            style={{
-              display: 'block',
-              outline: i === wrongSillIndex ? '7px solid #ff595e' : undefined,
-              borderRadius: 60,
-            }}
-          >
-            <ItemIcon id={id} size={72} variant="sill" />
-          </motion.span>
-        ))}
-      </div>
-      {/* Horizontal ingredient bar (master layout). HELP and ordering
-          feedback grow/highlight items here. */}
-      <div
-        data-testid="tray"
-        style={{
-          position: 'absolute',
-          left: 24,
-          top: 636,
-          width: 1552,
-          height: 132,
-          background: '#ffe9b8',
-          borderRadius: 24,
-          border: '5px solid rgba(90,50,20,.3)',
-          display: 'flex',
-          gap: 8,
-          padding: 10,
-          alignItems: 'center',
-          overflowX: 'auto',
-        }}
-      >
-        {mergedItems.map((id) => {
-          const isHelp = id === helpId;
-          const isOrdering = ordering && id === orderingId;
-          const active = isHelp || isOrdering;
-          return (
-            <button
-              key={id}
-              data-tray-item={id}
-              data-base-item={id}
-              data-help-active={isHelp ? 'true' : undefined}
-              data-ordering-active={isOrdering ? 'true' : undefined}
-              disabled={state.phase !== 'cooking'}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                transform: active ? 'scale(1.35)' : undefined,
-                outline: active ? '7px solid #ffd93d' : undefined,
-                borderRadius: 60,
-                transition: 'transform 160ms ease',
-                zIndex: active ? 3 : undefined,
-              }}
-              onClick={() => {
-                playSfx('tap');
-                dispatch({ type: 'addItem', item: id });
-              }}
-            >
-              <ItemIcon id={id} size={104} />
-            </button>
-          );
-        })}
-      </div>
-      {/* Controls under the tray: chef HELP left, undo/bell/trash centre
-          (bell biggest, clear of the bottom edge), stars lower right. */}
-      <button
-        data-testid="chef-help"
-        aria-label="Head Chef help"
-        disabled={!canHelp}
-        style={{
-          position: 'absolute',
-          left: 184,
-          top: 782,
-          width: 104,
-          height: 104,
-          borderRadius: '50%',
-          fontSize: 56,
-          background: '#fff',
-          border: '5px solid rgba(90,50,20,.4)',
-          opacity: canHelp ? 1 : 0.45,
-          zIndex: 6,
-        }}
-        onClick={() => void onHelp()}
-      >
-        <Art id="chef.helpFace" size={88} fallback={<span>👨‍🍳</span>} />
-      </button>
-      <div
-        data-testid="help-pips"
-        style={{ position: 'absolute', left: 300, top: 826, display: 'flex', gap: 7, zIndex: 6 }}
-        aria-hidden
-      >
-        {Array.from({ length: state.peekBudget }, (_, i) => (
-          <Art
-            key={i}
-            id={i < state.peekBudget - state.peeksUsed ? 'ui.pip.lit' : 'ui.pip.unlit'}
-            size={22}
-            fallback={
-              <span
-                style={{
-                  width: 20,
-                  height: 20,
-                  borderRadius: '50%',
-                  display: 'block',
-                  background: i < state.peekBudget - state.peeksUsed ? '#ffd93d' : 'rgba(90,50,20,.25)',
-                  border: '3px solid rgba(90,50,20,.4)',
-                }}
-              />
-            }
-          />
-        ))}
-      </div>
-      <div
-        style={{
-          position: 'absolute',
-          left: 560,
-          top: 776,
-          width: 480,
-          height: 112,
-          display: 'flex',
-          gap: 10,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <button
-          data-testid="undo"
-          aria-label="Undo"
-          disabled={state.phase !== 'cooking'}
-          style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
-          onClick={() => dispatch({ type: 'undo' })}
-        >
-          <Art id="prop.undo" size={64} fallback={<span>↩️</span>} />
-        </button>
-        <button
-          data-testid="bell"
-          aria-label="Serve"
-          disabled={state.phase !== 'cooking'}
-          style={{
-            ...BTN,
-            width: 150,
-            minWidth: 150,
-            minHeight: 112,
-            height: 112,
-            fontSize: 72,
-            borderRadius: '50%',
-            background: '#ffd93d',
-          }}
-          onClick={() => {
-            playSfx('bell');
-            dispatch({ type: 'serve' });
-          }}
-        >
-          <Art id="prop.bell" size={92} fallback={<span>🔔</span>} />
-        </button>
-        <button
-          data-testid="trash"
-          aria-label="Clear dish"
-          disabled={state.phase !== 'cooking'}
-          style={{ ...BTN, width: 104, minWidth: 104, minHeight: 104, height: 104, fontSize: 48, borderRadius: '50%' }}
-          onClick={() => dispatch({ type: 'trash' })}
-        >
-          <Art id="prop.trash" size={64} fallback={<span>🗑️</span>} />
-        </button>
-      </div>
-      <div
-        data-testid="try-stars"
-        style={{
-          position: 'absolute',
-          left: 1064,
-          top: 800,
-          width: 272,
-          height: 80,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          gap: 4,
-        }}
-      >
-        {Array.from({ length: bankedTarget(state.level) }, (_, i) => (
-          <Art
-            key={i}
-            id={i < state.starsTry ? 'ui.star.lit' : 'ui.star.unlit'}
-            size={bankedTarget(state.level) > 3 ? 36 : 52}
-            fallback={
-              <span
-                style={{ fontSize: bankedTarget(state.level) > 3 ? 36 : 52, opacity: i < state.starsTry ? 1 : 0.25 }}
-              >
-                ⭐
-              </span>
-            }
-          />
-        ))}
-      </div>
-      {state.streak && (
-        <div style={{ position: 'absolute', left: 640, top: 600, fontSize: 54, pointerEvents: 'none' }}>🔥</div>
-      )}
-      <div id="glove-layer" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 25 }} />
-      <div id="cheer-layer" style={{ position: 'absolute', left: 560, top: 200, pointerEvents: 'none', zIndex: 26 }} />
-    </div>
-  );
-}

@@ -1,18 +1,37 @@
 {
   "note": "Screen register for the art-integration skill (.muse/skills/art-integration). One entry per screen; `master` is the approved storyboard (3:2), shown in the game fit to the 1600-wide stage. `checklist` is what Spark judges the screenshot against, alongside the target.",
   "viewports": {
-    "wide-16x9": [1280, 720],
-    "ipad-4x3": [1194, 834],
-    "iphone-2.17": [852, 393]
+    "wide-16x9": [
+      1280,
+      720
+    ],
+    "ipad-4x3": [
+      1194,
+      834
+    ],
+    "iphone-2.17": [
+      852,
+      393
+    ]
   },
   "screens": [
     {
       "id": "S1",
       "name": "Title",
-      "phases": ["title"],
+      "phases": [
+        "title"
+      ],
       "master": "generated_images/approved/title-intro-master.png",
       "capture": "title",
-      "assets": ["env.title", "ui.wordmark", "chef.windowWave", "monster.og.wave", "monster.gobbler.wave", "ui.goButton", "chef.helpFace"],
+      "assets": [
+        "env.title",
+        "ui.wordmark",
+        "chef.windowWave",
+        "monster.og.wave",
+        "monster.gobbler.wave",
+        "ui.goButton",
+        "chef.helpFace"
+      ],
       "checklist": [
         "Nom Nom Go! logo above the truck: chunky letters, Nom coral, Nom mustard, Go! green, thick dark outline",
         "coral food truck centred with yellow striped awnings, teal sky, hills and confetti dots",
@@ -26,10 +45,18 @@
     {
       "id": "T1",
       "name": "Tutorial 1: the order",
-      "phases": ["title"],
+      "phases": [
+        "title"
+      ],
       "master": "generated_images/approved/tutorial-01.png",
       "capture": "tour1",
-      "assets": ["env.tutorial", "tut.lettuce", "tut.tomato", "monster.gobbler.point", "ui.goButton"],
+      "assets": [
+        "env.tutorial",
+        "tut.lettuce",
+        "tut.tomato",
+        "monster.gobbler.point",
+        "ui.goButton"
+      ],
       "checklist": [
         "three progress dots at the top centre: the first yellow, two empty with dark outlines",
         "two beige rounded tiles with thick dark outlines: green lettuce leaf left, red tomato right",
@@ -41,10 +68,19 @@
     {
       "id": "T2",
       "name": "Tutorial 2: drag to build",
-      "phases": ["title"],
+      "phases": [
+        "title"
+      ],
       "master": "generated_images/approved/tutorial-02.png",
       "capture": "tour2",
-      "assets": ["env.tutorial", "tut.lettuce", "tut.tomato", "tut.patty", "tut.glove", "ui.goButton"],
+      "assets": [
+        "env.tutorial",
+        "tut.lettuce",
+        "tut.tomato",
+        "tut.patty",
+        "tut.glove",
+        "ui.goButton"
+      ],
       "checklist": [
         "three progress dots: two yellow, one empty",
         "three beige tiles in a row: lettuce, tomato, patty on a bun",
@@ -56,10 +92,17 @@
     {
       "id": "T3",
       "name": "Tutorial 3: ring the bell",
-      "phases": ["title"],
+      "phases": [
+        "title"
+      ],
       "master": "generated_images/approved/tutorial-03.png",
       "capture": "tour3",
-      "assets": ["env.tutorial", "tut.burger", "tut.bell", "ui.goButton"],
+      "assets": [
+        "env.tutorial",
+        "tut.burger",
+        "tut.bell",
+        "ui.goButton"
+      ],
       "checklist": [
         "three yellow progress dots",
         "tall stacked burger on the left",
@@ -68,56 +111,152 @@
       ]
     },
     {
-      "id": "S2",
-      "name": "Level intro",
-      "phases": ["levelIntro"],
-      "master": "generated_images/approved/level-transition-master.png",
-      "capture": "levelIntro",
-      "assets": ["env.levelTruck", "chef.hello", "ui.pip.lit"],
-      "checklist": []
-    },
-    {
       "id": "S3",
       "name": "Ordering",
-      "phases": ["ordering"],
+      "phases": [
+        "ordering"
+      ],
       "master": "generated_images/approved/order-at-window-1-centred-ordering.png",
       "capture": "ordering",
-      "assets": ["env.kitchen"],
-      "checklist": []
+      "assets": [
+        "monster.og.tap",
+        "item.tomato.tray",
+        "chef.helpFace",
+        "prop.bell"
+      ],
+      "checklist": [],
+      "masters": [
+        "generated_images/approved/order-at-window-1-centred-ordering.png",
+        "generated_images/approved/order-at-window-2-bar-collecting.png"
+      ]
     },
     {
       "id": "S4",
       "name": "Go! wipe",
-      "phases": ["goWipe"],
+      "phases": [
+        "goWipe"
+      ],
       "master": "generated_images/approved/order-at-window-3-go-wipe.png",
       "capture": "goWipe",
-      "assets": ["env.goWipe"],
+      "assets": [],
       "checklist": []
     },
     {
       "id": "S5",
       "name": "Cooking",
-      "phases": ["cooking"],
-      "master": "generated_images/approved/kitchen-master-stars_000.png",
+      "phases": [
+        "cooking"
+      ],
+      "master": "generated_images/approved/go-start-gameplay.png",
       "capture": "cooking",
-      "assets": ["env.kitchen", "prop.bell", "prop.trash", "prop.undo", "ui.star.lit", "chef.helpFace"],
+      "assets": [
+        "monster.og.happy",
+        "item.patty.dish",
+        "dish.bunBottom",
+        "prop.undo",
+        "prop.bell",
+        "prop.trash",
+        "chef.helpFace"
+      ],
       "checklist": []
     },
-    { "id": "S6", "name": "Serve result", "phases": ["serveResult"], "master": null, "capture": null, "assets": [], "checklist": [] },
-    { "id": "S7", "name": "Level result", "phases": ["levelResult"], "master": null, "capture": null, "assets": [], "checklist": [] },
+    {
+      "id": "S6",
+      "name": "Serve result",
+      "phases": [
+        "serveResult"
+      ],
+      "master": null,
+      "capture": null,
+      "assets": [],
+      "checklist": []
+    },
+    {
+      "id": "S7",
+      "name": "Level transition",
+      "phases": [
+        "levelResult"
+      ],
+      "master": "generated_images/approved/level-transition-master.png",
+      "capture": "levelResult",
+      "assets": [
+        "env.title",
+        "chef.windowWave",
+        "ui.goButton"
+      ],
+      "checklist": []
+    },
     {
       "id": "S8",
       "name": "Boss ending / Closed",
-      "phases": ["bossEnding", "closed"],
+      "phases": [
+        "bossEnding",
+        "closed"
+      ],
       "master": "generated_images/approved/end-game-night-master.png",
       "capture": null,
-      "assets": ["env.night.goodbye", "env.night.closed", "chef.goodbye"],
+      "assets": [
+        "env.night.goodbye",
+        "env.night.closed",
+        "chef.goodbye"
+      ],
       "checklist": []
     },
-    { "id": "S9", "name": "Powered off", "phases": ["poweredOff"], "master": null, "capture": null, "assets": [], "checklist": [] },
-    { "id": "S10", "name": "Rotate overlay", "phases": [], "master": null, "capture": null, "assets": ["ui.rotate"], "checklist": [] },
-    { "id": "S11", "name": "Dad views", "phases": [], "master": null, "capture": null, "assets": ["chef.think", "cheer.thumbs", "cheer.heart", "cheer.wow"], "checklist": [] },
-    { "id": "S12", "name": "Parent area", "phases": [], "master": null, "capture": null, "assets": [], "checklist": [] },
-    { "id": "S13", "name": "PWA icon / splash", "phases": [], "master": "generated_images/approved/og_002.png", "capture": null, "assets": ["ui.appIcon"], "checklist": [] }
+    {
+      "id": "S9",
+      "name": "Powered off",
+      "phases": [
+        "poweredOff"
+      ],
+      "master": null,
+      "capture": null,
+      "assets": [],
+      "checklist": []
+    },
+    {
+      "id": "S10",
+      "name": "Rotate overlay",
+      "phases": [],
+      "master": null,
+      "capture": null,
+      "assets": [
+        "ui.rotate"
+      ],
+      "checklist": []
+    },
+    {
+      "id": "S11",
+      "name": "Dad views",
+      "phases": [],
+      "master": null,
+      "capture": null,
+      "assets": [
+        "chef.think",
+        "cheer.thumbs",
+        "cheer.heart",
+        "cheer.wow"
+      ],
+      "checklist": []
+    },
+    {
+      "id": "S12",
+      "name": "Parent area",
+      "phases": [],
+      "master": null,
+      "capture": null,
+      "assets": [],
+      "checklist": []
+    },
+    {
+      "id": "S13",
+      "name": "PWA icon / splash",
+      "phases": [],
+      "master": "generated_images/approved/og_002.png",
+      "capture": null,
+      "assets": [
+        "ui.appIcon"
+      ],
+      "checklist": []
+    }
   ]
 }

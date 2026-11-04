@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { ACTIVE_DISHES, DISHES, ITEMS, MONSTERS, itemsFor } from '../content/content';
 import { classifyMismatch } from './compare';
-import { deserialize, initialState, serialize, step, TOUR_STEPS, type GameState } from './game';
+import { deserialize, GO_WIPE_MS, initialState, serialize, step, TOUR_STEPS, type GameState } from './game';
 import { toMirror } from './mirror';
 import { ORDERS_PER_BATCH, generateOrder, generateTryOrders } from './orders';
 import { orderingIntervalMs, patienceMs, perItemSeconds } from './pace';
@@ -110,7 +110,7 @@ describe('game flow', () => {
     // ordering (at the kitchen window) -> Go! wipe -> cooking
     out = step(out, { type: 'tick', ms: 10000 });
     expect(out.phase).toBe('goWipe');
-    out = step(out, { type: 'tick', ms: 1000 });
+    out = step(out, { type: 'tick', ms: GO_WIPE_MS });
     expect(out.phase).toBe('cooking');
     const order = out.orders[out.orderIndex];
     const toTap = order.ticket;
@@ -197,7 +197,7 @@ describe('game flow', () => {
     s = step(s, { type: 'go' });
     s = step(s, { type: 'tick', ms: 2000 });
     s = step(s, { type: 'tick', ms: 10000 });
-    s = step(s, { type: 'tick', ms: 1000 });
+    s = step(s, { type: 'tick', ms: GO_WIPE_MS });
     expect(s.phase).toBe('cooking');
     expect(s.tutorial).toBeNull();
     const item = s.orders[s.orderIndex].ticket[0];
@@ -221,7 +221,7 @@ describe('game flow', () => {
     expect(s.phase).toBe('goWipe');
     expect(s.orderingShown).toBe(ticket.length);
     expect(s.patienceTotalMs).toBe(0);
-    s = step(s, { type: 'tick', ms: 699 });
+    s = step(s, { type: 'tick', ms: GO_WIPE_MS - 1 });
     expect(s.phase).toBe('goWipe');
     s = step(s, { type: 'tick', ms: 1 });
     expect(s.phase).toBe('cooking');
@@ -234,7 +234,7 @@ describe('game flow', () => {
     s = step(s, { type: 'go' });
     s = step(s, { type: 'tick', ms: 2000 });
     s = step(s, { type: 'tick', ms: 10000 });
-    s = step(s, { type: 'tick', ms: 1000 });
+    s = step(s, { type: 'tick', ms: GO_WIPE_MS });
     expect(s.phase).toBe('cooking');
     s = step(s, { type: 'tick', ms: 5000 });
     expect(s.hintsUsed).toBe(0);
@@ -267,7 +267,7 @@ describe('game flow', () => {
   it('retries the same order after a first wrong serve, then proceeds when corrected', () => {
     const toCooking = (s: GameState): GameState => {
       let out = step(s, { type: 'tick', ms: 10000 });
-      out = step(out, { type: 'tick', ms: 1000 });
+      out = step(out, { type: 'tick', ms: GO_WIPE_MS });
       expect(out.phase).toBe('cooking');
       return out;
     };
@@ -296,7 +296,7 @@ describe('game flow', () => {
   it('moves on after a second wrong serve, easing only the implicated dimension', () => {
     const toCooking = (s: GameState): GameState => {
       let out = step(s, { type: 'tick', ms: 10000 });
-      out = step(out, { type: 'tick', ms: 1000 });
+      out = step(out, { type: 'tick', ms: GO_WIPE_MS });
       expect(out.phase).toBe('cooking');
       return out;
     };
@@ -370,7 +370,7 @@ describe('game flow', () => {
   it('banks correct rounds across batches until three finish the level', () => {
     const toCooking = (s: GameState): GameState => {
       let out = step(s, { type: 'tick', ms: 10000 });
-      out = step(out, { type: 'tick', ms: 1000 });
+      out = step(out, { type: 'tick', ms: GO_WIPE_MS });
       expect(out.phase).toBe('cooking');
       return out;
     };
@@ -427,7 +427,7 @@ describe('game flow', () => {
         // order): nothing banks, so batches keep turning over.
         for (let attempt = 0; attempt < 2; attempt++) {
           s = step(s, { type: 'tick', ms: 30000 });
-          s = step(s, { type: 'tick', ms: 1000 });
+          s = step(s, { type: 'tick', ms: GO_WIPE_MS });
           expect(s.phase).toBe('cooking');
           s = step(s, { type: 'serve' });
           s = step(s, { type: 'tick', ms: 3000 });
@@ -557,8 +557,11 @@ describe('content coverage', () => {
       expect(artIds.has(`item.${item.id}.tray`), item.id).toBe(true);
       expect(artIds.has(`item.${item.id}.dish`), item.id).toBe(true);
     }
-    for (const m of MONSTERS) expect(artIds.has(`monster.${m.id}.idle`), m.id).toBe(true);
-    expect(artIds.has('monster.og.dance')).toBe(true);
+    for (const m of MONSTERS) {
+      for (const pose of ['tap', 'happy', 'fidgety', 'grumpy', 'gobble', 'confused']) {
+        expect(artIds.has(`monster.${m.id}.${pose}`), `${m.id}.${pose}`).toBe(true);
+      }
+    }
     expect(artIds.has('dish.bunBottom')).toBe(true);
     expect(artIds.has('dish.bunTop')).toBe(true);
   });

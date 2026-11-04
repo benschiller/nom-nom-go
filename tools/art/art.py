@@ -59,7 +59,8 @@ def load_env() -> None:
 load_env()
 from openai import OpenAI  # noqa: E402
 
-CLIENT = OpenAI(base_url="https://api.meta.ai/v1", api_key=os.environ["MODEL_API_KEY"])
+# Fail fast: a stuck call errors in minutes, not the client default of 10.
+CLIENT = OpenAI(base_url="https://api.meta.ai/v1", api_key=os.environ["MODEL_API_KEY"], timeout=180, max_retries=1)
 
 
 def ledger() -> dict:
@@ -312,6 +313,7 @@ def bleed_plate(entry: dict, plate: Path, extra: str = "") -> tuple[Image.Image,
 KEY_TOL = 70  # max per-channel distance from the key colour that still counts as background
 SAM_SUBJECT = 40  # SAM coverage above this marks a shape as part of the subject
 EDGE_BAND = 2  # px of subject edge whose alpha is solved from colour
+PURE_KEY = 50  # mean distance below which an enclosed region is the key colour itself
 
 
 def soft_cut(entry: dict, src: Path) -> Image.Image:
@@ -335,11 +337,14 @@ def soft_cut(entry: dict, src: Path) -> Image.Image:
 
     cov_path = SRC_DIR / f"{entry['id']}.coverage.png"
     sam_py = ROOT / ".venv-sam" / "bin" / "python"
-    # One bare noun per request (Meta SAM docs); an unmatched noun returns no
-    # records, so fall back to generic nouns before giving up.
-    for noun in dict.fromkeys([entry["sam"], "object", "cartoon"]):
+    # One short noun phrase per request (Meta SAM docs); an unmatched noun
+    # returns no records, so fall back to generic nouns before giving up.
+    # Only shapes SAM touches are kept, so a noun that matches part of the
+    # subject still keeps the whole connected sticker. "food", "circle" and
+    # "sticker" matched flat sticker subjects that "object" did not.
+    for noun in dict.fromkeys([entry["sam"], "food", "circle", "sticker", "object", "cartoon"]):
         r = subprocess.run([str(sam_py), str(TOOLS / "sam_cut.py"), str(src), noun, str(cov_path), "--coverage"],
-                           capture_output=True, text=True, timeout=360)
+                           capture_output=True, text=True, timeout=150)
         if r.returncode == 0:
             break
     else:
@@ -349,9 +354,14 @@ def soft_cut(entry: dict, src: Path) -> Image.Image:
     lab, n = ndimage.label(near_key)
     edge_labels = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
     bg = np.isin(lab, edge_labels[edge_labels > 0])
-    if n:  # enclosed key-coloured holes (e.g. between arm and body) SAM does not claim
+    if n:  # enclosed key-coloured holes (between arm and body, between strands)
+        # A hole is background if SAM does not claim it, or if it is plainly the
+        # key colour: subjects are generated to never contain the key, and SAM
+        # claims the gaps inside tangles (crispy onions) as part of the object.
         mean_cov = ndimage.mean(cov, lab, index=np.arange(1, n + 1))
-        holes = [i + 1 for i, m in enumerate(mean_cov) if m < 128]
+        dist = np.abs(rgb - key).max(axis=2)
+        mean_dist = ndimage.mean(dist, lab, index=np.arange(1, n + 1))
+        holes = [i + 1 for i, (m, d) in enumerate(zip(mean_cov, mean_dist)) if m < 128 or d < PURE_KEY]
         bg |= np.isin(lab, holes)
     fg = ~bg
     lab2, n2 = ndimage.label(fg)
@@ -398,7 +408,11 @@ def normalise(entry: dict, img: Image.Image) -> Path:
     spec = entry["export"]
     out = FIN_DIR / f"{entry['id']}.webp"
     out.parent.mkdir(parents=True, exist_ok=True)
-    if spec.get("trim"):
+    if spec.get("frame"):
+        # Keep the whole generation canvas: every pose of one character then
+        # shares the same scale and anchor, so swapping poses never jumps.
+        img.save(out, "WEBP", lossless=True, quality=100, method=6)
+    elif spec.get("trim"):
         bbox = img.getchannel("A").getbbox()
         if bbox and entry["mode"] != "cut":
             pad = 8
@@ -425,7 +439,7 @@ def deterministic_qa(entry: dict, final: Path) -> list[str]:
     issues = []
     img = Image.open(final)
     spec = entry["export"]
-    if not spec.get("trim") and img.size != (spec["w"], spec["h"]):
+    if not spec.get("trim") and not spec.get("frame") and img.size != (spec["w"], spec["h"]):
         issues.append(f"wrong size {img.size}, want {(spec['w'], spec['h'])}")
     if spec.get("alpha"):
         if img.mode != "RGBA":
@@ -638,9 +652,12 @@ def cmd_rebuild(asset_id: str, note: str = "") -> None:
     print("rebuild", asset_id, "v" + str(rec["version"]), result)
 
 
-def cmd_recut(asset_id: str, source: str) -> None:
+def cmd_recut(asset_id: str, source: str, accept: bool = False) -> None:
     """Re-cut an existing raw generation (no new image call) as version v+1,
-    with the entry's cutter. Same QA gates and keep-on-failure guard."""
+    with the entry's cutter. Same QA gates and keep-on-failure guard.
+    `accept`: Spark is advisory (skill); after you have looked at the cut at
+    full size, accept it when only Spark objects. The automated checks still
+    gate, and the override is recorded in the ledger."""
     entry, src = BY_ID[asset_id], ROOT / source
     with keep_on_failure(asset_id) as guard:
         rec = ledger().get(asset_id, {"version": 0})
@@ -649,6 +666,8 @@ def cmd_recut(asset_id: str, source: str) -> None:
         final = normalise(entry, img)
         issues = deterministic_qa(entry, final)
         verdict = {"pass": not issues, "issues": issues, "scores": {}} if issues else spark_qa(entry, final)
+        if accept and not issues and not verdict.get("pass"):
+            verdict = {**verdict, "pass": True, "override": "accepted after full-size visual check; Spark is advisory"}
         rec.update({"source": str(src.relative_to(ROOT)), "cut": cut_method, "response_id": "recut", "qa": verdict,
                     "status": "done" if verdict.get("pass") else "quarantined",
                     "last_issues": "; ".join(verdict.get("issues", []))})
@@ -682,6 +701,7 @@ def main() -> None:
     p_rc = sub.add_parser("recut")
     p_rc.add_argument("--id", required=True)
     p_rc.add_argument("--source", required=True)
+    p_rc.add_argument("--accept", action="store_true", help="accept when only Spark objects (after a visual check)")
     args = ap.parse_args()
     if args.cmd == "status":
         cmd_status()
@@ -703,7 +723,7 @@ def main() -> None:
     elif args.cmd == "rebuild":
         cmd_rebuild(args.id, args.note)
     elif args.cmd == "recut":
-        cmd_recut(args.id, args.source)
+        cmd_recut(args.id, args.source, args.accept)
 
 
 if __name__ == "__main__":
