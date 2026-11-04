@@ -2,6 +2,8 @@
 
 A kitchen to share across continents. Built for my son, made possible with Meta AI.
 
+**[Play Nom Nom Go!](https://d2kmjow2he655e.cloudfront.net)**
+
 I live in the UAE. My seven-year-old son lives in the USA. We love cooking together, but most of our time together happens on video calls.
 
 I built **Nom Nom Go!** to give us a kitchen we could share across that distance: silly monsters to feed, burgers to build, and my voice calling out the ingredients. A space in the upper-right corner leaves room for my video during our call, so Dad can stay beside the action.
@@ -75,7 +77,7 @@ Submission status:
 - [x] Public repository
 - [x] Hackathon build period and track identified
 - [x] Meta model roles documented with source links
-- [ ] Add the public live-game URL near the top of this README
+- [x] Add the public live-game URL near the top of this README
 - [x] Add the three-minute demo video near the top of this README
 - [x] Submit through Cerebral Valley with all contributors listed and accessible links
 
