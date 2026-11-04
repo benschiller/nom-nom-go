@@ -12,6 +12,8 @@ Meta AI made it possible for me to turn that idea into a personalized game—wit
 
 **Meta Global AI Developer Hackathon · Indie Developer track · Build for Your World**
 
+[![Watch the three-minute Nom Nom Go! demo](working/demo-video/nom-nom-go-demo-tn.png)](https://www.youtube.com/watch?v=NQIBh6xn3eo)
+
 ## Inside our kitchen
 
 Monsters arrive at the kitchen window and babble their orders. The Head Chef repeats each ingredient in my voice while its picture lights up. Then it’s time to build the burger: tap the ingredients in order and ring the serving bell. A successful order gets a monster munch, a happy reaction, and a celebration.
@@ -73,8 +75,9 @@ Submission status:
 - [x] Public repository
 - [x] Hackathon build period and track identified
 - [x] Meta model roles documented with source links
-- [ ] Add the public live-game URL and three-minute demo video near the top of this README
-- [ ] Submit through Cerebral Valley with all contributors listed and accessible links
+- [ ] Add the public live-game URL near the top of this README
+- [x] Add the three-minute demo video near the top of this README
+- [x] Submit through Cerebral Valley with all contributors listed and accessible links
 
 The [saved participant guide](docs/participant-guide.md) contains the detailed submission requirements and judging rubric. Check the [event details](https://cerebralvalley.ai/e/meta-ai-developer-hackathon/details) for organizer updates.
 
