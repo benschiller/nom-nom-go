@@ -80,6 +80,8 @@ Difficulty adapts on the device, invisibly, in the same reducer. The game keeps 
 
 Dad's 40 recorded order and ingredient clips live in `game/public/audio/clips/`. The [voice clip tracker](docs/dad-voice-clips.md) lists each filename, spoken line, and source time range. Any missing clip falls back to the device's speech voice.
 
+Successful rounds play the serving monster's munch, followed by a paired cannon pop and cheer. Level and final victories add a trumpet fanfare. The eight celebration cues, their source credits, and timing are listed in the [sound manifest](game/public/audio/sfx/manifest.json) and [credits](game/public/audio/sfx/CREDITS.txt). Rebuild them with `python3 tools/audio/build-celebration-sounds.py` (FFmpeg with rubberband required).
+
 ## Pairing Dad's Window
 
 1. On Dad's device, open `…/#dad` and choose **Copy pairing link**.
