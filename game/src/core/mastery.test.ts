@@ -144,7 +144,12 @@ describe('decoupled dimensions', () => {
       expect(s.peeksUsed).toBe(i);
       expect(s.helpPlaying).toBe(true);
       // No building, undo, clearing or serving until the replay ends.
-      for (const e of [{ type: 'addItem', item: 'cheese' }, { type: 'undo' }, { type: 'trash' }, { type: 'serve' }] as const) {
+      for (const e of [
+        { type: 'addItem', item: 'cheese' },
+        { type: 'undo' },
+        { type: 'trash' },
+        { type: 'serve' },
+      ] as const) {
         expect(step(s, e)).toBe(s);
       }
       s = step(s, { type: 'helpEnd' });

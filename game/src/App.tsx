@@ -402,6 +402,7 @@ function TourOrder({ still, soundOn }: { still: boolean; soundOn: boolean }): Re
   const l = TUTORIAL_LAYOUT.step1;
   const [shown, setShown] = useState(still ? 2 : 0);
   useEffect(() => {
+    const voice = new AbortController();
     const items = ['lettuce', 'tomato'];
     const pitch = MONSTERS.find((m) => m.id === 'gobbler')?.pitch ?? 1;
     let chain = Promise.resolve();
@@ -412,15 +413,19 @@ function TourOrder({ still, soundOn }: { still: boolean; soundOn: boolean }): Re
           playSfx('pop');
           if (isTestMode() || !soundOn) return;
           chain = chain.then(async () => {
+            if (voice.signal.aborted) return;
             playGibberish(pitch);
             await new Promise((r) => setTimeout(r, 160));
-            await playClipById(`ing.${item}`);
+            await playClipById(`ing.${item}`, voice.signal);
           });
         },
         isTestMode() ? 50 + i * 50 : 700 + i * 1300,
       ),
     );
-    return () => timers.forEach(clearTimeout);
+    return () => {
+      timers.forEach(clearTimeout);
+      voice.abort();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
@@ -782,6 +787,8 @@ function GameShell(): React.JSX.Element {
   const transportRef = useRef<Transport | null>(null);
   const seqRef = useRef(0);
   const voiceChain = useRef<Promise<void>>(Promise.resolve());
+  const orderVoice = useRef<AbortController | null>(null);
+  useEffect(() => () => orderVoice.current?.abort(), []);
   const spoken = useRef<{ key: string; count: number }>({ key: '', count: 0 });
 
   /** Complete reset: fresh save (pairing and sound retained), then reload. */
@@ -856,12 +863,21 @@ function GameShell(): React.JSX.Element {
   // broken speaker turns the Head Chef repeat into a burst of static;
   // the monster gibberish and the highlights still run.
   useEffect(() => {
-    if (state.phase !== 'ordering' || !order) return;
+    if (state.phase !== 'ordering' || !order || state.paused) {
+      orderVoice.current?.abort();
+      return;
+    }
     const key = `${state.level}-${state.orderIndex}-${state.tryCount}-${state.attemptsThisOrder}`;
-    if (spoken.current.key !== key) {
+    if (spoken.current.key !== key || !orderVoice.current || orderVoice.current.signal.aborted) {
+      orderVoice.current?.abort();
+      orderVoice.current = new AbortController();
       spoken.current = { key, count: 0 };
       voiceChain.current = Promise.resolve();
+      // Keep the window open until Dad finishes. Silent/test runs retain
+      // the ordinary reveal cadence without waiting on browser audio.
+      if (!isTestMode() && store.getSave().soundOn) dispatch({ type: 'orderingStarted' });
     }
+    const signal = orderVoice.current.signal;
     playSfx('pop');
     while (spoken.current.count < state.orderingShown) {
       const index = spoken.current.count;
@@ -870,14 +886,21 @@ function GameShell(): React.JSX.Element {
       const monster = MONSTERS.find((m) => m.id === order.monster);
       const ticket = order.ticket;
       voiceChain.current = voiceChain.current.then(async () => {
+        if (signal.aborted) return;
         playGibberish(monster?.pitch ?? 1);
         await new Promise((r) => setTimeout(r, 160));
+        if (signal.aborted) return;
         if (order.broken === 'speaker') playSfx('static');
-        else await playKioskItem(ticket, index);
+        else await playKioskItem(ticket, index, signal);
+      });
+    }
+    if (spoken.current.count === order.ticket.length) {
+      void voiceChain.current.then(() => {
+        if (!signal.aborted) dispatch({ type: 'orderingFinished' });
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.orderingShown, state.phase]);
+  }, [state.orderingShown, state.phase, state.paused]);
 
   useEffect(() => {
     if (state.phase === 'serveResult' && state.result?.kind === 'correct') playSfx('nom');

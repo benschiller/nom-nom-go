@@ -12,6 +12,10 @@ import { readdirSync } from 'node:fs';
 for (const name of readdirSync('dist')) {
   if (name === 'assets') continue;
   const src = `dist/${name}`;
-  if (['index.html', 'sw.js', 'manifest.webmanifest'].includes(name)) cpSync(src, `dist-root/${name}`);
+  // The manifest and named voice files can change between releases, so ship
+  // them with the root deployment's no-cache policy rather than immutable assets.
+  if (['index.html', 'sw.js', 'manifest.webmanifest', 'audio'].includes(name)) {
+    cpSync(src, `dist-root/${name}`, { recursive: true });
+  }
 }
 console.log('split dist -> dist-assets/, dist-root/');

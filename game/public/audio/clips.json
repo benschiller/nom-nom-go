@@ -9,197 +9,236 @@
     {
       "id": "phrase.order_up",
       "text": "Order up!",
-      "category": "order"
+      "category": "order",
+      "file": "phrase.order_up.m4a"
     },
     {
       "id": "phrase.and",
       "text": "and",
-      "category": "order"
+      "category": "order",
+      "file": "phrase.and.m4a"
     },
     {
       "id": "amount.double",
       "text": "double",
-      "category": "order"
+      "category": "order",
+      "file": "amount.double.m4a"
     },
     {
       "id": "ing.patty",
       "text": "patty",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.patty.m4a"
     },
     {
       "id": "ing.tomato",
       "text": "tomato slice",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.tomato.m4a"
     },
     {
       "id": "ing.pineapple",
       "text": "pineapple slice",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.pineapple.m4a"
     },
     {
       "id": "ing.lettuce",
       "text": "lettuce",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.lettuce.m4a"
     },
     {
       "id": "ing.avocado",
       "text": "avocado",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.avocado.m4a"
     },
     {
       "id": "ing.ketchup",
       "text": "ketchup",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.ketchup.m4a"
     },
     {
       "id": "ing.salsa",
       "text": "salsa",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.salsa.m4a"
     },
     {
       "id": "ing.cheese",
       "text": "cheese",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.cheese.m4a"
     },
     {
       "id": "ing.pickles",
       "text": "pickles",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.pickles.m4a"
     },
     {
       "id": "ing.onionRings",
       "text": "onion rings",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.onionRings.m4a"
     },
     {
       "id": "ing.crispyOnions",
       "text": "crispy onions",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.crispyOnions.m4a"
     },
     {
       "id": "ing.crust.thin",
       "text": "thin crust",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.crust.thin.m4a"
     },
     {
       "id": "ing.crust.thick",
       "text": "thick crust",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.crust.thick.m4a"
     },
     {
       "id": "ing.sauce.redSmooth",
       "text": "smooth red sauce",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.sauce.redSmooth.m4a"
     },
     {
       "id": "ing.sauce.redChunky",
       "text": "chunky red sauce",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.sauce.redChunky.m4a"
     },
     {
       "id": "ing.sauce.white",
       "text": "white sauce",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.sauce.white.m4a"
     },
     {
       "id": "ing.pepperoni",
       "text": "beef pepperoni",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.pepperoni.m4a"
     },
     {
       "id": "ing.greenPepper",
       "text": "green pepper",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.greenPepper.m4a"
     },
     {
       "id": "ing.basil",
-      "text": "basil leaf",
-      "category": "ingredients"
+      "text": "basil",
+      "category": "ingredients",
+      "file": "ing.basil.m4a"
     },
     {
       "id": "ing.mushroom",
       "text": "mushroom",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.mushroom.m4a"
     },
     {
       "id": "ing.olives",
       "text": "olives",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.olives.m4a"
     },
     {
       "id": "ing.turkey",
       "text": "turkey slice",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.turkey.m4a"
     },
     {
       "id": "ing.corn",
       "text": "corn",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.corn.m4a"
     },
     {
       "id": "ing.cup",
       "text": "cup",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.cup.m4a"
     },
     {
       "id": "ing.cone",
       "text": "cone",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.cone.m4a"
     },
     {
       "id": "ing.scoop.vanilla",
       "text": "vanilla scoop",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.scoop.vanilla.m4a"
     },
     {
       "id": "ing.scoop.chocolate",
       "text": "chocolate scoop",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.scoop.chocolate.m4a"
     },
     {
       "id": "ing.scoop.strawberry",
       "text": "strawberry scoop",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.scoop.strawberry.m4a"
     },
     {
       "id": "ing.cherry",
       "text": "cherry",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.cherry.m4a"
     },
     {
       "id": "ing.grape",
       "text": "grape",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.grape.m4a"
     },
     {
       "id": "ing.whippedCream",
       "text": "whipped cream",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.whippedCream.m4a"
     },
     {
       "id": "ing.marshmallow",
       "text": "marshmallow",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.marshmallow.m4a"
     },
     {
       "id": "ing.chocChips",
       "text": "chocolate chips",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.chocChips.m4a"
     },
     {
       "id": "ing.sprinkles",
       "text": "sprinkles",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.sprinkles.m4a"
     },
     {
       "id": "ing.banana",
       "text": "banana slice",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.banana.m4a"
     },
     {
       "id": "ing.caramel",
-      "text": "caramel drizzle",
-      "category": "ingredients"
+      "text": "caramel",
+      "category": "ingredients",
+      "file": "ing.caramel.m4a"
     },
     {
       "id": "cheer.great",
@@ -269,7 +308,8 @@
     {
       "id": "ing.pizzaTomato",
       "text": "tomato slice",
-      "category": "ingredients"
+      "category": "ingredients",
+      "file": "ing.pizzaTomato.m4a"
     }
   ]
 }

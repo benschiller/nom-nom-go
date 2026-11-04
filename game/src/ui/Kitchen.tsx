@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { motion } from 'motion/react';
 import { bankedTarget, orderingMsForDims } from '../core/difficulty';
 import { currentOrder, GO_WIPE_MS, type GameEvent, type GameState } from '../core/game';
-import { playKioskItem, playSfx } from '../audio/audio';
+import { playKioskItem, playSfx, stopVoice } from '../audio/audio';
 import { isTestMode, testSpeed } from './store';
 import { Art, artAspect, monsterPoseFor, preloadArt } from './Art';
 import { ItemIcon } from './ItemIcon';
@@ -40,8 +40,26 @@ export const KITCHEN_SB = {
   front: 904.5, // counter ledge, front edge
   diagL: [180, 790, 5, 904.5], // ledge's left end: post inner corner -> front edge
   diagR: [1729, 790, 1914, 904.5], // ledge's right end
-  hillsL: [[190, 420], [250, 489], [300, 551], [350, 543], [475, 508], [600, 531], [700, 600], [780, 700]],
-  hillsR: [[1240, 700], [1300, 628], [1350, 589], [1475, 554], [1550, 565], [1600, 592], [1650, 653], [1690, 690]],
+  hillsL: [
+    [190, 420],
+    [250, 489],
+    [300, 551],
+    [350, 543],
+    [475, 508],
+    [600, 531],
+    [700, 600],
+    [780, 700],
+  ],
+  hillsR: [
+    [1240, 700],
+    [1300, 628],
+    [1350, 589],
+    [1475, 554],
+    [1550, 565],
+    [1600, 592],
+    [1650, 653],
+    [1690, 690],
+  ],
   // Monster window-pose canvas (all poses and monsters share it). Sized so OG
   // matches the storyboard: body 671 wide at the counter, head top at y 300.
   monster: { size: 965, top: 281, orderX: 952.5, waitX: 1272 },
@@ -54,7 +72,19 @@ export const KITCHEN_SB = {
   stars: { right: 1897, centreY: 1168, size: 108, gap: 13, maxWidth: 597 },
   // Go! wipe at its storyboard moment: band axis angle, centre, thickness;
   // "GO!" and the triangle placed along the band (u) and across it (v).
-  wipe: { angle: -15.4, cx: 960, cy: 520, thickness: 611, goU: -130, goV: -93, goSize: 386, triU: 400, triV: -55, triW: 300, triH: 330 },
+  wipe: {
+    angle: -15.4,
+    cx: 960,
+    cy: 520,
+    thickness: 611,
+    goU: -130,
+    goV: -93,
+    goSize: 386,
+    triU: 400,
+    triV: -55,
+    triW: 300,
+    triH: 330,
+  },
 } as const;
 
 /** Stage-unit pieces not shown in the four storyboards. */
@@ -262,7 +292,13 @@ function NomBubble(): React.JSX.Element {
       transition={{ type: 'spring', stiffness: 380, damping: 16 }}
       style={{ position: 'absolute', left: n.left, top: n.top, width: n.width, height: n.height, zIndex: 8 }}
     >
-      <svg width={n.width} height={n.height} viewBox="0 0 400 170" style={{ position: 'absolute', inset: 0 }} aria-hidden>
+      <svg
+        width={n.width}
+        height={n.height}
+        viewBox="0 0 400 170"
+        style={{ position: 'absolute', inset: 0 }}
+        aria-hidden
+      >
         <path
           d="M44 12 H340 Q380 12 380 52 V100 Q380 138 340 138 H300 L352 166 L240 138 H44 Q8 138 8 100 V52 Q8 12 44 12 Z"
           fill="#fff"
@@ -298,7 +334,13 @@ function NomBubble(): React.JSX.Element {
 const STREAKS = Array.from({ length: 30 }, (_, i) => {
   const r = (n: number): number => ((Math.sin(i * 97.13 + n * 13.7) + 1) / 2) % 1;
   const t = KITCHEN_SB.wipe.thickness;
-  return { u: -2000 + r(1) * 4000, v: -t / 2 + 30 + r(2) * (t - 60), len: 300 + r(3) * 700, th: 8 + r(4) * 16, pale: i % 3 === 0 };
+  return {
+    u: -2000 + r(1) * 4000,
+    v: -t / 2 + 30 + r(2) * (t - 60),
+    len: 300 + r(3) * 700,
+    th: 8 + r(4) * 16,
+    pale: i % 3 === 0,
+  };
 });
 
 /** Go! wipe: the storyboard's diagonal streaked band with "GO!" and a white
@@ -317,7 +359,16 @@ export function GoWipe(): React.JSX.Element {
     <div
       data-testid="go-wipe"
       aria-hidden
-      style={{ position: 'absolute', left: BLEED.left, top: BLEED.top, width: BLEED.width, height: BLEED.height, overflow: 'hidden', zIndex: 20, pointerEvents: 'none' }}
+      style={{
+        position: 'absolute',
+        left: BLEED.left,
+        top: BLEED.top,
+        width: BLEED.width,
+        height: BLEED.height,
+        overflow: 'hidden',
+        zIndex: 20,
+        pointerEvents: 'none',
+      }}
     >
       <motion.div
         initial={{ x: -dx, y: -dy }}
@@ -333,9 +384,20 @@ export function GoWipe(): React.JSX.Element {
           background: C.band,
         }}
       >
-        <svg width={D(len)} height={D(w.thickness)} viewBox={`${-len / 2} ${-w.thickness / 2} ${len} ${w.thickness}`} style={{ position: 'absolute', inset: 0 }} aria-hidden>
+        <svg
+          width={D(len)}
+          height={D(w.thickness)}
+          viewBox={`${-len / 2} ${-w.thickness / 2} ${len} ${w.thickness}`}
+          style={{ position: 'absolute', inset: 0 }}
+          aria-hidden
+        >
           {STREAKS.map((s, i) => (
-            <path key={i} d={`M ${s.u} ${s.v} L ${s.u + s.len} ${s.v - s.th / 2} L ${s.u + s.len} ${s.v + s.th / 2} Z`} fill={s.pale ? '#fff27a' : '#f6b330'} opacity={0.9} />
+            <path
+              key={i}
+              d={`M ${s.u} ${s.v} L ${s.u + s.len} ${s.v - s.th / 2} L ${s.u + s.len} ${s.v + s.th / 2} Z`}
+              fill={s.pale ? '#fff27a' : '#f6b330'}
+              opacity={0.9}
+            />
           ))}
         </svg>
         <span
@@ -359,7 +421,11 @@ export function GoWipe(): React.JSX.Element {
           height={D(w.triH)}
           viewBox="0 0 300 330"
           aria-hidden
-          style={{ position: 'absolute', left: D(len / 2 + w.triU - w.triW / 2), top: D(w.thickness / 2 + w.triV - w.triH / 2) }}
+          style={{
+            position: 'absolute',
+            left: D(len / 2 + w.triU - w.triW / 2),
+            top: D(w.thickness / 2 + w.triV - w.triH / 2),
+          }}
         >
           <path d="M40 30 Q40 6 62 18 L280 145 Q300 165 280 185 L62 312 Q40 324 40 300 Z" fill="#fff" />
         </svg>
@@ -630,7 +696,13 @@ function DishStack({
   correct: boolean;
 }): React.JSX.Element {
   const sb = KITCHEN_SB.dish;
-  const d = { centreX: X(sb.centreX), base: Y(sb.base), width: D(sb.width), overlap: KITCHEN_EXTRA.dishOverlap, maxHeight: KITCHEN_EXTRA.dishMaxHeight };
+  const d = {
+    centreX: X(sb.centreX),
+    base: Y(sb.base),
+    width: D(sb.width),
+    overlap: KITCHEN_EXTRA.dishOverlap,
+    maxHeight: KITCHEN_EXTRA.dishMaxHeight,
+  };
   const order = currentOrder(state);
   const layers = [
     { key: 'bunBottom', art: 'dish.bunBottom', builtIndex: -1 },
@@ -639,7 +711,10 @@ function DishStack({
   ];
   const aspect = (art: string): number => artAspect(art) ?? 0.3;
   // Stack height at full width; shrink the whole dish if it would get too tall.
-  const full = layers.reduce((sum, l, i) => sum + aspect(l.art) * d.width * (i === layers.length - 1 ? 1 : 1 - d.overlap), 0);
+  const full = layers.reduce(
+    (sum, l, i) => sum + aspect(l.art) * d.width * (i === layers.length - 1 ? 1 : 1 - d.overlap),
+    0,
+  );
   const width = full > d.maxHeight ? (d.width * d.maxHeight) / full : d.width;
   const highlight = state.result?.highlight;
   let bottom = d.base;
@@ -733,9 +808,14 @@ export function Kitchen({
   const order = currentOrder(state);
   const [helpStep, setHelpStep] = useState(-1);
   const helpRun = useRef(0);
+  const helpVoice = useRef<AbortController | null>(null);
+  useEffect(() => {
+    if (state.paused || state.phase !== 'cooking') helpVoice.current?.abort();
+  }, [state.paused, state.phase]);
   useEffect(
     () => () => {
       helpRun.current += 1;
+      helpVoice.current?.abort();
     },
     [],
   );
@@ -764,7 +844,11 @@ export function Kitchen({
   // broken). Unlimited; the core counts helps for the mastery model.
   const helpId = helpStep >= 0 ? order.ticket[helpStep] : undefined;
   const onHelp = async (): Promise<void> => {
-    if (!cooking || state.helpPlaying) return;
+    if (!cooking || state.helpPlaying || state.paused) return;
+    stopVoice();
+    helpVoice.current?.abort();
+    const voice = new AbortController();
+    helpVoice.current = voice;
     dispatch({ type: 'peek' });
     const run = ++helpRun.current;
     // Same readable floor as the ordering reveal: each item glows for at
@@ -773,12 +857,12 @@ export function Kitchen({
     const paceMs = Math.max(1, Math.round(orderingMsForDims(state.dimensions) / testSpeed()));
     try {
       for (let i = 0; i < order.ticket.length; i++) {
-        if (helpRun.current !== run) return;
+        if (helpRun.current !== run || voice.signal.aborted) return;
         setHelpStep(i);
         const started = Date.now();
         if (order.broken === 'speaker') playSfx('static');
         else if (!isTestMode()) {
-          await Promise.race([playKioskItem(order.ticket, i), new Promise((r) => setTimeout(r, 1400))]);
+          await playKioskItem(order.ticket, i, voice.signal);
         }
         const wait = paceMs - (Date.now() - started);
         if (wait > 0) await new Promise((r) => setTimeout(r, wait));
@@ -798,8 +882,7 @@ export function Kitchen({
   const t = KITCHEN_SB.tiles;
   const rowWidth = D(rowIds.length * t.pitch - (t.pitch - t.width));
   const highlight = state.result?.highlight;
-  const missingId =
-    wrong && highlight?.side === 'expected' ? order.expected[highlight.index] : undefined;
+  const missingId = wrong && highlight?.side === 'expected' ? order.expected[highlight.index] : undefined;
   const orderingIndex = ordering ? state.orderingShown - 1 : -1;
   const ms = KITCHEN_SB.monster;
   const m = { size: D(ms.size), top: Y(ms.top), orderX: X(ms.orderX), waitX: X(ms.waitX), rise: KITCHEN_EXTRA.rise };

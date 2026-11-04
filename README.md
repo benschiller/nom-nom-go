@@ -78,7 +78,7 @@ The game rules are a pure TypeScript reducer with a seeded random generator and 
 
 Difficulty adapts on the device, invisibly, in the same reducer. The game keeps a small per-skill estimate (building the base, telling look-alikes apart, amounts and doubles, right order, remembering the order — plus a separate speed measure) and adjusts five independent axes — how fast orders are shown, how long patience lasts, how much memory support (hints) is offered, how crowded the tray is, and how long orders get — each kept inside the current level's limits, so a slip on one skill never makes everything harder at once. Levels ask for 3–7 correct dishes each (31 across the six levels), sized with a built-in persona simulator so a full first run through all six levels takes roughly 21 minutes; a returning session warms up one level below the furthest uncompleted level, then carries on from there. None of this is shown to the child, and the estimates never leave the device.
 
-Dad's voice clips live in `game/public/audio/clips/`. Any missing clip falls back to the device's speech voice.
+Dad's 40 recorded order and ingredient clips live in `game/public/audio/clips/`. The [voice clip tracker](docs/dad-voice-clips.md) lists each filename, spoken line, and source time range. Any missing clip falls back to the device's speech voice.
 
 ## Pairing Dad's Window
 

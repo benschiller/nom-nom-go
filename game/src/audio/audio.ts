@@ -2,8 +2,18 @@
 
 let ctx: AudioContext | null = null;
 let soundOn = true;
+let voiceGeneration = 0;
+const activeVoiceStops = new Set<() => void>();
+
+/** Stop active speech and invalidate the remaining clips in its call-out. */
+export function stopVoice(): void {
+  voiceGeneration++;
+  for (const stop of [...activeVoiceStops]) stop();
+}
+
 export const setSoundOn = (on: boolean): void => {
   soundOn = on;
+  if (!on) stopVoice();
 };
 
 export function unlockAudio(): void {
@@ -129,56 +139,143 @@ export interface Clip {
   file?: string;
 }
 let clipsCache: Clip[] | null = null;
+let clipsLoading: Promise<Clip[]> | null = null;
 export async function loadClips(): Promise<Clip[]> {
   if (clipsCache) return clipsCache;
-  try {
-    const res = await fetch('/audio/clips.json');
-    const data = (await res.json()) as { clips: Clip[] };
-    clipsCache = data.clips;
-  } catch {
-    clipsCache = [];
+  if (!clipsLoading) {
+    clipsLoading = (async () => {
+      const controller = new AbortController();
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        const request = (async () => {
+          const res = await fetch('/audio/clips.json', { signal: controller.signal });
+          if (!res.ok) throw new Error('clip manifest failed');
+          const data = (await res.json()) as { clips: Clip[] };
+          if (!Array.isArray(data.clips)) throw new Error('invalid clip manifest');
+          return data.clips;
+        })();
+        const timeout = new Promise<never>((_, reject) => {
+          timer = setTimeout(() => {
+            controller.abort();
+            reject(new Error('clip manifest timed out'));
+          }, 5000);
+        });
+        // Bound the response body too; stalled manifest loading must not
+        // hold the ordering gate or HELP forever.
+        const clips = await Promise.race([request, timeout]);
+        clipsCache = clips;
+        return clips;
+      } catch {
+        // Retry on the next request after a transient network failure.
+        return [];
+      } finally {
+        clearTimeout(timer);
+        clipsLoading = null;
+      }
+    })();
   }
-  return clipsCache;
+  return clipsLoading;
 }
 
-function speak(text: string): Promise<void> {
+function loadVoiceClips(signal?: AbortSignal): Promise<Clip[]> {
   return new Promise((resolve) => {
-    if (!soundOn) {
+    if (signal?.aborted) {
+      resolve([]);
+      return;
+    }
+    const finish = (clips: Clip[]): void => {
+      activeVoiceStops.delete(stop);
+      signal?.removeEventListener('abort', stop);
+      resolve(clips);
+    };
+    const stop = (): void => finish([]);
+    activeVoiceStops.add(stop);
+    signal?.addEventListener('abort', stop, { once: true });
+    // A caller can leave immediately without aborting another caller's
+    // shared manifest request.
+    void loadClips().then(finish);
+  });
+}
+
+const voiceIsActive = (generation: number, signal?: AbortSignal): boolean =>
+  soundOn && generation === voiceGeneration && !signal?.aborted;
+
+function speak(text: string, generation: number, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve) => {
+    if (!voiceIsActive(generation, signal)) {
       resolve();
       return;
     }
-    try {
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.05;
-      u.onend = () => resolve();
-      u.onerror = () => resolve();
-      window.speechSynthesis.speak(u);
-      // Safety timeout so a stuck utterance never blocks the game.
-      setTimeout(resolve, Math.max(800, text.length * 110));
-    } catch {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let utterance: SpeechSynthesisUtterance | undefined;
+    const finish = (): void => {
+      clearTimeout(timer);
+      activeVoiceStops.delete(stop);
+      signal?.removeEventListener('abort', stop);
+      if (utterance) utterance.onend = utterance.onerror = null;
       resolve();
+    };
+    const stop = (): void => {
+      finish();
+      window.speechSynthesis?.cancel();
+    };
+    try {
+      utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.05;
+      utterance.onend = finish;
+      utterance.onerror = finish;
+      activeVoiceStops.add(stop);
+      signal?.addEventListener('abort', stop, { once: true });
+      // A stuck fallback must neither block the game nor overlap the next cue.
+      timer = setTimeout(stop, Math.max(1500, text.length * 150));
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      finish();
     }
   });
 }
 
-async function playClip(id: string): Promise<void> {
-  const clips = await loadClips();
+function playRecording(file: string, signal?: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio(`/audio/clips/${file}`);
+    let settled = false;
+    const finish = (error?: Error): void => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      activeVoiceStops.delete(stop);
+      signal?.removeEventListener('abort', stop);
+      audio.onended = audio.onerror = null;
+      audio.pause();
+      if (error) reject(error);
+      else resolve();
+    };
+    const stop = (): void => finish();
+    activeVoiceStops.add(stop);
+    signal?.addEventListener('abort', stop, { once: true });
+    audio.onended = () => finish();
+    audio.onerror = () => finish(new Error('clip failed'));
+    // Current recordings are short, but allow slow loads without leaving HELP stuck.
+    const timer = setTimeout(() => finish(new Error('clip timed out')), 10000);
+    void audio.play().catch(() => finish(new Error('clip failed')));
+  });
+}
+
+async function playClip(id: string, generation: number, signal?: AbortSignal): Promise<void> {
+  if (!voiceIsActive(generation, signal)) return;
+  const clips = await loadVoiceClips(signal);
+  if (!voiceIsActive(generation, signal)) return;
   const clip = clips.find((c) => c.id === id);
   if (!clip) return;
   if (clip.file) {
     try {
-      await new Promise<void>((resolve, reject) => {
-        const a = new Audio(`/audio/clips/${clip.file}`);
-        a.onended = () => resolve();
-        a.onerror = () => reject(new Error('clip failed'));
-        void a.play().catch(reject);
-      });
+      await playRecording(clip.file, signal);
       return;
     } catch {
       /* fall through to speech stand-in */
     }
   }
-  await speak(clip.text);
+  await speak(clip.text, generation, signal);
 }
 
 const wait = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
@@ -223,26 +320,26 @@ export function itemClipIds(ticket: readonly string[], index: number): string[] 
   return ids;
 }
 
-export async function playCallout(ticket: readonly string[]): Promise<void> {
-  if (!soundOn) return;
-  const ids = calloutClipIds(ticket);
+async function playSequence(ids: readonly string[], signal?: AbortSignal): Promise<void> {
+  const generation = voiceGeneration;
   for (let i = 0; i < ids.length; i++) {
-    await playClip(ids[i]);
+    if (!voiceIsActive(generation, signal)) return;
+    await playClip(ids[i], generation, signal);
     if (i < ids.length - 1) await wait(40);
   }
 }
 
-/** Speak one window item as it joins the sill row, so seeing and hearing happen together. */
-export async function playKioskItem(ticket: readonly string[], index: number): Promise<void> {
-  if (!soundOn) return;
-  for (const id of itemClipIds(ticket, index)) {
-    await playClip(id);
-    await wait(40);
-  }
+export async function playCallout(ticket: readonly string[], signal?: AbortSignal): Promise<void> {
+  await playSequence(calloutClipIds(ticket), signal);
 }
 
-export async function playClipById(id: string): Promise<void> {
-  await playClip(id);
+/** Speak one window item as it joins the sill row, so seeing and hearing happen together. */
+export async function playKioskItem(ticket: readonly string[], index: number, signal?: AbortSignal): Promise<void> {
+  await playSequence(itemClipIds(ticket, index), signal);
+}
+
+export async function playClipById(id: string, signal?: AbortSignal): Promise<void> {
+  await playSequence([id], signal);
 }
 
 let bgTimer: number | null = null;
