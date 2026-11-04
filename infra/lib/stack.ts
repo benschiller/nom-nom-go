@@ -77,10 +77,24 @@ export class NomNomGoStack extends Stack {
       },
     });
 
-    eventApi.addChannelNamespace('kitchen', {
-      code: appsync.Code.fromInline(ON_PUBLISH),
-      publishHandlerConfig: {},
+    const publishDataSource = new appsync.CfnDataSource(this, 'KitchenPublishDataSource', {
+      apiId: eventApi.apiId,
+      name: 'KitchenPublish',
+      type: 'NONE',
     });
+
+    const kitchenNamespace = new appsync.CfnChannelNamespace(this, 'KitchenNamespace', {
+      apiId: eventApi.apiId,
+      name: 'kitchen',
+      codeHandlers: ON_PUBLISH,
+      handlerConfigs: {
+        onPublish: {
+          behavior: 'CODE',
+          integration: { dataSourceName: publishDataSource.name },
+        },
+      },
+    });
+    kitchenNamespace.node.addDependency(publishDataSource);
 
     const apiKey = eventApi.apiKeys['NomNomGoKey'] ?? Object.values(eventApi.apiKeys)[0];
 
