@@ -1,4 +1,5 @@
 /** Web Audio SFX, gibberish, and Dad clip playback with speech stand-in. */
+import { isCelebrationPlaying, preloadCelebrationAudio, setCelebrationSoundOn } from './celebrations';
 
 let ctx: AudioContext | null = null;
 let soundOn = true;
@@ -13,12 +14,14 @@ export function stopVoice(): void {
 
 export const setSoundOn = (on: boolean): void => {
   soundOn = on;
+  setCelebrationSoundOn(on);
   if (!on) stopVoice();
 };
 
 export function unlockAudio(): void {
   if (!ctx) ctx = new AudioContext();
   if (ctx.state !== 'running') void ctx.resume();
+  preloadCelebrationAudio();
   // Prime speechSynthesis inside the user gesture (iOS).
   try {
     const u = new SpeechSynthesisUtterance('');
@@ -51,7 +54,6 @@ function tone(freq: number, ms: number, type: OscillatorType = 'sine', gain = 0.
 }
 
 export type Sfx =
-  | 'nom'
   | 'ding'
   | 'print'
   | 'tap'
@@ -86,13 +88,6 @@ export function playSfx(name: Sfx): void {
     case 'oops':
       tone(300, 150, 'sine', 0.06);
       tone(240, 200, 'sine', 0.06, 0.12);
-      break;
-    case 'nom':
-      // Distinctive two-syllable "Nom Nom" for a correct serve.
-      tone(220, 110, 'sawtooth', 0.06);
-      tone(170, 110, 'sawtooth', 0.06, 0.13);
-      tone(220, 110, 'sawtooth', 0.06, 0.3);
-      tone(170, 140, 'sawtooth', 0.06, 0.43);
       break;
     case 'gobble':
       tone(180, 100, 'sawtooth', 0.05);
@@ -348,7 +343,7 @@ export function startBackgroundLoop(getTempo: () => number): void {
   const notes = [262, 330, 392, 330];
   let i = 0;
   const loop = (): void => {
-    if (soundOn && ctx) tone(notes[i % notes.length], 180, 'triangle', 0.02);
+    if (soundOn && ctx) tone(notes[i % notes.length], 180, 'triangle', isCelebrationPlaying() ? 0.005 : 0.02);
     i++;
     bgTimer = window.setTimeout(loop, getTempo());
   };

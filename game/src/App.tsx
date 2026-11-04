@@ -14,6 +14,13 @@ import {
   unlockAudio,
   ensureAudioOnVisible,
 } from './audio/audio';
+import {
+  createCelebrationPlayer,
+  preloadCelebrationAudio,
+  ROUND_CELEBRATION_DELAY_MS,
+  stopCelebrations,
+  type CelebrationCue,
+} from './audio/celebrations';
 import { isTestMode, testSpeed, useGame } from './ui/store';
 import { Emoji } from './ui/ItemIcon';
 import { Art, Backdrop, preloadArt } from './ui/Art';
@@ -125,11 +132,6 @@ function LevelTransition({ stars, onContinue }: { stars: number; onContinue: () 
   const s = LEVEL_LAYOUT.stars;
   const size = Math.min(s.maxSize, (s.maxWidth - s.gap * (stars - 1)) / stars);
   const reduce = useReducedMotion();
-  useEffect(() => {
-    if (reduce) return undefined;
-    const timers = Array.from({ length: stars }, (_, i) => window.setTimeout(() => playSfx('pop'), 350 + i * 260));
-    return () => timers.forEach((t) => clearTimeout(t));
-  }, [stars, reduce]);
   return (
     <div data-testid="level-transition" style={{ position: 'absolute', inset: 0 }}>
       <Backdrop id="env.title" />
@@ -790,9 +792,20 @@ function GameShell(): React.JSX.Element {
   const orderVoice = useRef<AbortController | null>(null);
   useEffect(() => () => orderVoice.current?.abort(), []);
   const spoken = useRef<{ key: string; count: number }>({ key: '', count: 0 });
+  const celebration = useRef<{
+    key: string;
+    controller: AbortController;
+    play: (cue: CelebrationCue) => void;
+    roundPlayed: boolean;
+  } | null>(null);
+  useEffect(() => {
+    preloadCelebrationAudio();
+    return () => celebration.current?.controller.abort();
+  }, []);
 
   /** Complete reset: fresh save (pairing and sound retained), then reload. */
   const resetCompletely = (): void => {
+    stopCelebrations();
     const save = store.getSave();
     dispatch({ type: 'powerReset' });
     store.setSave({
@@ -839,8 +852,10 @@ function GameShell(): React.JSX.Element {
   // Auto-pause + AudioContext recovery on visibility.
   useEffect(() => {
     const onVis = (): void => {
-      if (document.hidden) dispatch({ type: 'pause' });
-      else ensureAudioOnVisible();
+      if (document.hidden) {
+        stopCelebrations();
+        dispatch({ type: 'pause' });
+      } else ensureAudioOnVisible();
     };
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
@@ -903,11 +918,42 @@ function GameShell(): React.JSX.Element {
   }, [state.orderingShown, state.phase, state.paused]);
 
   useEffect(() => {
-    if (state.phase === 'serveResult' && state.result?.kind === 'correct') playSfx('nom');
     if (state.phase === 'serveResult' && state.result?.kind === 'wrong') playSfx('oops');
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.phase]);
+
+  const roundWon = state.phase === 'serveResult' && state.result?.kind === 'correct';
+  const levelWon = state.phase === 'levelResult' || state.phase === 'bossEnding';
+  const celebrationKey =
+    roundWon || levelWon
+      ? `${state.phase}-${state.level}-${state.orderIndex}-${state.tryCount}-${state.attemptsThisOrder}`
+      : '';
+  const roundReady = roundWon && state.phaseMs >= ROUND_CELEBRATION_DELAY_MS;
+  const celebrationMonster = order?.monster;
+  useEffect(() => {
+    if (celebration.current?.key !== celebrationKey) {
+      celebration.current?.controller.abort();
+      celebration.current = null;
+    }
+    if (!celebrationKey) return;
+    if (!celebration.current) {
+      const controller = new AbortController();
+      const play = createCelebrationPlayer(controller.signal);
+      celebration.current = { key: celebrationKey, controller, play, roundPlayed: false };
+      if (state.paused) controller.abort();
+      else if (roundWon && celebrationMonster) play(`monster.${celebrationMonster}.nom`);
+      else if (levelWon) play('celebration.level');
+    }
+    const run = celebration.current;
+    if (state.paused) run.controller.abort();
+    // A game-clock crossing keeps sound and cannons aligned after slow
+    // frames. A cancelled run stays cancelled when play resumes.
+    if (roundReady && !run.roundPlayed) {
+      run.roundPlayed = true;
+      run.play('celebration.round');
+    }
+  }, [celebrationKey, celebrationMonster, levelWon, roundReady, roundWon, state.paused]);
 
   // Dad's Window (child side): snapshots out, glove/cheers/presence in.
   useEffect(() => {
@@ -1223,8 +1269,10 @@ function GameShell(): React.JSX.Element {
         )}
 
         <Confetti
-          active={(state.phase === 'serveResult' && state.result?.kind === 'correct') || state.phase === 'levelResult'}
+          active={roundReady || state.phase === 'levelResult'}
           variant={state.phase === 'levelResult' ? 'level' : 'round'}
+          runKey={celebrationKey}
+          paused={state.paused}
         />
       </div>
 

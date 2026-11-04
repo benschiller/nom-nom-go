@@ -25,6 +25,8 @@ async function observeAudio(page: Page): Promise<void> {
       new URL(media.currentSrc || media.src).pathname.split('/').at(-1) ?? '';
     const play = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function () {
+      // Celebration sounds have their own audit; this suite checks Dad's voice.
+      if (!new URL(this.currentSrc || this.src).pathname.startsWith('/audio/clips/')) return play.call(this);
       if (!watched.has(this)) {
         watched.add(this);
         this.addEventListener('playing', () => {

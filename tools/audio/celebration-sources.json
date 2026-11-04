@@ -1,0 +1,44 @@
+{
+  "sources": [
+    {
+      "file": "qubodup-nom.mp3",
+      "title": "Nom Nom Nom",
+      "creator": "qubodup",
+      "source": "https://freesound.org/people/qubodup/sounds/210432/",
+      "download": "https://cdn.freesound.org/previews/210/210432_71257-hq.mp3",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Nom Nom Nom by qubodup (Freesound), CC0 1.0; author changed license to CC0 on 2024-11-23.",
+      "description": "Performed eating vocalization. First two nom syllables at 0.08\u20130.85 s used for six monster variants.",
+      "sha256": "1b76f7f91a7b862e1536491776649b0be361451744994a9b9477966336c67144"
+    },
+    {
+      "file": "castlefanfare.mp3",
+      "title": "Trumpet Fanfare",
+      "creator": "gchoc / Graciano Choc - Bz.gamedev",
+      "source": "https://opengameart.org/content/trumpet-fanfare",
+      "download": "https://opengameart.org/sites/default/files/castlefanfare.mp3",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Trumpet Fanfare by Graciano Choc (gchoc / Bz.gamedev), via OpenGameArt. CC0 1.0.",
+      "description": "Original author describes fanfare to signal return of king; total duration 2.424s. Strong compact candidate for <=1.6s when modestly time-compressed.",
+      "sha256": "e248d4e55f87671898fa1ea3edfa4242969f193ced960864b6a51c960e186c6b",
+      "bytes": 99385,
+      "duration_seconds": 2.42424
+    },
+    {
+      "file": "davidox-hurra.mp3",
+      "title": "Jaaaaa Hurraaaaa.wav",
+      "creator": "Davidox",
+      "source": "https://freesound.org/people/Davidox/sounds/169993/",
+      "download": "https://cdn.freesound.org/previews/169/169993_3142792-hq.mp3",
+      "license": "CC0 1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Jaaaaa Hurraaaaa.wav by Davidox (Freesound), CC0 1.0.",
+      "description": "Author describes Happy swedish boy. First Ja vowel ~0.80\u20131.64s, second Hurra-shaped two-syllable vocalization ~1.70\u20133.35s. Suggested crop 1.68\u20133.48s. ASR is unreliable on this shouted voice; Swedish base model outputs Ja then Ha ha ha. Check audition before choosing.",
+      "sha256": "347ab9b6e318c57a90404953c6278a3749af90d70755c03789f24299dbf651bd",
+      "bytes": 94368,
+      "duration_seconds": 5.0
+    }
+  ]
+}

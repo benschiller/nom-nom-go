@@ -128,21 +128,34 @@ function draw(g: CanvasRenderingContext2D, p: Particle, t: number): void {
 export function Confetti({
   active,
   variant = 'round',
+  runKey,
+  paused = false,
 }: {
   active: boolean;
   variant?: 'round' | 'level';
+  runKey: string;
+  paused?: boolean;
 }): React.JSX.Element {
   const ref = useRef<HTMLCanvasElement>(null);
+  const run = useRef({ key: '', started: false, cancelled: false });
   const reduced = useReducedMotion() ?? false;
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
     const g = canvas.getContext('2d');
     if (!g) return;
-    if (!active) {
+    if (run.current.key !== runKey) run.current = { key: runKey, started: false, cancelled: false };
+    if (paused) run.current.cancelled = true;
+    canvas.dataset.cancelled = String(run.current.cancelled);
+    canvas.dataset.active = 'false';
+    if (!active || run.current.cancelled) {
       g.clearRect(0, 0, canvas.width, canvas.height);
       return;
     }
+    // The same result cannot re-fire its cannons after pause/resume.
+    if (run.current.started) return;
+    run.current.started = true;
+    canvas.dataset.active = 'true';
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     canvas.width = 1600 * dpr;
     canvas.height = 900 * dpr;
@@ -188,17 +201,23 @@ export function Confetti({
       }
       const pending = bursts.some((b) => b.at >= frame);
       if (alive || pending) raf = requestAnimationFrame(step);
-      else g.clearRect(0, 0, 1600, 900);
+      else {
+        canvas.dataset.active = 'false';
+        g.clearRect(0, 0, 1600, 900);
+      }
     };
     step();
     return () => {
       cancelAnimationFrame(raf);
       g.clearRect(0, 0, 1600, 900);
     };
-  }, [active, variant, reduced]);
+  }, [active, variant, reduced, runKey, paused]);
   return (
     <canvas
       ref={ref}
+      data-testid="celebration-confetti"
+      data-variant={variant}
+      data-run-key={runKey}
       style={{ position: 'absolute', inset: 0, width: 1600, height: 900, pointerEvents: 'none', zIndex: 50 }}
       aria-hidden
     />

@@ -104,6 +104,18 @@ describe('recorded voice playback', () => {
     expect(spoken).toEqual([]);
   });
 
+  it('keeps Dad recordings independent when celebrations are cancelled', async () => {
+    const { playClipById } = await import('./audio');
+    const { stopCelebrations } = await import('./celebrations');
+    const playback = playClipById('ing.cheese');
+    await vi.advanceTimersByTimeAsync(0);
+    stopCelebrations();
+    expect(instances[0].pause).not.toHaveBeenCalled();
+    instances[0].onended?.();
+    await playback;
+    expect(spoken).toEqual([]);
+  });
+
   it('stops an active recording on mute and does not resume stale queued clips after unmuting', async () => {
     const { playCallout, setSoundOn } = await import('./audio');
     const playback = playCallout(['cheese', 'pickles']);

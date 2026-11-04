@@ -1,0 +1,21 @@
+Nom Nom Go! — celebration sound credits
+
+All three source recordings are CC0 1.0; edits retain that public-domain dedication.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Nom Nom Nom by qubodup (Freesound), CC0 1.0; author changed license to CC0 on 2024-11-23.
+https://freesound.org/people/qubodup/sounds/210432/
+
+Trumpet Fanfare by Graciano Choc (gchoc / Bz.gamedev), via OpenGameArt. CC0 1.0.
+https://opengameart.org/content/trumpet-fanfare
+
+Jaaaaa Hurraaaaa.wav by Davidox (Freesound), CC0 1.0.
+https://freesound.org/people/Davidox/sounds/169993/
+
+Changes: excerpts, character pitch/tempo shifts, layered crowd, loudness matching, fades, AAC conversion.
+The soft paired cannon pop is an original synthesized effect.
+No part of Dad's recording was transformed or used to make these monster voices.
+
+File mapping, durations, source ranges, and checksums: manifest.json in this folder.
+Rebuild: python3 tools/audio/build-celebration-sounds.py
+Requires FFmpeg with the rubberband filter. Originals live in tools/audio/celebration-sources/.
